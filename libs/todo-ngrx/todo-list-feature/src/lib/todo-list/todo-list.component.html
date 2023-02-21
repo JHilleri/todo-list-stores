@@ -1,0 +1,14 @@
+<tdl-todo-creation (create)="createItem($event)"></tdl-todo-creation>
+<ul>
+    <li *ngFor="let todo of items; trackBy: trackBy">
+        <input
+            type="checkbox"
+            id="todo-{{ todo.id }}"
+            [checked]="todo.completed"
+            (change)="toggle(todo)"
+        />
+        <label for="todo-{{ todo.id }}">{{ todo.title }}: {{ todo.text }}</label>
+    </li>
+</ul>
+<button (click)="completeAll()">Complete All</button>
+<button (click)="unCompleteAll()">Uncomplete All</button>

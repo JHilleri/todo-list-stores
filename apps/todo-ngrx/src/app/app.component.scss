@@ -1,0 +1,22 @@
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: rgb(38, 38, 125);
+  color: white;
+  align-items: center;
+  padding: 1rem;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: white;
+  gap: 1rem;
+}
+
+a {
+  color: white;
+}

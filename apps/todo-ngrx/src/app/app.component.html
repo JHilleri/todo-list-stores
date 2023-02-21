@@ -1,1 +1,10 @@
-<todo-lists-nx-welcome></todo-lists-nx-welcome> <router-outlet></router-outlet>
+<header>
+    <h1>{{ title }}</h1>
+    <nav>
+        <a routerLink="/todos" routerLinkActive="active">Todos</a>
+        <a routerLink="/Config" routerLinkActive="active">Config</a>
+    </nav>
+</header>
+<main>
+    <router-outlet></router-outlet>
+</main>
