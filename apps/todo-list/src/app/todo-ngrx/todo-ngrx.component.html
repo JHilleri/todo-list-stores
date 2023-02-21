@@ -1,0 +1,28 @@
+<ng-container *ngIf="vm$ | async as vm">
+    <tdl-todo-creation (create)="createItem($event)" />
+
+    <div>
+        <input
+            id="show-completed"
+            type="checkbox"
+            [ngModel]="vm.showCompleted"
+            (ngModelChange)="updateShowCompleted($event)"
+        />
+        <label for="show-completed">Show completed</label>
+    </div>
+
+    <div class="actions">
+        <button tdl-button (click)="completeAll()">Complete All</button>
+        <button tdl-button (click)="uncompleteAll()">Uncomplete All</button>
+    </div>
+
+    <div class="status">
+        <span>Completed: {{ vm.completedCount }}</span>
+        <span>Uncompleted: {{ vm.uncompletedCount }}</span>
+    </div>
+
+    <tdl-todo-card-grid
+        [items]="vm.todos"
+        (updateCompleted)="updateCompleted($event)"
+    />
+</ng-container>

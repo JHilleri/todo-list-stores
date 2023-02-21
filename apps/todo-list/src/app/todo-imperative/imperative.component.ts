@@ -16,6 +16,7 @@ import {
     getMockedTodoItems,
     TodoItem,
     TodoItemCreationParams,
+    UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
 import { Subject } from 'rxjs';
 import { delay, takeUntil, tap } from 'rxjs/operators';
@@ -31,7 +32,7 @@ import { delay, takeUntil, tap } from 'rxjs/operators';
         TodoCardGridComponent,
     ],
     templateUrl: './imperative.component.html',
-    styleUrls: ['./imperative.component.scss'],
+    styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImperativeComponent implements OnInit, OnDestroy {
@@ -70,13 +71,7 @@ export class ImperativeComponent implements OnInit, OnDestroy {
         this.updateFilteredItems();
     }
 
-    protected updateCompleted({
-        id,
-        completed,
-    }: {
-        id: number;
-        completed: boolean;
-    }) {
+    protected updateCompleted({ id, completed }: UpdateTodoCompletionParams) {
         const todoItem = this.items.find((item) => item.id === id);
         if (!todoItem) return;
         todoItem.completed = completed;

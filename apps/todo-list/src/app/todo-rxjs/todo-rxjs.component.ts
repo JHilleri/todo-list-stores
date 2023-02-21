@@ -11,6 +11,7 @@ import {
     getMockedTodoItems,
     TodoItem,
     TodoItemCreationParams,
+    UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
 import { BehaviorSubject, combineLatest, delay, map, tap, using } from 'rxjs';
 
@@ -25,7 +26,7 @@ import { BehaviorSubject, combineLatest, delay, map, tap, using } from 'rxjs';
         TodoCardGridComponent,
     ],
     templateUrl: './todo-rxjs.component.html',
-    styleUrls: ['./todo-rxjs.component.scss'],
+    styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoRxjsComponent {
@@ -76,13 +77,7 @@ export class TodoRxjsComponent {
         this.showCompleted$.next(showCompleted);
     }
 
-    protected updateCompleted({
-        id,
-        completed,
-    }: {
-        id: number;
-        completed: boolean;
-    }) {
+    protected updateCompleted({ id, completed }: UpdateTodoCompletionParams) {
         this.items$.next(
             this.items$.value.map((item) =>
                 item.id === id ? { ...item, completed } : item
