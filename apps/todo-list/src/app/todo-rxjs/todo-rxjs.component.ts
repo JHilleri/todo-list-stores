@@ -13,7 +13,8 @@ import {
     TodoItemCreationParams,
     UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
-import { BehaviorSubject, combineLatest, delay, map, tap, using } from 'rxjs';
+import { BehaviorSubject, combineLatest, using } from 'rxjs';
+import { debounceTime, delay, map, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'todo-lists-todo-rxjs',
@@ -66,7 +67,10 @@ export class TodoRxjsComponent {
                 completedCount: this.completedCount$,
                 uncompletedCount: this.uncompletedCount$,
                 showCompleted: this.showCompleted$,
-            })
+            }).pipe(
+                debounceTime(0), // prevent diamond problem
+                tap((vm) => console.log('mv', vm))
+            )
     );
 
     protected createItem(item: TodoItemCreationParams) {

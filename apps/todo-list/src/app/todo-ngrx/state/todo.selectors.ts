@@ -1,25 +1,30 @@
 import { createSelector } from '@ngrx/store';
-import { todoFeature } from './todo.reducer';
+import { todoFeature, selectAll } from './todo.reducer';
+
+const selectAllItems = createSelector(
+    todoFeature.selectTodoNgrxState,
+    selectAll
+);
 
 export const selectCompletedCount = createSelector(
-    todoFeature.selectTodos,
+    selectAllItems,
     (todos) => todos.filter((todo) => todo.completed).length
 );
 
 export const selectUncompletedCount = createSelector(
-    todoFeature.selectTodos,
+    selectAllItems,
     (todos) => todos.filter((todo) => !todo.completed).length
 );
 
 export const selectFilteredTodos = createSelector(
-    todoFeature.selectTodos,
+    selectAllItems,
     todoFeature.selectShowCompleted,
     (todos, showCompleted) =>
         todos.filter((todo) => showCompleted || !todo.completed)
 );
 
 export const selectViewModel = createSelector({
-    todos: selectFilteredTodos,
+    filteredTodos: selectFilteredTodos,
     completedCount: selectCompletedCount,
     uncompletedCount: selectUncompletedCount,
     showCompleted: todoFeature.selectShowCompleted,

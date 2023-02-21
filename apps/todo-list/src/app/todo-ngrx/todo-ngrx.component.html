@@ -22,7 +22,7 @@
     </div>
 
     <tdl-todo-card-grid
-        [items]="vm.todos"
+        [items]="vm.filteredTodos"
         (updateCompleted)="updateCompleted($event)"
     />
 </ng-container>

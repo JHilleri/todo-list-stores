@@ -1,46 +1,41 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { createTodoItem, TodoItem } from '@todo-lists/todo/util';
 import { todoActions } from './todo.actions';
 
-interface State {
-    todos: TodoItem[];
+interface State extends EntityState<TodoItem> {
     showCompleted: boolean;
 }
 
-export const initialState: State = {
-    todos: [],
+const adapter = createEntityAdapter<TodoItem>();
+export const initialState: State = adapter.getInitialState({
     showCompleted: false,
-};
+});
 
 export const todoFeature = createFeature({
-    name: 'todo-ngrx',
+    name: 'todoNgrx',
     reducer: createReducer(
         initialState,
-        on(todoActions.add, (state, { params }) => ({
-            ...state,
-            todos: [...state.todos, createTodoItem(params)],
-        })),
+        on(todoActions.add, (state, { params }) =>
+            adapter.addOne(createTodoItem(params), state)
+        ),
         on(todoActions.update_show_completed, (state, { showCompleted }) => ({
             ...state,
             showCompleted,
         })),
-        on(todoActions.update_completed, (state, { id, completed }) => ({
-            ...state,
-            todos: state.todos.map((item) =>
-                item.id === id ? { ...item, completed } : item
-            ),
-        })),
-        on(todoActions.complete_all, (state) => ({
-            ...state,
-            todos: state.todos.map((item) => ({ ...item, completed: true })),
-        })),
-        on(todoActions.uncomplete_all, (state) => ({
-            ...state,
-            todos: state.todos.map((item) => ({ ...item, completed: false })),
-        })),
-        on(todoActions.loading_completed, (state, { items }) => ({
-            ...state,
-            todos: [...state.todos, ...items],
-        }))
+        on(todoActions.update_completed, (state, { id, completed }) =>
+            adapter.updateOne({ id, changes: { completed } }, state)
+        ),
+        on(todoActions.complete_all, (state) =>
+            adapter.map((item) => ({ ...item, completed: true }), state)
+        ),
+        on(todoActions.uncomplete_all, (state) =>
+            adapter.map((item) => ({ ...item, completed: false }), state)
+        ),
+        on(todoActions.loading_completed, (state, { items }) =>
+            adapter.addMany(items, state)
+        )
     ),
 });
+
+export const { selectAll } = adapter.getSelectors();
