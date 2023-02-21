@@ -23,6 +23,10 @@
     "@ngrx/store": "^15.3.0",
     "@ngrx/store-devtools": "^15.3.0",
     "@nrwl/angular": "15.7.2",
+    "@state-adapt/angular": "^0.63.0",
+    "@state-adapt/core": "^0.63.0",
+    "@state-adapt/ngrx": "^0.63.0",
+    "@state-adapt/rxjs": "^0.63.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

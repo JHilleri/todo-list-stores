@@ -44,5 +44,14 @@ export const appRoutes: Route[] = [
             import(
                 './todo-ngrx-component-store/todo-ngrx-component-store.component'
             ).then((m) => m.TodoNgrxComponentStoreComponent),
+        title: 'NgRx Component Store',
+    },
+    {
+        path: 'state-adapt',
+        loadComponent: () =>
+            import('./todo-state-adapt/todo-state-adapt.component').then(
+                (m) => m.TodoStateAdaptComponent
+            ),
+        title: 'State Adapt',
     },
 ];
