@@ -21,4 +21,10 @@ nav {
 
 a {
     color: var(--tdl-on-primary);
+    padding: 0.5rem;
+}
+
+.active-route {
+    font-weight: bold;
+    border: 1px solid var(--tdl-on-primary);
 }
