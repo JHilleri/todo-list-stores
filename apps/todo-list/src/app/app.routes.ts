@@ -38,4 +38,11 @@ export const appRoutes: Route[] = [
         ],
         title: 'NgRx',
     },
+    {
+        path: 'ngrx-component-store',
+        loadComponent: () =>
+            import(
+                './todo-ngrx-component-store/todo-ngrx-component-store.component'
+            ).then((m) => m.TodoNgrxComponentStoreComponent),
+    },
 ];

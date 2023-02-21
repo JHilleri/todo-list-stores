@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { todoActions } from './state/todo.actions';
-import { selectViewModel } from './state/todo.selectors';
-import { Store } from '@ngrx/store';
+import { provideComponentStore } from '@ngrx/component-store';
+import { TodoStore } from './todo.store';
 import {
     TodoItemCreationParams,
     UpdateTodoCompletionParams,
@@ -13,9 +12,10 @@ import {
     ButtonComponent,
     TodoCardGridComponent,
 } from '@todo-lists/todo/ui';
+import { debounceTime, tap } from 'rxjs/operators';
 
 @Component({
-    selector: 'todo-lists-todo-ngrx',
+    selector: 'todo-lists-todo-ngrx-component-store',
     standalone: true,
     imports: [
         CommonModule,
@@ -24,34 +24,38 @@ import {
         ButtonComponent,
         TodoCardGridComponent,
     ],
-    templateUrl: './todo-ngrx.component.html',
+    templateUrl: './todo-ngrx-component-store.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [provideComponentStore(TodoStore)],
 })
-export class TodoNgrxComponent {
-    private store = inject(Store);
+export class TodoNgrxComponentStoreComponent {
+    private store = inject(TodoStore);
 
-    protected vm$ = this.store.select(selectViewModel);
+    protected vm$ = this.store.vm$.pipe(
+        debounceTime(0), // prevent diamond problem
+        tap((vm) => {
+            console.log('component vm', vm);
+        })
+    );
 
     protected createItem(params: TodoItemCreationParams) {
-        this.store.dispatch(todoActions.add({ params }));
+        this.store.createItem(params);
     }
 
     protected updateShowCompleted(showCompleted: boolean) {
-        this.store.dispatch(
-            todoActions.update_show_completed({ showCompleted })
-        );
+        this.store.updateShowCompleted(showCompleted);
     }
 
     protected updateCompleted(params: UpdateTodoCompletionParams) {
-        this.store.dispatch(todoActions.update_completed({params}));
+        this.store.updateCompleted(params);
     }
 
     protected completeAll() {
-        this.store.dispatch(todoActions.complete_all());
+        this.store.completeAll();
     }
 
     protected uncompleteAll() {
-        this.store.dispatch(todoActions.uncomplete_all());
+        this.store.uncompleteAll();
     }
 }

@@ -23,8 +23,10 @@ export const todoFeature = createFeature({
             ...state,
             showCompleted,
         })),
-        on(todoActions.update_completed, (state, { id, completed }) =>
-            adapter.updateOne({ id, changes: { completed } }, state)
+        on(
+            todoActions.update_completed,
+            (state, { params: { id, completed } }) =>
+                adapter.updateOne({ id, changes: { completed } }, state)
         ),
         on(todoActions.complete_all, (state) =>
             adapter.map((item) => ({ ...item, completed: true }), state)

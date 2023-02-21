@@ -8,7 +8,7 @@ describe('TodoNgrxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [TodoNgrxComponent],
+            imports: [TodoNgrxComponent, ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(TodoNgrxComponent);
