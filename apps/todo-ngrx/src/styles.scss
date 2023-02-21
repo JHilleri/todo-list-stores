@@ -1,5 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+    --tdl-primary: #007bff;
+    --tdl-on-primary: #fff;
+    --tds-ripple-color: #000;
+
+    --tdl-secondary: #6c757d;
+    --tdl-on-secondary: #fff;
+
+    --tdl-background: #f8f9fa;
+    --tdl-surface: #efeed7;
+
+    --tdl-completed: #28a745;
+    --tdl-on-completed: #fff;
+}
+
 body {
   margin: 0;
   padding: 0;

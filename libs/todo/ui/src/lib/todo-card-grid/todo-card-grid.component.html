@@ -1,0 +1,8 @@
+<ul>
+    <li *ngFor="let item of items; trackBy: trackBy">
+        <tdl-todo-card
+            [item]="item"
+            (completedChange)="updateCompletedItem(item, $event)"
+        />
+    </li>
+</ul>

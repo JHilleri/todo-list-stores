@@ -1,0 +1,32 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+    --primary-hue: 210;
+    --secondary-hue: 208;
+    --primary-saturation: 100%;
+    --lightness: 40%;
+}
+
+:root {
+    --tdl-primary: hsl(
+        var(--primary-hue),
+        var(--primary-saturation),
+        var(--lightness)
+    );
+    --tdl-on-primary: hsl(var(--primary-hue), var(--primary-saturation), 95%);
+    --tds-ripple-color: hsl(var(--primary-hue), var(--primary-saturation), 0%);
+
+    --tdl-secondary: hsl(var(--secondary-hue), 7%, var(--lightness));
+    --tdl-on-secondary: hsl(var(--secondary-hue), 0%, 100%);
+
+    --tdl-background: hsl(0, 0%, 98%);
+    --tdl-surface: hsl(39, 77%, 95%);
+
+    --tdl-completed: hsl(134, 61%, var(--lightness));
+    --tdl-on-completed: hsl(0, 0%, 100%);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

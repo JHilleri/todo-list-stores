@@ -1,4 +1,4 @@
-<tdl-todo-creation (create)="createItem($event)"></tdl-todo-creation>
+<tdl-todo-creation (create)="createItem($event)" />
 
 <div>
     <input
@@ -20,11 +20,7 @@
     <span>Uncompleted: {{ uncompletedCount }}</span>
 </div>
 
-<ul>
-    <li *ngFor="let todo of filteredItems; trackBy: trackBy">
-        <tdl-todo-card
-            [item]="todo"
-            (completedChange)="updateCompleted(todo, $event)"
-        ></tdl-todo-card>
-    </li>
-</ul>
+<tdl-todo-card-grid
+    [items]="filteredItems"
+    (updateCompleted)="updateCompleted($event)"
+/>

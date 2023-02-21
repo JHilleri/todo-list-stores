@@ -1,0 +1,25 @@
+<ng-container *ngIf="item !== undefined">
+    <div class="card-header">
+        <h3>{{ item.title }}</h3>
+        <div>
+            <span *ngIf="item.completed" class="badge badge-completed">
+                Completed
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <p>{{ item.text }}</p>
+    </div>
+    <div class="card-footer">
+        <button
+            tdl-button
+            *ngIf="!item.completed"
+            class="btn btn-primary"
+            type="button"
+            [disabled]="item.completed"
+            (click)="updateCompleted(true)"
+        >
+            Mark as completed
+        </button>
+    </div>
+</ng-container>

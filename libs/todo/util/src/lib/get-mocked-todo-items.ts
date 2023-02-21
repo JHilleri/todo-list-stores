@@ -1,8 +1,9 @@
+import { Observable, of } from 'rxjs';
 import { createTodoItem } from './create-todo-item';
 import { TodoItem } from './todo-item';
 
-export function getMockedTodoItems(): TodoItem[] {
-    return [
+export function getMockedTodoItems(): Observable<TodoItem[]> {
+    return of([
         createTodoItem({
             title: 'Todo 1',
             text: 'Todo 1 text',
@@ -11,5 +12,5 @@ export function getMockedTodoItems(): TodoItem[] {
             title: 'Todo 2',
             text: 'Todo 2 text',
         }),
-    ];
+    ]);
 }

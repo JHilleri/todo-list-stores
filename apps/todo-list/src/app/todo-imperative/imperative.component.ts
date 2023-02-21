@@ -8,7 +8,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import {
     ButtonComponent,
-    TodoCardComponent,
+    TodoCardGridComponent,
     TodoCreationComponent,
 } from '@todo-lists/todo/ui';
 import {
@@ -21,28 +21,32 @@ import { Subject } from 'rxjs';
 import { delay, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
-    selector: 'tdl-todo-list',
+    selector: 'todo-lists-imperative',
     standalone: true,
     imports: [
         CommonModule,
         TodoCreationComponent,
-        TodoCardComponent,
         FormsModule,
         ButtonComponent,
+        TodoCardGridComponent,
     ],
-    templateUrl: './todo-list.component.html',
-    styleUrls: ['./todo-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Default,
+    templateUrl: './imperative.component.html',
+    styleUrls: ['./imperative.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TodoListComponent implements OnInit, OnDestroy {
+export class ImperativeComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
+
+    // state
     protected items: TodoItem[] = [];
-    protected filteredItems: TodoItem[] = [];
     protected showCompleted = false;
 
+    // derived state
+    protected filteredItems: TodoItem[] = [];
     protected completedCount = 0;
     protected uncompletedCount = 0;
 
+    // side effects
     private loadItems$ = getMockedTodoItems().pipe(
         delay(2000),
         tap((items) => {
@@ -66,8 +70,16 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.updateFilteredItems();
     }
 
-    protected updateCompleted(item: TodoItem, isCompleted: boolean) {
-        item.completed = isCompleted;
+    protected updateCompleted({
+        id,
+        completed,
+    }: {
+        id: number;
+        completed: boolean;
+    }) {
+        const todoItem = this.items.find((item) => item.id === id);
+        if (!todoItem) return;
+        todoItem.completed = completed;
         this.updateCounts();
         this.updateFilteredItems();
     }
@@ -83,8 +95,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.updateCounts();
         this.updateFilteredItems();
     }
-
-    protected trackBy = (_: number, item: TodoItem) => item.id;
 
     private updateCounts() {
         this.completedCount = this.items.filter(
