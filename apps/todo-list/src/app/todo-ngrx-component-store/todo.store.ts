@@ -8,7 +8,7 @@ import {
     TodoItemCreationParams,
     UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
-import { delay } from 'rxjs/operators';
+import { debounceTime, delay, tap } from 'rxjs/operators';
 
 interface TodoState extends EntityState<TodoItem> {
     showCompleted: boolean;
@@ -84,5 +84,10 @@ export class TodoStore extends ComponentStore<TodoState> {
         completedCount: this.completedCount$,
         uncompletedCount: this.uncompletedCount$,
         showCompleted: this.showCompleted$,
-    });
+    }).pipe(
+        debounceTime(0), // prevent glitch
+        tap((vm) => {
+            console.log('component vm', vm);
+        })
+    );
 }

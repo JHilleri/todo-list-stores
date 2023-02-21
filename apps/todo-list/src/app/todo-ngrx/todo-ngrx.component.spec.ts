@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideEffects } from '@ngrx/effects';
+import { provideState, provideStore } from '@ngrx/store';
+import { TodoEffectsService } from './state/todo.effects';
+import { todoFeature } from './state/todo.reducer';
 
 import { TodoNgrxComponent } from './todo-ngrx.component';
 
@@ -8,7 +12,12 @@ describe('TodoNgrxComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [TodoNgrxComponent, ],
+            imports: [TodoNgrxComponent],
+            providers: [
+                provideStore({}),
+                provideState(todoFeature),
+                provideEffects(TodoEffectsService),
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(TodoNgrxComponent);

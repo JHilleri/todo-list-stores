@@ -68,8 +68,8 @@ export class TodoRxjsComponent {
                 uncompletedCount: this.uncompletedCount$,
                 showCompleted: this.showCompleted$,
             }).pipe(
-                debounceTime(0), // prevent diamond problem
-                tap((vm) => console.log('mv', vm))
+                debounceTime(0), // prevent glitch
+                tap((vm) => console.log('rxjs vm', vm))
             )
     );
 

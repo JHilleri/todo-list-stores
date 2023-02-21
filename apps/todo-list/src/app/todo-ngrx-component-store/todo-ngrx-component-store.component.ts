@@ -32,12 +32,7 @@ import { debounceTime, tap } from 'rxjs/operators';
 export class TodoNgrxComponentStoreComponent {
     private store = inject(TodoStore);
 
-    protected vm$ = this.store.vm$.pipe(
-        debounceTime(0), // prevent diamond problem
-        tap((vm) => {
-            console.log('component vm', vm);
-        })
-    );
+    protected vm$ = this.store.vm$;
 
     protected createItem(params: TodoItemCreationParams) {
         this.store.createItem(params);
