@@ -49,7 +49,6 @@ export class ImperativeComponent implements OnInit, OnDestroy {
 
     // side effects
     private loadItems$ = getMockedTodoItems().pipe(
-        delay(2000),
         tap((items) => {
             this.items.push(...items);
             this.updateCounts();

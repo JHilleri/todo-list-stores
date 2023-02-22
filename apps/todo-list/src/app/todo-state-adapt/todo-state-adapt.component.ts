@@ -13,7 +13,6 @@ import {
     TodoItemCreationParams,
     UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
-import { delay, tap } from 'rxjs';
 import { TodoState, todoStateAdapter } from './todo-state-adapter';
 
 const initialState: TodoState = {
@@ -35,7 +34,6 @@ const initialState: TodoState = {
 })
 export class TodoStateAdaptComponent {
     private dataLoaded$ = getMockedTodoItems().pipe(
-        delay(2000),
         toSource('[stateAdapt] data loaded')
     );
     private store = adaptNgrx(['stateAdapt', initialState, todoStateAdapter], {

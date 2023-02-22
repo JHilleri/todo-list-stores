@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { delay, Observable, of } from 'rxjs';
 import { createTodoItem } from './create-todo-item';
 import { TodoItem } from './todo-item';
 
@@ -12,5 +12,5 @@ export function getMockedTodoItems(): Observable<TodoItem[]> {
             title: 'Todo 2',
             text: 'Todo 2 text',
         }),
-    ]);
+    ]).pipe(delay(2000));
 }

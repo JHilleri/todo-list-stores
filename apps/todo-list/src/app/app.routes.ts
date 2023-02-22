@@ -54,4 +54,12 @@ export const appRoutes: Route[] = [
             ),
         title: 'State Adapt',
     },
+    {
+        path: 'rx-angular',
+        loadComponent: () =>
+            import('./todo-rx-angular/todo-rx-angular.component').then(
+                (m) => m.TodoRxAngularComponent
+            ),
+        title: 'Rx Angular',
+    },
 ];

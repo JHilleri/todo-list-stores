@@ -14,7 +14,7 @@ import {
     UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
 import { BehaviorSubject, combineLatest, using } from 'rxjs';
-import { debounceTime, delay, map, tap } from 'rxjs/operators';
+import { debounceTime, map, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'todo-lists-todo-rxjs',
@@ -53,7 +53,6 @@ export class TodoRxjsComponent {
 
     // side effects
     private loadItems$ = getMockedTodoItems().pipe(
-        delay(2000),
         tap((items) => {
             this.items$.next(items);
         })
