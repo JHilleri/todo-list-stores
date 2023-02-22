@@ -10,23 +10,16 @@ import {
 } from '@todo-lists/todo/ui';
 import {
     getMockedTodoItems,
-    TodoItem,
     TodoItemCreationParams,
     UpdateTodoCompletionParams,
 } from '@todo-lists/todo/util';
-import { delay } from 'rxjs';
-import { todoStateAdapter } from './todo-state-adapter';
-
-export interface TodoState {
-    items: TodoItem[];
-    showCompleted: boolean;
-}
+import { delay, tap } from 'rxjs';
+import { TodoState, todoStateAdapter } from './todo-state-adapter';
 
 const initialState: TodoState = {
     items: [],
     showCompleted: false,
 };
-
 @Component({
     selector: 'todo-lists-todo-state-adapt',
     standalone: true,
@@ -41,32 +34,33 @@ const initialState: TodoState = {
     styleUrls: ['../todo.component.scss'],
 })
 export class TodoStateAdaptComponent {
+    private dataLoaded$ = getMockedTodoItems().pipe(
+        delay(2000),
+        toSource('[stateAdapt] data loaded')
+    );
     private store = adaptNgrx(['stateAdapt', initialState, todoStateAdapter], {
-        addItems: getMockedTodoItems().pipe(
-            delay(2000),
-            toSource('[stateAdapt] data loaded')
-        ),
+        addItems: this.dataLoaded$,
     });
 
     protected vm$ = this.store.vm$;
 
     protected createItem(params: TodoItemCreationParams) {
-        this.store.createItem(params);
+        this.store.createItems(params);
     }
 
     protected updateShowCompleted(showCompleted: boolean) {
-        this.store.updateShowCompleted(showCompleted);
+        this.store.setShowCompleted(showCompleted);
     }
 
     protected updateCompleted(params: UpdateTodoCompletionParams) {
-        this.store.updateCompleted(params);
+        this.store.updateItemsCompleted(params);
     }
 
     protected completeAll() {
-        this.store.completeAll();
+        this.store.completeItemsAll();
     }
 
     protected uncompleteAll() {
-        this.store.uncompleteAll();
+        this.store.uncompleteItemsAll();
     }
 }

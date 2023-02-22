@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideStore } from '@ngrx/store';
+import { adaptReducer } from '@state-adapt/core';
 
 import { TodoStateAdaptComponent } from './todo-state-adapt.component';
 
@@ -8,7 +10,10 @@ describe('TodoStateAdaptComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [TodoStateAdaptComponent],
+            imports: [
+                TodoStateAdaptComponent,
+                provideStore({ adapt: adaptReducer }),
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(TodoStateAdaptComponent);
