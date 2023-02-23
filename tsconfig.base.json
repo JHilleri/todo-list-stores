@@ -15,9 +15,6 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@todo-lists/todo-ngrx/todo-list-feature": [
-                "libs/todo-ngrx/todo-list-feature/src/index.ts"
-            ],
             "@todo-lists/todo/ui": ["libs/todo/ui/src/index.ts"],
             "@todo-lists/todo/util": ["libs/todo/util/src/index.ts"]
         }
