@@ -1,11 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import {
-    Actions,
-    createEffect,
-    OnInitEffects,
-    ofType,
-    concatLatestFrom,
-} from '@ngrx/effects';
+import { Actions, createEffect, OnInitEffects, ofType, concatLatestFrom } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, mergeMap, switchMap } from 'rxjs';
 import { CategoryService } from '../../category.service';
@@ -39,9 +33,7 @@ export class TodoEffectsService implements OnInitEffects {
     updateTodo$ = createEffect(() =>
         this.actions$.pipe(
             ofType(todoActions.update_item),
-            mergeMap(({ item, changes }) =>
-                this.todoService.updateTodo(item, changes)
-            ),
+            mergeMap(({ item, changes }) => this.todoService.updateTodo(item, changes)),
             map((result) => todoActions.update_item_completed({ result }))
         )
     );
@@ -50,9 +42,7 @@ export class TodoEffectsService implements OnInitEffects {
         this.actions$.pipe(
             ofType(todoActions.complete_all),
             concatLatestFrom(() => this.store.select(selectAllItems)),
-            mergeMap(([, items]) =>
-                this.todoService.updateManyTodos(items, { completed: true })
-            ),
+            mergeMap(([, items]) => this.todoService.updateManyTodos(items, { completed: true })),
             map((items) => todoActions.complete_all_completed({ items }))
         )
     );
@@ -61,9 +51,7 @@ export class TodoEffectsService implements OnInitEffects {
         this.actions$.pipe(
             ofType(todoActions.uncomplete_all),
             concatLatestFrom(() => this.store.select(selectAllItems)),
-            mergeMap(([, items]) =>
-                this.todoService.updateManyTodos(items, { completed: false })
-            ),
+            mergeMap(([, items]) => this.todoService.updateManyTodos(items, { completed: false })),
             map((items) => todoActions.uncomplete_all_completed({ items }))
         )
     );
@@ -72,9 +60,7 @@ export class TodoEffectsService implements OnInitEffects {
         this.actions$.pipe(
             ofType(todoActions.load),
             switchMap(() => this.categoryService.getCategories()),
-            map((categories) =>
-                todoActions.load_categories_completed({ categories })
-            )
+            map((categories) => todoActions.load_categories_completed({ categories }))
         )
     );
 

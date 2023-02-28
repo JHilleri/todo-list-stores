@@ -3,11 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LetModule } from '@ngrx/component';
 import { Store } from '@ngrx/store';
-import {
-    ButtonComponent,
-    FiltersComponent, LoadingComponent, TodoCardGridComponent,
-    TodoCreationComponent
-} from '@todo-lists/todo/ui';
+import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { todoActions } from './state/todo.actions';
 import { selectViewModel } from './state/todo.selectors';
@@ -18,16 +14,7 @@ import { selectViewModel } from './state/todo.selectors';
     templateUrl: './todo-ngrx.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        TodoCreationComponent,
-        NgIf,
-        FormsModule,
-        ButtonComponent,
-        TodoCardGridComponent,
-        LetModule,
-        LoadingComponent,
-        FiltersComponent,
-    ],
+    imports: [NgIf, FormsModule, LetModule, UiComponentsModule],
 })
 export class TodoNgrxComponent {
     private store = inject(Store);
@@ -39,21 +26,11 @@ export class TodoNgrxComponent {
     }
 
     protected updateShowCompleted(showCompleted: boolean) {
-        this.store.dispatch(
-            todoActions.update_show_completed({ showCompleted })
-        );
+        this.store.dispatch(todoActions.update_show_completed({ showCompleted }));
     }
 
-    protected updateCompleted({
-        item,
-        completed,
-    }: {
-        item: TodoItem;
-        completed: boolean;
-    }) {
-        this.store.dispatch(
-            todoActions.update_item({ item, changes: { completed } })
-        );
+    protected updateCompleted({ item, completed }: { item: TodoItem; completed: boolean }) {
+        this.store.dispatch(todoActions.update_item({ item, changes: { completed } }));
     }
 
     protected completeAll() {

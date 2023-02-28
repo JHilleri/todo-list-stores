@@ -8,10 +8,7 @@ import { combineLatest, using } from 'rxjs';
     providedIn: 'root',
 })
 export class SettingsService {
-    private readonly store = adaptNgrx(
-        ['settings', settingsInitialState],
-        settingsAdapter
-    );
+    private readonly store = adaptNgrx(['settings', settingsInitialState], settingsAdapter);
 
     public readonly setTheme = this.store.setTheme;
     public readonly setPrimaryColorHue = this.store.setPrimaryColorHue;
@@ -46,10 +43,7 @@ export class SettingsService {
         })
     );
 
-    public readonly effect$ = combineLatest([
-        this.themeUpdated$,
-        this.customCssUpdated$,
-    ]).pipe(share());
+    public readonly effect$ = combineLatest([this.themeUpdated$, this.customCssUpdated$]).pipe(share());
 
     public readonly vm$ = using(
         () => this.effect$.subscribe(),

@@ -5,14 +5,7 @@ import { insert } from '@rx-angular/cdk/transformations';
 import { RxState, stateful } from '@rx-angular/state';
 import { RxActionFactory } from '@rx-angular/state/actions';
 import { LetModule } from '@rx-angular/template/let';
-import {
-    ButtonComponent,
-    FiltersComponent,
-    LoadingComponent,
-    LogStateDirective,
-    TodoCardGridComponent,
-    TodoCreationComponent,
-} from '@todo-lists/todo/ui';
+import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { combineLatest, map, mergeMap, startWith, withLatestFrom } from 'rxjs';
 import { CategoryService } from '../category.service';
@@ -41,17 +34,7 @@ interface TodoEvents {
 @Component({
     selector: 'todo-lists-todo-rx-angular',
     standalone: true,
-    imports: [
-        LetModule,
-        NgIf,
-        TodoCreationComponent,
-        FormsModule,
-        ButtonComponent,
-        TodoCardGridComponent,
-        LoadingComponent,
-        FiltersComponent,
-        LogStateDirective,
-    ],
+    imports: [LetModule, NgIf, FormsModule, UiComponentsModule],
     templateUrl: './todo-rx-angular.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,14 +1,7 @@
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    ButtonComponent,
-    FiltersComponent,
-    LoadingComponent,
-    LogStateDirective,
-    TodoCardGridComponent,
-    TodoCreationComponent,
-} from '@todo-lists/todo/ui';
+import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { BehaviorSubject, combineLatest, Subject, using } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
@@ -18,17 +11,7 @@ import { TodoService } from '../todo.service';
 @Component({
     selector: 'todo-lists-todo-rxjs',
     standalone: true,
-    imports: [
-        NgIf,
-        AsyncPipe,
-        TodoCreationComponent,
-        FormsModule,
-        ButtonComponent,
-        TodoCardGridComponent,
-        LogStateDirective,
-        LoadingComponent,
-        FiltersComponent,
-    ],
+    imports: [NgIf, AsyncPipe, FormsModule, UiComponentsModule],
     templateUrl: './todo-rxjs.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

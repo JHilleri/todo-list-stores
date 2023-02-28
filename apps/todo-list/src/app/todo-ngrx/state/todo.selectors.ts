@@ -1,10 +1,7 @@
 import { createSelector } from '@ngrx/store';
 import { todoFeature, selectAll } from './todo.reducer';
 
-export const selectAllItems = createSelector(
-    todoFeature.selectTodoNgrxState,
-    selectAll
-);
+export const selectAllItems = createSelector(todoFeature.selectTodoNgrxState, selectAll);
 
 export const selectCompletedCount = createSelector(
     selectAllItems,
@@ -16,10 +13,7 @@ export const selectUncompletedCount = createSelector(
     (todos) => todos.filter((todo) => !todo.completed).length
 );
 
-export const selectFilter = createSelector(
-    todoFeature.selectTodoNgrxState,
-    (state) => state.filter
-);
+export const selectFilter = createSelector(todoFeature.selectTodoNgrxState, (state) => state.filter);
 
 export const selectFilteredTodos = createSelector(
     selectAllItems,
@@ -37,32 +31,22 @@ export const selectFilteredTodos = createSelector(
         })
 );
 
-export const selectAreItemsLoading = createSelector(
-    todoFeature.selectTodoNgrxState,
-    (state) => state.areItemsLoading
-);
+export const selectAreItemsLoading = createSelector(todoFeature.selectTodoNgrxState, (state) => state.areItemsLoading);
 
 export const selectAreCategoriesLoading = createSelector(
     todoFeature.selectTodoNgrxState,
     (state) => state.areCategoriesLoading
 );
 
-export const selectCategories = createSelector(
-    todoFeature.selectTodoNgrxState,
-    (state) => state.categories
-);
+export const selectCategories = createSelector(todoFeature.selectTodoNgrxState, (state) => state.categories);
 
-export const selectIsUpdating = createSelector(
-    todoFeature.selectTodoNgrxState,
-    (state) => state.isUpdating
-);
+export const selectIsUpdating = createSelector(todoFeature.selectTodoNgrxState, (state) => state.isUpdating);
 
 export const selectIsLoading = createSelector(
     selectAreItemsLoading,
     selectAreCategoriesLoading,
     selectIsUpdating,
-    (areItemsLoading, areCategoriesLoading, isUpdating) =>
-        areItemsLoading || areCategoriesLoading || isUpdating
+    (areItemsLoading, areCategoriesLoading, isUpdating) => areItemsLoading || areCategoriesLoading || isUpdating
 );
 
 export const selectViewModel = createSelector({

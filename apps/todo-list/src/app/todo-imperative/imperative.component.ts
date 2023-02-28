@@ -1,14 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    ButtonComponent,
-    FiltersComponent,
-    LoadingComponent,
-    LogStateDirective,
-    TodoCardGridComponent,
-    TodoCreationComponent,
-} from '@todo-lists/todo/ui';
+import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
@@ -21,20 +14,11 @@ import { TodoService } from '../todo.service';
     templateUrl: './imperative.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
-    imports: [
-        CommonModule,
-        TodoCreationComponent,
-        FormsModule,
-        ButtonComponent,
-        TodoCardGridComponent,
-        FiltersComponent,
-        LogStateDirective,
-        LoadingComponent,
-    ],
+    imports: [CommonModule, FormsModule, UiComponentsModule],
 })
 export class ImperativeComponent implements OnInit, OnDestroy {
-    todoService = inject(TodoService);
-    categoryService = inject(CategoryService);
+    private todoService = inject(TodoService);
+    private categoryService = inject(CategoryService);
 
     private destroy$ = new Subject<void>();
 
