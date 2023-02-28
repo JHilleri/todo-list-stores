@@ -1,4 +1,4 @@
-import { bootstrapApplication } from '@angular/platform-browser';
+import { ApplicationConfig, bootstrapApplication } from '@angular/platform-browser';
 import {
     provideRouter,
     withEnabledBlockingInitialNavigation,

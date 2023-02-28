@@ -1,28 +1,50 @@
-<ng-container *ngIf="vm$ | async as vm">
-    <tdl-todo-creation (create)="createItem($event)" />
-
-    <div>
-        <input
-            id="show-completed"
-            type="checkbox"
-            [ngModel]="vm.showCompleted"
-            (ngModelChange)="updateShowCompleted($event)"
+<main
+    *ngIf="vm$ | async as vm"
+    [tdlLogState]="vm"
+    tdlLogStateName="rxj"
+>
+    <ng-container *ngIf="!vm.isLoading; else loading">
+        <tdl-todo-creation
+            [categories]="vm.categories"
+            (create)="createTodoItem$.next($event)"
         />
-        <label for="show-completed">Show completed</label>
-    </div>
 
-    <div class="actions">
-        <button tdl-button (click)="completeAll()">Complete All</button>
-        <button tdl-button (click)="unCompleteAll()">Uncomplete All</button>
-    </div>
+        <tdl-filters
+            [showCompleted]="vm.showCompleted"
+            [filter]="vm.filter"
+            (updateShowCompleted)="showCompleted$.next($event)"
+            (updateFilter)="filter$.next($event)"
+        />
 
-    <div class="status">
-        <span>Completed: {{ vm.completedCount }}</span>
-        <span>Uncompleted: {{ vm.uncompletedCount }}</span>
-    </div>
+        <div class="actions">
+            <button
+                tdl-button
+                color="secondary"
+                (click)="completeAll$.next()"
+            >
+                Complete All
+            </button>
+            <button
+                tdl-button
+                color="secondary"
+                (click)="uncompleteAll$.next()"
+            >
+                Uncomplete All
+            </button>
+        </div>
 
-    <tdl-todo-card-grid
-        [items]="vm.filteredItems"
-        (updateCompleted)="updateCompleted($event)"
-    />
-</ng-container>
+        <div class="status">
+            <span>Completed: {{ vm.completedCount }}</span>
+            <span>Uncompleted: {{ vm.uncompletedCount }}</span>
+        </div>
+
+        <tdl-todo-card-grid
+            [items]="vm.filteredItems"
+            (updateCompleted)="updateItemCompletion$.next($event)"
+        />
+    </ng-container>
+
+    <ng-template #loading>
+        <tdl-loading></tdl-loading>
+    </ng-template>
+</main>

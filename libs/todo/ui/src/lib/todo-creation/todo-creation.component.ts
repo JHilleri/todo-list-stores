@@ -2,6 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     EventEmitter,
+    Input,
     Output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -13,6 +14,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { ButtonComponent } from '../button/button.component';
+import { TodoItemCreationParams } from '@todo-lists/todo/util';
 
 @Component({
     selector: 'tdl-todo-creation',
@@ -23,21 +25,24 @@ import { ButtonComponent } from '../button/button.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoCreationComponent {
-    @Output() protected create = new EventEmitter<{
-        title: string;
-        text: string;
-    }>();
+    @Input() public categories: string[] = [];
+
+    @Output() public create = new EventEmitter<TodoItemCreationParams>();
     protected form = new FormGroup({
         title: new FormControl('', { validators: [Validators.required] }),
         text: new FormControl(''),
+        category: new FormControl(''),
     });
 
     protected add() {
-        const { title, text } = this.form.value;
+        const { title, text, category } = this.form.value;
         if (!title) return;
         this.create.emit({
             title,
             text: text ?? '',
+            tags: [category].filter((category): category is string =>
+                Boolean(category)
+            ),
         });
         this.form.reset();
     }

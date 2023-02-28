@@ -1,0 +1,91 @@
+<main *rxLet="vm$; let vm">
+    <tdl-field>
+        <label for="theme">Theme</label>
+        <select
+            id="theme"
+            class="theme"
+            [ngModel]="vm.theme"
+            (ngModelChange)="setTheme($event)"
+        >
+            <option value="auto">Auto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
+    </tdl-field>
+    <fieldset>
+        <legend>Colors</legend>
+        <tdl-field>
+            <label for="primary-color-hue">Primary Color Hue</label>
+            <div class="color-inputs">
+                <input
+                    id="primary-color-hue"
+                    type="number"
+                    min="0"
+                    max="360"
+                    step="10"
+                    [ngModel]="vm.primaryColorHue"
+                    (ngModelChange)="setPrimaryColorHue($event)"
+                />
+                <input
+                    class="primary-color-hue"
+                    type="range"
+                    min="0"
+                    max="360"
+                    step="10"
+                    aria-label="Primary Color Hue"
+                    [ngModel]="vm.primaryColorHue"
+                    (ngModelChange)="setPrimaryColorHue($event)"
+                />
+                <button
+                    tdl-button
+                    type="button"
+                    class="reset-color"
+                    (click)="resetPrimaryColorHue()"
+                >
+                    Reset
+                </button>
+            </div>
+        </tdl-field>
+        <tdl-field>
+            <label for="secondary-color-hue">Secondary Color Hue</label>
+            <div class="color-inputs">
+                <input
+                    id="secondary-color-hue"
+                    type="number"
+                    min="0"
+                    max="360"
+                    step="10"
+                    [ngModel]="vm.secondaryColorHue"
+                    (ngModelChange)="setSecondaryColorHue($event)"
+                />
+                <input
+                    class="secondary-color-hue"
+                    type="range"
+                    min="0"
+                    max="360"
+                    step="10"
+                    aria-label="Secondary Color Hue"
+                    [ngModel]="vm.secondaryColorHue"
+                    (ngModelChange)="setSecondaryColorHue($event)"
+                />
+                <button
+                    tdl-button
+                    type="button"
+                    class="reset-color"
+                    (click)="resetSecondaryColorHue()"
+                >
+                    Reset
+                </button>
+            </div>
+        </tdl-field>
+    </fieldset>
+    <div class="checkbox-field">
+        <label for="simulate-server">Simulate Server</label>
+        <input
+            id="simulate-server"
+            type="number"
+            [ngModel]="vm.simulateServerDelay"
+            (ngModelChange)="setSimulateServerDelay($event)"
+        />
+    </div>
+</main>

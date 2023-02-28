@@ -1,0 +1,18 @@
+@mixin withHover() {
+    isolation: isolate;
+    position: relative;
+
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        inset: 0;
+        background-color: var(--hover-color);
+        opacity: 0;
+        z-index: -1;
+    }
+
+    &:hover::before {
+        opacity: 0.1;
+    }
+}

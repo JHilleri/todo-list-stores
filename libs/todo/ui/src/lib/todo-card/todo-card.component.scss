@@ -6,11 +6,12 @@
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.2);
-    background-color: var(--tdl-surface);
+    background-color: var(--surface);
+    color: var(--on-surface);
     transition: all 0.2s ease-in-out;
-    // &:hover {
-    //     box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.4);
-    // }
+    &:hover {
+        box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.4);
+    }
 }
 
 
@@ -20,18 +21,31 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    h3 {
-        font-size: 1.2rem;
-        font-weight: 600;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.badges {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.5rem;
+    &.badge--completed {
+        background-color: var(--completed);
+        color: var(--on-completed);
     }
-    .badge {
-        font-size: 0.8rem;
-        font-weight: 600;
-        padding: 0.2rem 0.5rem;
-        border-radius: 0.5rem;
-        &.badge-completed {
-            background-color: var(--tdl-completed);
-            color: var(--tdl-on-completed);
-        }
+    &.badge--tag {
+        background-color: var(--tag);
+        color: var(--on-tag);
     }
 }

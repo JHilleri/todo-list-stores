@@ -2,3 +2,8 @@ export * from './lib/todo-creation/todo-creation.component';
 export * from './lib/todo-card/todo-card.component';
 export * from './lib/button/button.component';
 export * from './lib/todo-card-grid/todo-card-grid.component';
+export * from './lib/filters/filters.component';
+export * from './lib/log-state.directive';
+export * from './lib/field/field.component';
+export * from './lib/loading/loading.component';
+export * from './lib/ui-components.module';

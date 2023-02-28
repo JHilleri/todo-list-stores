@@ -1,28 +1,50 @@
-<ng-container *rxLet="vm$; let vm">
-    <tdl-todo-creation (create)="ui.createItem($event)" />
-
-    <div>
-        <input
-            id="show-completed"
-            type="checkbox"
-            [ngModel]="vm.showCompleted"
-            (ngModelChange)="ui.updateShowCompleted($event)"
+<main
+    *rxLet="vm$; let vm"
+    tdlLogState="vm"
+    tdlLogStateName="ngrx-component-store"
+>
+    <ng-container *ngIf="!vm.isLoading; else loading">
+        <tdl-todo-creation
+            [categories]="vm.categories"
+            (create)="uiActions.createItem($event)"
         />
-        <label for="show-completed">Show completed</label>
-    </div>
 
-    <div class="actions">
-        <button tdl-button (click)="ui.completeAll()">Complete All</button>
-        <button tdl-button (click)="ui.uncompleteAll()">Uncomplete All</button>
-    </div>
+        <tdl-filters
+            [showCompleted]="vm.showCompleted"
+            [filter]="vm.filter"
+            (updateShowCompleted)="uiActions.updateShowCompleted($event)"
+            (updateFilter)="uiActions.updateFilter($event)"
+        />
 
-    <div class="status">
-        <span>Completed: {{ vm.completedCount }}</span>
-        <span>Uncompleted: {{ vm.uncompletedCount }}</span>
-    </div>
+        <div class="actions">
+            <button
+                tdl-button
+                color="secondary"
+                (click)="uiActions.completeAll()"
+            >
+                Complete All
+            </button>
+            <button
+                tdl-button
+                color="secondary"
+                (click)="uiActions.uncompleteAll()"
+            >
+                Uncomplete All
+            </button>
+        </div>
 
-    <tdl-todo-card-grid
-        [items]="vm.filteredItems"
-        (updateCompleted)="ui.updateCompleted($event)"
-    />
-</ng-container>
+        <div class="status">
+            <span>Completed: {{ vm.completedCount }}</span>
+            <span>Uncompleted: {{ vm.uncompletedCount }}</span>
+        </div>
+
+        <tdl-todo-card-grid
+            [items]="vm.filteredItems"
+            (updateCompleted)="uiActions.updateCompleted($event)"
+        />
+    </ng-container>
+
+    <ng-template #loading>
+        <tdl-loading></tdl-loading>
+    </ng-template>
+</main>

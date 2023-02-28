@@ -1,32 +1,37 @@
+@use './themes/dark' as dark-theme;
+@use './themes/light' as light-theme;
+
 /* You can add global styles to this file, and also import other style files */
 :root {
+    color-scheme: light dark;
+
+    // used in themes
     --primary-hue: 210;
     --secondary-hue: 208;
     --primary-saturation: 100%;
     --lightness: 40%;
+
+    @include light-theme.lightTheme();
 }
 
-:root {
-    --tdl-primary: hsl(
-        var(--primary-hue),
-        var(--primary-saturation),
-        var(--lightness)
-    );
-    --tdl-on-primary: hsl(var(--primary-hue), var(--primary-saturation), 95%);
-    --tds-ripple-color: hsl(var(--primary-hue), var(--primary-saturation), 0%);
+.light {
+    @include light-theme.lightTheme();
+}
 
-    --tdl-secondary: hsl(var(--secondary-hue), 7%, var(--lightness));
-    --tdl-on-secondary: hsl(var(--secondary-hue), 0%, 100%);
+.dark {
+    @include dark-theme.darkTheme();
+}
 
-    --tdl-background: hsl(0, 0%, 98%);
-    --tdl-surface: hsl(39, 77%, 95%);
-
-    --tdl-completed: hsl(134, 61%, var(--lightness));
-    --tdl-on-completed: hsl(0, 0%, 100%);
+@media screen and (prefers-color-scheme: dark) {
+    :root {
+        @include dark-theme.darkTheme();
+    }
 }
 
 body {
     margin: 0;
     padding: 0;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
+    background-color: var(--background);
+    color: var(--on-background);
 }

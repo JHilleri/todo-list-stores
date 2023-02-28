@@ -1,9 +1,12 @@
 <ng-container *ngIf="item !== undefined">
     <div class="card-header">
         <h3>{{ item.title }}</h3>
-        <div>
-            <span *ngIf="item.completed" class="badge badge-completed">
+        <div class="badges">
+            <span *ngIf="item.completed" class="badge badge--completed">
                 Completed
+            </span>
+            <span *ngFor="let tag of item.tags" class="badge badge--tag">
+                {{ tag }}
             </span>
         </div>
     </div>
@@ -13,6 +16,7 @@
     <div class="card-footer">
         <button
             tdl-button
+            color="primary"
             *ngIf="!item.completed"
             class="btn btn-primary"
             type="button"

@@ -7,5 +7,14 @@
         <label for="todo-description">description</label>
         <textarea id="todo-description" formControlName="text"></textarea>
     </div>
-    <button tdl-button (click)="add()">Add</button>
+    <div class="field">
+        <label for="category">category</label>
+        <select id="category" formControlName="category">
+            <option *ngFor="let category of categories" [value]="category">
+                {{ category }}
+            </option>
+        </select>
+    </div>
+
+    <button tdl-button color="primary" (click)="add()">Add</button>
 </form>

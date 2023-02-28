@@ -1,26 +1,56 @@
-<tdl-todo-creation (create)="createItem($event)" />
-
-<div>
-    <input
-        id="show-completed"
-        type="checkbox"
-        [ngModel]="showCompleted"
-        (ngModelChange)="updateShowCompleted($event)"
+<main
+    *ngIf="!isLoading; else loading"
+    [tdlLogState]="{
+        showCompleted: showCompleted,
+        filteredItems: filteredItems,
+        completedCount: completedCount,
+        uncompletedCount: uncompletedCount,
+        filter: filter,
+        categories: categories
+    }"
+    tdlLogStateName="imperative"
+>
+    <tdl-todo-creation
+        [categories]="categories"
+        (create)="createItem($event)"
     />
-    <label for="show-completed">Show completed</label>
-</div>
 
-<div class="actions">
-    <button tdl-button (click)="completeAll()">Complete All</button>
-    <button tdl-button (click)="unCompleteAll()">Uncomplete All</button>
-</div>
+    <tdl-filters
+        [showCompleted]="showCompleted"
+        [filter]="filter"
+        (updateShowCompleted)="updateShowCompleted($event)"
+        (updateFilter)="updateFilter($event)"
+    />
 
-<div class="status">
-    <span>Completed: {{ completedCount }}</span>
-    <span>Uncompleted: {{ uncompletedCount }}</span>
-</div>
+    <div class="actions">
+        <button
+            tdl-button
+            color="secondary"
+            (click)="completeAll()"
+        >
+            Complete All
+        </button>
+        <button
+            tdl-button
+            color="secondary"
+            (click)="unCompleteAll()"
+        >
+            Uncomplete All
+        </button>
+    </div>
 
-<tdl-todo-card-grid
-    [items]="filteredItems"
-    (updateCompleted)="updateCompleted($event)"
-/>
+    <div class="status">
+        <span>total</span>
+        <span>Completed: {{ completedCount }}</span>
+        <span>Uncompleted: {{ uncompletedCount }}</span>
+    </div>
+
+    <tdl-todo-card-grid
+        [items]="filteredItems"
+        (updateCompleted)="updateCompleted($event)"
+    />
+</main>
+
+<ng-template #loading>
+    <tdl-loading></tdl-loading>
+</ng-template>

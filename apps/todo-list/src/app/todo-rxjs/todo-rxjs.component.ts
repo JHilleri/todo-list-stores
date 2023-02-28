@@ -1,102 +1,150 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-    TodoCreationComponent,
     ButtonComponent,
+    FiltersComponent,
+    LoadingComponent,
+    LogStateDirective,
     TodoCardGridComponent,
+    TodoCreationComponent,
 } from '@todo-lists/todo/ui';
-import {
-    createTodoItem,
-    getMockedTodoItems,
-    TodoItem,
-    TodoItemCreationParams,
-    UpdateTodoCompletionParams,
-} from '@todo-lists/todo/util';
-import { BehaviorSubject, combineLatest, using } from 'rxjs';
-import { debounceTime, map, tap } from 'rxjs/operators';
+import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
+import { BehaviorSubject, combineLatest, Subject, using } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
+import { CategoryService } from '../category.service';
+import { TodoService } from '../todo.service';
 
 @Component({
     selector: 'todo-lists-todo-rxjs',
     standalone: true,
     imports: [
-        CommonModule,
+        NgIf,
+        AsyncPipe,
         TodoCreationComponent,
         FormsModule,
         ButtonComponent,
         TodoCardGridComponent,
+        LogStateDirective,
+        LoadingComponent,
+        FiltersComponent,
     ],
     templateUrl: './todo-rxjs.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoRxjsComponent {
+    private todoService = inject(TodoService);
+    private categoryService = inject(CategoryService);
+
     // state
     protected items$ = new BehaviorSubject<TodoItem[]>([]);
     protected showCompleted$ = new BehaviorSubject<boolean>(false);
+    protected isUpdating$ = new BehaviorSubject<boolean>(false);
+    protected areItemsLoading$ = new BehaviorSubject<boolean>(true);
+    protected categories$ = new BehaviorSubject<string[]>([]);
+    protected areCategoriesLoading$ = new BehaviorSubject<boolean>(true);
+    protected filter$ = new BehaviorSubject<string>('');
 
     // derived state
-    protected filteredItems$ = combineLatest({
+    private filteredItems$ = combineLatest({
         items: this.items$,
         showCompleted: this.showCompleted$,
+        filter: this.filter$,
     }).pipe(
-        map(({ items, showCompleted }) =>
-            items.filter((item) => showCompleted || !item.completed)
+        map(({ items, showCompleted, filter }) =>
+            items.filter((item) => {
+                const matchCompleted = showCompleted || !item.completed;
+                const matchFilter = filter
+                    ? item.title.includes(filter) ||
+                      item.text.includes(filter) ||
+                      item.tags.some((tag) => tag.includes(filter))
+                    : true;
+                return matchCompleted && matchFilter;
+            })
         )
     );
-    protected completedCount$ = this.items$.pipe(
-        map((items) => items.filter((item) => item.completed).length)
-    );
-    protected uncompletedCount$ = this.items$.pipe(
-        map((items) => items.filter((item) => !item.completed).length)
-    );
-
-    // side effects
-    private loadItems$ = getMockedTodoItems().pipe(
-        tap((items) => {
-            this.items$.next(items);
+    private completedCount$ = this.items$.pipe(map((items) => items.filter((item) => item.completed).length));
+    private uncompletedCount$ = this.items$.pipe(map((items) => items.filter((item) => !item.completed).length));
+    private isLoading$ = combineLatest({
+        areItemsLoading: this.areItemsLoading$,
+        areCategoriesLoading: this.areCategoriesLoading$,
+        isUpdating: this.isUpdating$,
+    }).pipe(
+        map(({ areItemsLoading, areCategoriesLoading, isUpdating }) => {
+            return areItemsLoading || areCategoriesLoading || isUpdating;
         })
     );
 
+    // side effects
+    private loadItems$ = this.todoService.getTodos().pipe(
+        tap((items) => {
+            this.items$.next(items);
+            this.areItemsLoading$.next(false);
+        })
+    );
+    private loadCategories$ = this.categoryService.getCategories().pipe(
+        tap((categories) => {
+            this.categories$.next(categories);
+            this.areCategoriesLoading$.next(false);
+        })
+    );
+
+    // actions
+    protected createTodoItem$ = new Subject<TodoItemCreationParams>();
+    protected updateItemCompletion$ = new Subject<{ item: TodoItem; completed: boolean }>();
+    protected completeAll$ = new Subject<void>();
+    protected uncompleteAll$ = new Subject<void>();
+
+    // effects
+    protected efects$ = combineLatest([
+        this.createTodoItem$.pipe(
+            tap(() => this.isUpdating$.next(true)),
+            mergeMap((item) => this.todoService.createTodo(item)),
+            tap((item) => {
+                this.items$.next([...this.items$.value, item]);
+                this.isUpdating$.next(false);
+            })
+        ),
+        this.updateItemCompletion$.pipe(
+            tap(() => this.isUpdating$.next(true)),
+            mergeMap(({ item, completed }) => this.todoService.updateTodo(item, { completed })),
+            tap((result) => {
+                this.items$.next(this.items$.value.map((i) => (i.id === result.id ? result : i)));
+                this.isUpdating$.next(false);
+            })
+        ),
+        this.completeAll$.pipe(
+            tap(() => this.isUpdating$.next(true)),
+            mergeMap(() => this.todoService.updateManyTodos(this.items$.value, { completed: true })),
+            tap((items) => {
+                this.items$.next(items);
+                this.isUpdating$.next(false);
+            })
+        ),
+        this.uncompleteAll$.pipe(
+            tap(() => this.isUpdating$.next(true)),
+            mergeMap(() => this.todoService.updateManyTodos(this.items$.value, { completed: false })),
+            tap((items) => {
+                this.items$.next(items);
+                this.isUpdating$.next(false);
+            })
+        ),
+        this.loadItems$,
+        this.loadCategories$,
+    ]);
+
     protected vm$ = using(
-        () => this.loadItems$.subscribe(),
+        () => this.efects$.subscribe(),
         () =>
             combineLatest({
                 filteredItems: this.filteredItems$,
                 completedCount: this.completedCount$,
                 uncompletedCount: this.uncompletedCount$,
                 showCompleted: this.showCompleted$,
-            }).pipe(
-                debounceTime(0), // prevent glitch
-                tap((vm) => console.log('rxjs vm', vm))
-            )
+                isLoading: this.isLoading$,
+                categories: this.categories$,
+                filter: this.filter$,
+            })
     );
-
-    protected createItem(item: TodoItemCreationParams) {
-        this.items$.next([...this.items$.value, createTodoItem(item)]);
-    }
-
-    protected updateShowCompleted(showCompleted: boolean) {
-        this.showCompleted$.next(showCompleted);
-    }
-
-    protected updateCompleted({ id, completed }: UpdateTodoCompletionParams) {
-        this.items$.next(
-            this.items$.value.map((item) =>
-                item.id === id ? { ...item, completed } : item
-            )
-        );
-    }
-
-    protected completeAll() {
-        this.items$.next(
-            this.items$.value.map((item) => ({ ...item, completed: true }))
-        );
-    }
-
-    protected unCompleteAll() {
-        this.items$.next(
-            this.items$.value.map((item) => ({ ...item, completed: false }))
-        );
-    }
 }

@@ -62,4 +62,12 @@ export const appRoutes: Route[] = [
             ),
         title: 'Rx Angular',
     },
+    {
+        path: 'settings',
+        loadComponent: () =>
+            import('./settings/settings.component').then(
+                (m) => m.SettingsComponent
+            ),
+        title: 'Settings',
+    },
 ];

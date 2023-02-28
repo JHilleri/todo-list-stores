@@ -1,0 +1,60 @@
+:host {
+    display: grid;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.primary-color-hue {
+    accent-color: var(--primary);
+}
+
+.secondary-color-hue {
+    accent-color: var(--secondary);
+}
+
+.theme-button {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+select {
+    height: 2rem;
+    padding-inline: 0.5rem;
+}
+
+.active {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.color-inputs {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+}
+
+.checkbox-field {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}

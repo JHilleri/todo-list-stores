@@ -1,27 +1,31 @@
-import { CommonModule } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LetModule } from '@ngrx/component';
 import { provideComponentStore } from '@ngrx/component-store';
 import {
     ButtonComponent,
+    FiltersComponent,
+    LoadingComponent,
+    LogStateDirective,
     TodoCardGridComponent,
     TodoCreationComponent,
 } from '@todo-lists/todo/ui';
-import {
-    TodoItemCreationParams,
-    UpdateTodoCompletionParams,
-} from '@todo-lists/todo/util';
 import { TodoStore } from './todo.store';
 
 @Component({
     selector: 'todo-lists-todo-ngrx-component-store',
     standalone: true,
     imports: [
-        CommonModule,
+        LetModule,
+        NgIf,
         TodoCreationComponent,
         FormsModule,
         ButtonComponent,
         TodoCardGridComponent,
+        LoadingComponent,
+        FiltersComponent,
+        LogStateDirective,
     ],
     templateUrl: './todo-ngrx-component-store.component.html',
     styleUrls: ['../todo.component.scss'],
@@ -33,23 +37,10 @@ export class TodoNgrxComponentStoreComponent {
 
     protected vm$ = this.store.vm$;
 
-    protected createItem(params: TodoItemCreationParams) {
-        this.store.createItem(params);
-    }
-
-    protected updateShowCompleted(showCompleted: boolean) {
-        this.store.updateShowCompleted(showCompleted);
-    }
-
-    protected updateCompleted(params: UpdateTodoCompletionParams) {
-        this.store.updateCompleted(params);
-    }
-
-    protected completeAll() {
-        this.store.completeAll();
-    }
-
-    protected uncompleteAll() {
-        this.store.uncompleteAll();
-    }
+    protected createItem = this.store.createItem;
+    protected updateFilter = this.store.updateFilter;
+    protected updateShowCompleted = this.store.updateShowCompleted;
+    protected updateCompleted = this.store.updateCompleted;
+    protected completeAll = this.store.completeAll;
+    protected uncompleteAll = this.store.uncompleteAll;
 }

@@ -1,29 +1,25 @@
+@use '../styles/hover' as hoverModule;
+
 :host {
+    @include hoverModule.withHover();
     min-height: 2rem;
     border: none;
     border-radius: 0.5rem;
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
-    position: relative;
     overflow: hidden;
 
-    background-color: var(--tdl-primary);
-    color: var(--tdl-on-primary);
+    background-color: var(--surface);
+    color: var(--on-surface);
+}
 
-    &::before {
-        content: '';
-        display: block;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        position: absolute;
-        background-color: var(--tds-ripple-color);
-        opacity: 0;
-    }
+:host.tdl-button--primary {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
 
-    &:hover::before {
-        opacity: 0.1;
-    }
+:host.tdl-button--secondary {
+    background-color: var(--secondary);
+    color: var(--on-secondary);
 }

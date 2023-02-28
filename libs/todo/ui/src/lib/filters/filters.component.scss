@@ -1,17 +1,13 @@
-main {
+:host {
     margin: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.status {
+.filter {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.actions {
-    display: flex;
-    gap: 1rem;
-}

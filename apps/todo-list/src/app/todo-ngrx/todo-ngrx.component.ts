@@ -1,32 +1,33 @@
+import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { todoActions } from './state/todo.actions';
-import { selectViewModel } from './state/todo.selectors';
+import { FormsModule } from '@angular/forms';
+import { LetModule } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import {
-    TodoItemCreationParams,
-    UpdateTodoCompletionParams,
-} from '@todo-lists/todo/util';
-import { FormsModule } from '@angular/forms';
-import {
-    TodoCreationComponent,
     ButtonComponent,
-    TodoCardGridComponent,
+    FiltersComponent, LoadingComponent, TodoCardGridComponent,
+    TodoCreationComponent
 } from '@todo-lists/todo/ui';
+import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
+import { todoActions } from './state/todo.actions';
+import { selectViewModel } from './state/todo.selectors';
 
 @Component({
     selector: 'todo-lists-todo-ngrx',
     standalone: true,
-    imports: [
-        CommonModule,
-        TodoCreationComponent,
-        FormsModule,
-        ButtonComponent,
-        TodoCardGridComponent,
-    ],
     templateUrl: './todo-ngrx.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        TodoCreationComponent,
+        NgIf,
+        FormsModule,
+        ButtonComponent,
+        TodoCardGridComponent,
+        LetModule,
+        LoadingComponent,
+        FiltersComponent,
+    ],
 })
 export class TodoNgrxComponent {
     private store = inject(Store);
@@ -43,8 +44,16 @@ export class TodoNgrxComponent {
         );
     }
 
-    protected updateCompleted(params: UpdateTodoCompletionParams) {
-        this.store.dispatch(todoActions.update_completed({params}));
+    protected updateCompleted({
+        item,
+        completed,
+    }: {
+        item: TodoItem;
+        completed: boolean;
+    }) {
+        this.store.dispatch(
+            todoActions.update_item({ item, changes: { completed } })
+        );
     }
 
     protected completeAll() {
@@ -53,5 +62,9 @@ export class TodoNgrxComponent {
 
     protected uncompleteAll() {
         this.store.dispatch(todoActions.uncomplete_all());
+    }
+
+    protected updateFilter(filter: string) {
+        this.store.dispatch(todoActions.update_filter({ filter }));
     }
 }

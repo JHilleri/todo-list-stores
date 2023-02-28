@@ -1,9 +1,11 @@
+@use 'libs/todo/ui/src/lib/styles/hover' as hoverModule;
+
 header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background-color: var(--tdl-primary);
-    color: var(--tdl-on-primary);
+    background-color: var(--primary);
+    color: var(--on-primary);
     align-items: center;
     padding: 1rem;
 }
@@ -15,16 +17,37 @@ h1 {
 nav {
     display: flex;
     flex-direction: row;
+    gap: 0.5rem;
+}
+
+ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 1rem;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style: none;
 }
 
 a {
-    color: var(--tdl-on-primary);
+    @include hoverModule.withHover();
+    color: var(--on-primary);
     padding: 0.5rem;
+    text-decoration: none;
 }
 
 .active-route {
     font-weight: bold;
-    border: 1px solid var(--tdl-on-primary);
+    border: 1px solid var(--on-primary);
+}
+
+.separator {
+    background-color: var(--on-primary);
+    flex-grow: 0;
+    width: 1px;
 }

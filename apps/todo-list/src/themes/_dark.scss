@@ -1,0 +1,24 @@
+@mixin darkTheme() {
+    color-scheme: dark;
+
+    --primary: hwb(var(--primary-hue) 0% 40%);
+    --on-primary: hwb(var(--primary-hue) 95% 0%);
+
+    --hover-color: hwb(0 100% 0%);
+    --border: hwb(0 90% 10%);
+
+    --secondary: hwb(var(--secondary-hue) 0% 40%);
+    --on-secondary: hwb(var(--secondary-hue) 95% 0%);
+
+    --background: hwb(0 10% 90%);
+    --on-background: hwb(0 100% 0%);
+
+    --surface: hwb(60 20% 90%);
+    --on-surface: hwb(39 100% 0%);
+
+    --completed: hwb(130 0% 40%);
+    --on-completed: hwb(130 100% 0%);
+
+    --tag: hwb(250 25% 25%);
+    --on-tag: hwb(0 100% 0%);
+}
