@@ -14,6 +14,7 @@ interface TodoState extends EntityState<TodoItem> {
     categories: string[];
     areCategoriesLoading: boolean;
     filter: string;
+    isDialogCreateItemOpen: boolean;
 }
 
 const adapter = createEntityAdapter<TodoItem>();
@@ -32,6 +33,7 @@ export class TodoStore extends ComponentStore<TodoState> {
                 categories: [],
                 areCategoriesLoading: true,
                 filter: '',
+                isDialogCreateItemOpen: false,
             })
         );
         this.setItems(this.todoService.getTodos());
@@ -54,32 +56,33 @@ export class TodoStore extends ComponentStore<TodoState> {
         return { ...state, showCompleted };
     });
 
-    readonly updateCompleted = this.effect((params$: Observable<{ item: TodoItem; completed: boolean }>) => {
-        return params$.pipe(
-            tap(() => this.patchState({ isUpdating: true })),
-            mergeMap(({ item, completed }) => {
-                return this.todoService.updateTodo(item, { completed });
-            }),
-            tap((item) => {
-                this.patchState((state) =>
-                    adapter.updateOne(
-                        {
-                            id: item.id,
-                            changes: item,
-                        },
-                        { ...state, isUpdating: false }
-                    )
-                );
-            })
-        );
-    });
+    readonly updateCompleted = this.effect(
+        (params$: Observable<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>) => {
+            return params$.pipe(
+                tap(() => this.patchState({ isUpdating: true })),
+                mergeMap(({ itemId: itemId, changes }) => {
+                    return this.todoService.updateTodo(itemId, changes);
+                }),
+                tap((item) => {
+                    this.patchState((state) =>
+                        adapter.updateOne(
+                            {
+                                id: item.id,
+                                changes: item,
+                            },
+                            { ...state, isUpdating: false }
+                        )
+                    );
+                })
+            );
+        }
+    );
 
     readonly completeAll = this.effect((event$: Observable<void>) => {
         return event$.pipe(
             tap(() => this.patchState({ isUpdating: true })),
             mergeMap(() => {
-                const items = adapter.getSelectors().selectAll(this.get());
-                return this.todoService.updateManyTodos(items, {
+                return this.todoService.updateAllTodos({
                     completed: true,
                 });
             }),
@@ -93,8 +96,7 @@ export class TodoStore extends ComponentStore<TodoState> {
         return events$.pipe(
             tap(() => this.patchState({ isUpdating: true })),
             mergeMap(() => {
-                const items = adapter.getSelectors().selectAll(this.get());
-                return this.todoService.updateManyTodos(items, {
+                return this.todoService.updateAllTodos({
                     completed: false,
                 });
             }),
@@ -114,6 +116,14 @@ export class TodoStore extends ComponentStore<TodoState> {
 
     readonly setCategories = this.updater((state, categories: string[]) => {
         return { ...state, categories, areCategoriesLoading: false };
+    });
+
+    readonly dialogCreateItemOpened = this.updater((state) => {
+        return { ...state, isDialogCreateItemOpen: true };
+    });
+
+    readonly dialogCreateItemClosed = this.updater((state) => {
+        return { ...state, isDialogCreateItemOpen: false };
     });
 
     private readonly allItems$ = this.select(this.state$, (state) => {
@@ -144,12 +154,15 @@ export class TodoStore extends ComponentStore<TodoState> {
         return state.filter;
     });
 
+    readonly isDialogCreateItemOpen$ = this.select(this.state$, (state) => {
+        return state.isDialogCreateItemOpen;
+    });
+
     readonly isLoading$ = this.select(
         this.areItemsLoading$,
         this.areCategoriesLoading$,
-        this.isUpdating$,
-        (areItemsLoading, areCategoriesLoading, isUpdating) => {
-            return areItemsLoading || areCategoriesLoading || isUpdating;
+        (areItemsLoading, areCategoriesLoading) => {
+            return areItemsLoading || areCategoriesLoading;
         }
     );
 
@@ -182,5 +195,7 @@ export class TodoStore extends ComponentStore<TodoState> {
         categories: this.categories$,
         isLoading: this.isLoading$,
         filter: this.filter$,
+        isUpdating: this.isUpdating$,
+        isDialogCreateItemOpen: this.isDialogCreateItemOpen$,
     });
 }

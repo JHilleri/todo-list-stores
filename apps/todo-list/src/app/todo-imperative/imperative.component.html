@@ -1,56 +1,42 @@
 <main
     *ngIf="!isLoading; else loading"
     [tdlLogState]="{
+        items: items,
         showCompleted: showCompleted,
+        filter: filter,
+        categories: categories,
+        areItemsLoading: areItemsLoading,
+        areCategoriesLoading: areCategoriesLoading,
+        isUpdating: isUpdating,
+        isDialogCreateItemOpen: isDialogCreateItemOpen,
         filteredItems: filteredItems,
         completedCount: completedCount,
         uncompletedCount: uncompletedCount,
-        filter: filter,
-        categories: categories
+        isLoading: isLoading
     }"
     tdlLogStateName="imperative"
 >
-    <tdl-todo-creation
-        [categories]="categories"
-        (create)="createItem($event)"
-    />
-
-    <tdl-filters
+    <tdl-todo-list
         [showCompleted]="showCompleted"
         [filter]="filter"
+        [filteredItems]="filteredItems"
+        [completedCount]="completedCount"
+        [uncompletedCount]="uncompletedCount"
+        [categories]="categories"
+        [isUpdating]="isUpdating"
+        [isDialogCreateItemOpen]="isDialogCreateItemOpen"
         (updateShowCompleted)="updateShowCompleted($event)"
         (updateFilter)="updateFilter($event)"
-    />
-
-    <div class="actions">
-        <button
-            tdl-button
-            color="secondary"
-            (click)="completeAll()"
-        >
-            Complete All
-        </button>
-        <button
-            tdl-button
-            color="secondary"
-            (click)="unCompleteAll()"
-        >
-            Uncomplete All
-        </button>
-    </div>
-
-    <div class="status">
-        <span>total</span>
-        <span>Completed: {{ completedCount }}</span>
-        <span>Uncompleted: {{ uncompletedCount }}</span>
-    </div>
-
-    <tdl-todo-card-grid
-        [items]="filteredItems"
-        (updateCompleted)="updateCompleted($event)"
+        (openDialogCreateItem)="openDialogCreateItem()"
+        (completeAll)="completeAll()"
+        (uncompleteAll)="uncompleteAll()"
+        (updadteItem)="updateCompleted($event)"
+        (deleteItem)="deleteItem($event)"
+        (createItem)="createItem($event)"
+        (dialogCreateItemClosed)="dialogCreateItemClosed()"
     />
 </main>
 
 <ng-template #loading>
-    <tdl-loading></tdl-loading>
+    <tdl-loading />
 </ng-template>

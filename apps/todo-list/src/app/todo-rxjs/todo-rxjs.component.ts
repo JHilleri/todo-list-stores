@@ -28,6 +28,7 @@ export class TodoRxjsComponent {
     protected categories$ = new BehaviorSubject<string[]>([]);
     protected areCategoriesLoading$ = new BehaviorSubject<boolean>(true);
     protected filter$ = new BehaviorSubject<string>('');
+    protected isDialogCreateItemOpen$ = new BehaviorSubject<boolean>(false);
 
     // derived state
     private filteredItems$ = combineLatest({
@@ -52,10 +53,9 @@ export class TodoRxjsComponent {
     private isLoading$ = combineLatest({
         areItemsLoading: this.areItemsLoading$,
         areCategoriesLoading: this.areCategoriesLoading$,
-        isUpdating: this.isUpdating$,
     }).pipe(
-        map(({ areItemsLoading, areCategoriesLoading, isUpdating }) => {
-            return areItemsLoading || areCategoriesLoading || isUpdating;
+        map(({ areItemsLoading, areCategoriesLoading }) => {
+            return areItemsLoading || areCategoriesLoading;
         })
     );
 
@@ -75,14 +75,19 @@ export class TodoRxjsComponent {
 
     // actions
     protected createTodoItem$ = new Subject<TodoItemCreationParams>();
-    protected updateItemCompletion$ = new Subject<{ item: TodoItem; completed: boolean }>();
+    protected updateItemCompletion$ = new Subject<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>();
     protected completeAll$ = new Subject<void>();
     protected uncompleteAll$ = new Subject<void>();
+    protected dialogCreateItemOpen$ = new Subject<void>();
+    protected dialogCreateItemClose$ = new Subject<void>();
 
     // effects
     protected efects$ = combineLatest([
         this.createTodoItem$.pipe(
-            tap(() => this.isUpdating$.next(true)),
+            tap(() => {
+                this.isUpdating$.next(true);
+                this.isDialogCreateItemOpen$.next(false);
+            }),
             mergeMap((item) => this.todoService.createTodo(item)),
             tap((item) => {
                 this.items$.next([...this.items$.value, item]);
@@ -91,7 +96,7 @@ export class TodoRxjsComponent {
         ),
         this.updateItemCompletion$.pipe(
             tap(() => this.isUpdating$.next(true)),
-            mergeMap(({ item, completed }) => this.todoService.updateTodo(item, { completed })),
+            mergeMap(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes)),
             tap((result) => {
                 this.items$.next(this.items$.value.map((i) => (i.id === result.id ? result : i)));
                 this.isUpdating$.next(false);
@@ -99,7 +104,7 @@ export class TodoRxjsComponent {
         ),
         this.completeAll$.pipe(
             tap(() => this.isUpdating$.next(true)),
-            mergeMap(() => this.todoService.updateManyTodos(this.items$.value, { completed: true })),
+            mergeMap(() => this.todoService.updateAllTodos({ completed: true })),
             tap((items) => {
                 this.items$.next(items);
                 this.isUpdating$.next(false);
@@ -107,7 +112,7 @@ export class TodoRxjsComponent {
         ),
         this.uncompleteAll$.pipe(
             tap(() => this.isUpdating$.next(true)),
-            mergeMap(() => this.todoService.updateManyTodos(this.items$.value, { completed: false })),
+            mergeMap(() => this.todoService.updateAllTodos({ completed: false })),
             tap((items) => {
                 this.items$.next(items);
                 this.isUpdating$.next(false);
@@ -115,6 +120,16 @@ export class TodoRxjsComponent {
         ),
         this.loadItems$,
         this.loadCategories$,
+        this.dialogCreateItemOpen$.pipe(
+            tap(() => {
+                this.isDialogCreateItemOpen$.next(true);
+            })
+        ),
+        this.dialogCreateItemClose$.pipe(
+            tap(() => {
+                this.isDialogCreateItemOpen$.next(false);
+            })
+        ),
     ]);
 
     protected vm$ = using(
@@ -128,6 +143,8 @@ export class TodoRxjsComponent {
                 isLoading: this.isLoading$,
                 categories: this.categories$,
                 filter: this.filter$,
+                isUpdating: this.isUpdating$,
+                isDialogCreateItemOpen: this.isDialogCreateItemOpen$,
             })
     );
 }

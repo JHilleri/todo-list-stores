@@ -1,8 +1,10 @@
 :host {
-    margin: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem;
+    border: var(--border) solid 1px;
+    border-radius: 0.5rem;
 }
 
 .filter {

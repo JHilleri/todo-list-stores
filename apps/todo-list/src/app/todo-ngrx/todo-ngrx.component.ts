@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LetModule } from '@ngrx/component';
 import { Store } from '@ngrx/store';
@@ -16,10 +16,18 @@ import { selectViewModel } from './state/todo.selectors';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgIf, FormsModule, LetModule, UiComponentsModule],
 })
-export class TodoNgrxComponent {
+export class TodoNgrxComponent implements OnInit {
     private store = inject(Store);
 
     protected vm$ = this.store.select(selectViewModel);
+
+    ngOnInit(): void {
+        this.store.dispatch(todoActions.load());
+    }
+
+    protected openDialogCreateItem() {
+        this.store.dispatch(todoActions.open_dialog_create_item());
+    }
 
     protected createItem(params: TodoItemCreationParams) {
         this.store.dispatch(todoActions.add({ params }));
@@ -29,8 +37,8 @@ export class TodoNgrxComponent {
         this.store.dispatch(todoActions.update_show_completed({ showCompleted }));
     }
 
-    protected updateCompleted({ item, completed }: { item: TodoItem; completed: boolean }) {
-        this.store.dispatch(todoActions.update_item({ item, changes: { completed } }));
+    protected updateItem({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) {
+        this.store.dispatch(todoActions.update_item({ itemId, changes }));
     }
 
     protected completeAll() {
@@ -44,4 +52,9 @@ export class TodoNgrxComponent {
     protected updateFilter(filter: string) {
         this.store.dispatch(todoActions.update_filter({ filter }));
     }
+
+    protected dialogCreateItemClosed() {
+        this.store.dispatch(todoActions.close_dialog_create_item());
+    }
+
 }

@@ -39,14 +39,17 @@ export const selectAreCategoriesLoading = createSelector(
 );
 
 export const selectCategories = createSelector(todoFeature.selectTodoNgrxState, (state) => state.categories);
+export const selectIsDialogCreateItemOpen = createSelector(
+    todoFeature.selectTodoNgrxState,
+    (state) => state.isDialogCreateItemOpen
+);
 
 export const selectIsUpdating = createSelector(todoFeature.selectTodoNgrxState, (state) => state.isUpdating);
 
 export const selectIsLoading = createSelector(
     selectAreItemsLoading,
     selectAreCategoriesLoading,
-    selectIsUpdating,
-    (areItemsLoading, areCategoriesLoading, isUpdating) => areItemsLoading || areCategoriesLoading || isUpdating
+    (areItemsLoading, areCategoriesLoading) => areItemsLoading || areCategoriesLoading
 );
 
 export const selectViewModel = createSelector({
@@ -57,4 +60,6 @@ export const selectViewModel = createSelector({
     categories: selectCategories,
     isLoading: selectIsLoading,
     filter: selectFilter,
+    isUpdating: selectIsUpdating,
+    isDialogCreateItemOpen: selectIsDialogCreateItemOpen,
 });

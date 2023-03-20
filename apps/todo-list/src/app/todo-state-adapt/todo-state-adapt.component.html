@@ -4,43 +4,23 @@
     tdlLogStateName="state-adapt"
 >
     <ng-container *ngIf="!vm.isLoading; else loading">
-        <tdl-todo-creation
-            [categories]="vm.categories"
-            (create)="createItem$.next($event)"
-        />
-
-        <tdl-filters
+        <tdl-todo-list
             [showCompleted]="vm.showCompleted"
             [filter]="vm.filter"
+            [filteredItems]="vm.filteredTodos"
+            [completedCount]="vm.completedCount"
+            [uncompletedCount]="vm.uncompletedCount"
+            [categories]="vm.categories"
+            [isUpdating]="vm.isUpdating"
+            [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
             (updateShowCompleted)="updateShowCompleted$.next($event)"
             (updateFilter)="updateFilter$.next($event)"
-        />
-
-        <div class="actions">
-            <button
-                tdl-button
-                color="secondary"
-                (click)="completeAll$.next(vm.items)"
-            >
-                Complete All
-            </button>
-            <button
-                tdl-button
-                color="secondary"
-                (click)="uncompleteAll$.next(vm.items)"
-            >
-                Uncomplete All
-            </button>
-        </div>
-
-        <div class="status">
-            <span>Completed: {{ vm.completedCount }}</span>
-            <span>Uncompleted: {{ vm.uncompletedCount }}</span>
-        </div>
-
-        <tdl-todo-card-grid
-            [items]="vm.filteredTodos"
-            (updateCompleted)="updateCompleted$.next($event)"
+            (openDialogCreateItem)="dialogCreateItemOpened$.next()"
+            (completeAll)="completeAll$.next()"
+            (uncompleteAll)="uncompleteAll$.next()"
+            (updadteItem)="updateItem$.next($event)"
+            (createItem)="createItem$.next($event)"
+            (dialogCreateItemClosed)="dialogCreateItemClosed$.next()"
         />
     </ng-container>
 

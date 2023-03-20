@@ -26,4 +26,6 @@ export class TodoNgrxComponentStoreComponent {
     protected updateCompleted = this.store.updateCompleted;
     protected completeAll = this.store.completeAll;
     protected uncompleteAll = this.store.uncompleteAll;
+    protected dialogCreateItemOpened = this.store.dialogCreateItemOpened;
+    protected dialogCreateItemClosed = this.store.dialogCreateItemClosed;
 }

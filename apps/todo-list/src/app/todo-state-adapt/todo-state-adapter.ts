@@ -10,6 +10,7 @@ export interface TodoState {
     categories: string[];
     areCategoriesLoading: boolean;
     filter: string;
+    isDialogCreateItemOpen: boolean;
 }
 
 const todoListAdapter = createAdapter<TodoItem[]>()({
@@ -32,6 +33,7 @@ export const todoStateAdapter = joinAdapters<TodoState>()({
     categories: categoryListAdapter,
     areCategoriesLoading: booleanAdapter,
     filter: createAdapter<string>()({}),
+    isDialogCreateItemOpen: booleanAdapter,
 })({
     filteredTodos: (selectors) => {
         return selectors.items.filter((todo) => {
@@ -45,7 +47,7 @@ export const todoStateAdapter = joinAdapters<TodoState>()({
         });
     },
     isLoading: (selectors) => {
-        return selectors.areItemsLoading || selectors.areCategoriesLoading || selectors.isUpdating;
+        return selectors.areItemsLoading || selectors.areCategoriesLoading;
     },
 })({
     vm: (selectors) => ({
@@ -57,6 +59,8 @@ export const todoStateAdapter = joinAdapters<TodoState>()({
         filter: selectors.filter,
         categories: selectors.categories,
         items: selectors.items,
+        isUpdating: selectors.isUpdating,
+        isDialogCreateItemOpen: selectors.isDialogCreateItemOpen,
     }),
 })({
     setLoadedItems: {

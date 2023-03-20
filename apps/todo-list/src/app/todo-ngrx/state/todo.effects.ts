@@ -1,16 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { Actions, createEffect, OnInitEffects, ofType, concatLatestFrom } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { map, mergeMap, switchMap } from 'rxjs';
 import { CategoryService } from '../../category.service';
 import { TodoService } from '../../todo.service';
 import { todoActions } from './todo.actions';
-import { selectAllItems } from './todo.selectors';
 
 @Injectable()
-export class TodoEffectsService implements OnInitEffects {
+export class TodoEffectsService {
     private actions$ = inject(Actions);
-    private store = inject(Store);
     private todoService = inject(TodoService);
     private categoryService = inject(CategoryService);
 
@@ -33,7 +30,7 @@ export class TodoEffectsService implements OnInitEffects {
     updateTodo$ = createEffect(() =>
         this.actions$.pipe(
             ofType(todoActions.update_item),
-            mergeMap(({ item, changes }) => this.todoService.updateTodo(item, changes)),
+            mergeMap(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes)),
             map((result) => todoActions.update_item_completed({ result }))
         )
     );
@@ -41,8 +38,7 @@ export class TodoEffectsService implements OnInitEffects {
     completeAll$ = createEffect(() =>
         this.actions$.pipe(
             ofType(todoActions.complete_all),
-            concatLatestFrom(() => this.store.select(selectAllItems)),
-            mergeMap(([, items]) => this.todoService.updateManyTodos(items, { completed: true })),
+            mergeMap(() => this.todoService.updateAllTodos({ completed: true })),
             map((items) => todoActions.complete_all_completed({ items }))
         )
     );
@@ -50,8 +46,7 @@ export class TodoEffectsService implements OnInitEffects {
     uncompleteAll$ = createEffect(() =>
         this.actions$.pipe(
             ofType(todoActions.uncomplete_all),
-            concatLatestFrom(() => this.store.select(selectAllItems)),
-            mergeMap(([, items]) => this.todoService.updateManyTodos(items, { completed: false })),
+            mergeMap(() => this.todoService.updateAllTodos({ completed: false })),
             map((items) => todoActions.uncomplete_all_completed({ items }))
         )
     );
@@ -63,8 +58,4 @@ export class TodoEffectsService implements OnInitEffects {
             map((categories) => todoActions.load_categories_completed({ categories }))
         )
     );
-
-    ngrxOnInitEffects() {
-        return todoActions.load();
-    }
 }

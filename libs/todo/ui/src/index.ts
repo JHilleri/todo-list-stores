@@ -7,3 +7,5 @@ export * from './lib/log-state.directive';
 export * from './lib/field/field.component';
 export * from './lib/loading/loading.component';
 export * from './lib/ui-components.module';
+export * from './lib/dialog/dialog.component';
+export * from './lib/todo-list/todo-list.component';

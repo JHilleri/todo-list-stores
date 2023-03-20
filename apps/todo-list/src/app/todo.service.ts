@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { createTodoItem, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { of } from 'rxjs';
+import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { delay, switchMap } from 'rxjs/operators';
+import { LocalStorageTodoService } from './local-storage-todo.service';
 import { SettingsService } from './settings/settings.service';
 
 @Injectable({
@@ -9,24 +9,13 @@ import { SettingsService } from './settings/settings.service';
 })
 export class TodoService {
     private settingsService = inject(SettingsService);
+    private localTodoItemStorage = inject(LocalStorageTodoService);
     private serverDelay = this.settingsService.simulateServerDelay$;
-    private todoItems$ = of([
-        createTodoItem({
-            title: 'Todo 1',
-            text: 'Todo 1 text',
-            tags: [],
-        }),
-        createTodoItem({
-            title: 'Todo 2',
-            text: 'Todo 2 text',
-            tags: [],
-        }),
-    ]);
 
     public getTodos() {
         return this.serverDelay.pipe(
             switchMap((serverDelay) => {
-                return this.todoItems$.pipe(delay(serverDelay));
+                return this.localTodoItemStorage.getTodos().pipe(delay(serverDelay));
             })
         );
     }
@@ -34,32 +23,39 @@ export class TodoService {
     public createTodo(params: TodoItemCreationParams) {
         return this.serverDelay.pipe(
             switchMap((serverDelay) => {
-                return of(createTodoItem(params)).pipe(delay(serverDelay));
+                return this.localTodoItemStorage.createTodo(params).pipe(delay(serverDelay));
             })
         );
     }
 
-    public updateTodo(todo: TodoItem, params: Partial<TodoItem>) {
+    public updateTodo(todoId: TodoItem['id'], params: Partial<TodoItem>) {
         return this.serverDelay.pipe(
             switchMap((serverDelay) => {
-                return of({ ...todo, ...params }).pipe(delay(serverDelay));
+                return this.localTodoItemStorage.updateTodo(todoId, params).pipe(delay(serverDelay));
             })
         );
     }
 
-    public updateManyTodos(todos: TodoItem[], params: Partial<TodoItem>) {
+    public updateManyTodos(todos: TodoItem['id'][], params: Partial<TodoItem>) {
         return this.serverDelay.pipe(
             switchMap((serverDelay) => {
-                return of(todos.map((todo) => ({ ...todo, ...params }))).pipe(delay(serverDelay));
+                return this.localTodoItemStorage.updateManyTodos(todos, params).pipe(delay(serverDelay));
             })
         );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public deleteTodo(todo: TodoItem) {
+    public updateAllTodos(params: Partial<TodoItem>) {
         return this.serverDelay.pipe(
             switchMap((serverDelay) => {
-                return of(true).pipe(delay(serverDelay));
+                return this.localTodoItemStorage.updateAllTodos(params).pipe(delay(serverDelay));
+            })
+        );
+    }
+
+    public deleteTodo(todoId: TodoItem['id']) {
+        return this.serverDelay.pipe(
+            switchMap((serverDelay) => {
+                return this.localTodoItemStorage.deleteTodoItem(todoId).pipe(delay(serverDelay));
             })
         );
     }

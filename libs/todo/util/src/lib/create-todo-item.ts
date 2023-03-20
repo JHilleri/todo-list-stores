@@ -1,12 +1,9 @@
 import { TodoItem } from './todo-item';
-
-let nextId = 1;
-
-export type TodoItemCreationParams = Pick<TodoItem, 'title' | 'text' | 'tags'>;
+import { TodoItemCreationParams } from './todo-item-creation-params';
 
 export function createTodoItem(data: TodoItemCreationParams): TodoItem {
     return {
-        id: nextId++,
+        id: crypto.randomUUID(),
         completed: false,
         ...data,
     };

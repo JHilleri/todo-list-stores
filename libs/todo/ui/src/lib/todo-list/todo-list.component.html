@@ -1,0 +1,59 @@
+<div class="actions">
+    <button
+        type="button"
+        tdl-button
+        color="primary"
+        [disabled]="isUpdating"
+        (click)="openDialogCreateItem.next()"
+    >
+        create item
+    </button>
+    <button
+        tdl-button
+        color="secondary"
+        [disabled]="isUpdating"
+        (click)="completeAll.next()"
+    >
+        Complete All
+    </button>
+    <button
+        tdl-button
+        color="secondary"
+        [disabled]="isUpdating"
+        (click)="uncompleteAll.next()"
+    >
+        Uncomplete All
+    </button>
+</div>
+
+<tdl-filters
+    [showCompleted]="showCompleted"
+    [filter]="filter"
+    (updateShowCompleted)="updateShowCompleted.next($event)"
+    (updateFilter)="updateFilter.next($event)"
+/>
+
+<div class="status">
+    <span>Completed: {{ completedCount }}</span>
+    <span>Uncompleted: {{ uncompletedCount }}</span>
+</div>
+
+<tdl-todo-card-grid
+    [items]="filteredItems"
+    (updateCompleted)="updadteItem.next($event)"
+/>
+
+<tdl-dialog
+    [open]="isDialogCreateItemOpen"
+    (closed)="dialogCreateItemClosed.next()"
+>
+    <h2>Create Item</h2>
+    <tdl-todo-creation
+        [categories]="categories"
+        (create)="createItem.next($event)"
+    />
+</tdl-dialog>
+
+<dialog [open]="isUpdating">
+    <tdl-loading />
+</dialog>

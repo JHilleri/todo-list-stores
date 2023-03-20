@@ -1,11 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-    TrackByFunction,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoCardComponent } from '../todo-card/todo-card.component';
 import { TodoItem } from '@todo-lists/todo/util';
@@ -24,13 +17,13 @@ export class TodoCardGridComponent {
 
     @Output()
     public updateCompleted = new EventEmitter<{
-        item: TodoItem;
-        completed: boolean;
+        itemId: TodoItem['id'];
+        changes: Partial<TodoItem>;
     }>();
 
     protected trackBy: TrackByFunction<TodoItem> = (_, item) => item.id;
 
     protected updateCompletedItem(item: TodoItem, completed: boolean) {
-        this.updateCompleted.emit({ item, completed });
+        this.updateCompleted.emit({ itemId: item.id, changes: { completed } });
     }
 }

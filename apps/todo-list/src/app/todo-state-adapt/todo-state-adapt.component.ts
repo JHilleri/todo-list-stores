@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LetModule } from '@rx-angular/template/let';
 import { adaptNgrx } from '@state-adapt/ngrx';
-import { Source, toRequestSource, toSource } from '@state-adapt/rxjs';
+import { getRequestSources, Source } from '@state-adapt/rxjs';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
-import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { asapScheduler, mergeMap, observeOn } from 'rxjs';
+import { TodoItemCreationParams, UpdateItemParams } from '@todo-lists/todo/util';
+import { merge, mergeMap, tap, using } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 import { TodoState, todoStateAdapter } from './todo-state-adapter';
@@ -19,7 +19,9 @@ const initialState: TodoState = {
     categories: [],
     areCategoriesLoading: true,
     filter: '',
+    isDialogCreateItemOpen: false,
 };
+
 @Component({
     selector: 'todo-lists-todo-state-adapt',
     standalone: true,
@@ -33,55 +35,75 @@ export class TodoStateAdaptComponent {
     private categoryService = inject(CategoryService);
 
     // ui actions
-    protected createItem$ = new Source<TodoItemCreationParams>('[stateAdapt] item created started');
-    protected updateShowCompleted$ = new Source<boolean>('[stateAdapt] show completed updated');
-    protected updateCompleted$ = new Source<{ item: TodoItem; completed: boolean }>(
-        '[stateAdapt] item completed update started'
-    );
-    protected completeAll$ = new Source<TodoItem[]>('[stateAdapt] all items completed started');
-    protected uncompleteAll$ = new Source<TodoItem[]>('[stateAdapt] all items uncompleted started');
-    protected updateFilter$ = new Source<string>('[stateAdapt] filter updated');
+    protected createItem$ = new Source<TodoItemCreationParams>('[stateAdapt] create item');
+    protected updateShowCompleted$ = new Source<boolean>('[stateAdapt] update show completed');
+    protected updateItem$ = new Source<UpdateItemParams>('[stateAdapt] update item');
+    protected completeAll$ = new Source<void>('[stateAdapt] complete all items');
+    protected uncompleteAll$ = new Source<void>('[stateAdapt] uncomplete all items');
+    protected updateFilter$ = new Source<string>('[stateAdapt] update filter');
+    protected dialogCreateItemClosed$ = new Source<void>('[stateAdapt] close create dialog item');
+    protected dialogCreateItemOpened$ = new Source<void>('[stateAdapt] open create dialog item');
 
     // api actions
-    private todoItemsLoaded$ = this.todoService.getTodos().pipe(toSource('[stateAdapt] items loaded'));
-    private categoriesLoaded$ = this.categoryService.getCategories().pipe(toSource('[stateAdapt] categories loaded'));
-    private createItemSuccess$ = this.createItem$.pipe(
-        mergeMap(({ payload }) => this.todoService.createTodo(payload)),
-        toRequestSource('[stateAdapt] item created success'),
-        observeOn(asapScheduler)
+    private todoItemsLoaded = getRequestSources(this.todoService.getTodos(), '[stateAdapt] loaded items');
+    private categoriesLoaded = getRequestSources(
+        this.categoryService.getCategories(),
+        '[stateAdapt] loaded categories'
     );
-    private updateCompletedSuccess$ = this.updateCompleted$.pipe(
-        mergeMap(({ payload: { item, completed } }) => this.todoService.updateTodo(item, { completed })),
-        toRequestSource('[stateAdapt] item completed update success'),
-        observeOn(asapScheduler)
+    private createdItem = getRequestSources(
+        this.createItem$.pipe(mergeMap(({ payload }) => this.todoService.createTodo(payload))),
+        '[stateAdapt] created item'
     );
-    private completeAllSuccess$ = this.completeAll$.pipe(
-        mergeMap(({ payload }) => this.todoService.updateManyTodos(payload, { completed: true })),
-        toRequestSource('[stateAdapt] all items completed success'),
-        observeOn(asapScheduler)
+    private updatedItem = getRequestSources(
+        this.updateItem$.pipe(
+            mergeMap(({ payload: { itemId, changes } }) => this.todoService.updateTodo(itemId, changes))
+        ),
+        '[stateAdapt] updated item'
     );
-    private uncompleteAllSuccess$ = this.uncompleteAll$.pipe(
-        mergeMap(({ payload }) => this.todoService.updateManyTodos(payload, { completed: false })),
-        toRequestSource('[stateAdapt] all items uncompleted success'),
-        observeOn(asapScheduler)
+    private completedAll = getRequestSources(
+        this.completeAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: true }))),
+        '[stateAdapt] marked all as completed'
+    );
+    private uncompletedAll = getRequestSources(
+        this.uncompleteAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: false }))),
+        '[stateAdapt] marked all as uncompleted'
     );
 
     private store = adaptNgrx(['stateAdapt', initialState, todoStateAdapter], {
-        setLoadedItems: this.todoItemsLoaded$,
-        setLoadedCategories: this.categoriesLoaded$,
+        setLoadedItems: this.todoItemsLoaded.success$,
+        setLoadedCategories: this.categoriesLoaded.success$,
         setShowCompleted: this.updateShowCompleted$,
         setFilter: this.updateFilter$,
-        setIsUpdatingTrue: [this.createItem$, this.updateCompleted$, this.completeAll$, this.uncompleteAll$],
+        addItems: this.createdItem.success$,
+        updateItems: this.updatedItem.success$,
+        setItems: [this.completedAll.success$, this.uncompletedAll.success$],
+        setIsDialogCreateItemOpenTrue: this.dialogCreateItemOpened$,
+        setIsDialogCreateItemOpenFalse: [this.dialogCreateItemClosed$, this.createItem$],
+        setIsUpdatingTrue: [this.createItem$, this.updateItem$, this.completeAll$, this.uncompleteAll$],
         setIsUpdatingFalse: [
-            this.createItemSuccess$,
-            this.updateCompletedSuccess$,
-            this.completeAllSuccess$,
-            this.uncompleteAllSuccess$,
+            this.createdItem.success$,
+            this.createdItem.error$,
+            this.updatedItem.success$,
+            this.updatedItem.error$,
+            this.completedAll.success$,
+            this.completedAll.error$,
+            this.uncompletedAll.success$,
+            this.uncompletedAll.error$,
         ],
-        addItems: this.createItemSuccess$,
-        updateItems: this.updateCompletedSuccess$,
-        setItems: [this.completeAllSuccess$, this.uncompleteAllSuccess$],
     });
 
-    protected vm$ = this.store.vm$;
+    protected vm$ = using(
+        () =>
+            merge(
+                this.createdItem.error$,
+                this.updatedItem.error$,
+                this.completedAll.error$,
+                this.uncompletedAll.error$,
+                this.todoItemsLoaded.error$,
+                this.categoriesLoaded.error$
+            )
+                .pipe(tap((error) => console.error(error)))
+                .subscribe(),
+        () => this.store.vm$
+    );
 }

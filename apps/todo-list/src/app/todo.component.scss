@@ -1,17 +1,13 @@
+:host {
+    display: grid;
+}
+
 main {
     margin: 1rem;
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 1rem;
 }
 
-.status {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.actions {
-    display: flex;
-    gap: 1rem;
+tdl-loading {
+    align-self: center;
 }

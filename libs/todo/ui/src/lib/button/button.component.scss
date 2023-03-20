@@ -23,3 +23,8 @@
     background-color: var(--secondary);
     color: var(--on-secondary);
 }
+
+:host:disabled {
+    cursor: progress;
+    opacity: 0.5;
+}

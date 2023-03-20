@@ -6,14 +6,19 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     template: `
-        Loading...
+        Loading ...
         <progress></progress>
     `,
     styles: [`
         :host {
             display: grid;
             place-items: center;
+            align-content: center;
             gap: 1rem;
+        }
+
+        progress {
+            accent-color: var(--primary);
         }
     `],
 })

@@ -10,6 +10,7 @@ interface State extends EntityState<TodoItem> {
     categories: string[];
     areCategoriesLoading: boolean;
     filter: string;
+    isDialogCreateItemOpen: boolean;
 }
 
 const adapter = createEntityAdapter<TodoItem>();
@@ -20,6 +21,7 @@ export const initialState: State = adapter.getInitialState({
     categories: [],
     areCategoriesLoading: false,
     filter: '',
+    isDialogCreateItemOpen: false,
 });
 
 export const todoFeature = createFeature({
@@ -29,6 +31,7 @@ export const todoFeature = createFeature({
         on(todoActions.add, (state) => ({
             ...state,
             isUpdating: true,
+            isDialogCreateItemOpen: false,
         })),
         on(todoActions.add_completed, (state, { item }) =>
             adapter.addOne(item, {
@@ -92,6 +95,14 @@ export const todoFeature = createFeature({
         on(todoActions.update_filter, (state, { filter }) => ({
             ...state,
             filter,
+        })),
+        on(todoActions.open_dialog_create_item, (state) => ({
+            ...state,
+            isDialogCreateItemOpen: true,
+        })),
+        on(todoActions.close_dialog_create_item, (state) => ({
+            ...state,
+            isDialogCreateItemOpen: false,
         }))
     ),
 });

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 
@@ -27,10 +27,10 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     protected showCompleted = false;
     protected filter = '';
     protected categories: string[] = [];
-    protected selectedCategory = '';
     protected areItemsLoading = true;
     protected areCategoriesLoading = true;
     protected isUpdating = false;
+    protected isDialogCreateItemOpen = false;
 
     // derived state
     protected filteredItems: TodoItem[] = [];
@@ -38,28 +38,43 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     protected uncompletedCount = 0;
     protected isLoading = false;
 
-    // side effects
-    private loadItems$ = this.todoService.getTodos().pipe(
-        tap((items) => {
-            this.items = items;
-            this.areItemsLoading = false;
-            this.updateIsLoading();
-            this.updateCounts();
-            this.updateFilteredItems();
-        })
-    );
-
-    private loadCategories$ = this.categoryService.getCategories().pipe(
-        tap((categories) => {
-            this.categories = categories;
-            this.areCategoriesLoading = false;
-            this.updateIsLoading();
-        })
-    );
-
     ngOnInit(): void {
-        this.loadItems$.pipe(takeUntil(this.destroy$)).subscribe();
-        this.loadCategories$.pipe(takeUntil(this.destroy$)).subscribe();
+        this.todoService
+            .getTodos()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (items) => {
+                    this.items = items;
+                    this.areItemsLoading = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+                error: (err) => {
+                    console.error(err);
+                    this.items = [];
+                    this.areItemsLoading = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+            });
+        this.categoryService
+            .getCategories()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (categories) => {
+                    this.categories = categories;
+                    this.areCategoriesLoading = false;
+                    this.updateIsLoading();
+                },
+                error: (err) => {
+                    console.error(err);
+                    this.categories = [];
+                    this.areCategoriesLoading = false;
+                    this.updateIsLoading();
+                },
+            });
         this.updateIsLoading();
     }
 
@@ -68,35 +83,50 @@ export class ImperativeComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    // update state
+    // event handlers
+
+    protected openDialogCreateItem() {
+        this.isDialogCreateItemOpen = true;
+    }
+
+    protected dialogCreateItemClosed() {
+        this.isDialogCreateItemOpen = false;
+    }
 
     protected createItem(item: TodoItemCreationParams) {
         this.isUpdating = true;
+        this.isDialogCreateItemOpen = false;
         this.updateIsLoading();
         this.todoService
             .createTodo(item)
             .pipe(takeUntil(this.destroy$))
-            .subscribe((item) => {
-                this.items.push(item);
-                this.isUpdating = false;
-                this.updateIsLoading();
-                this.updateCounts();
-                this.updateFilteredItems();
+            .subscribe({
+                next: (item) => {
+                    this.items.push(item);
+                    this.isUpdating = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+                error: this.handleError,
             });
     }
 
-    protected updateCompleted({ item, completed }: { item: TodoItem; completed: boolean }) {
+    protected updateCompleted({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) {
         this.isUpdating = true;
         this.updateIsLoading();
         this.todoService
-            .updateTodo(item, { completed })
+            .updateTodo(itemId, changes)
             .pipe(takeUntil(this.destroy$))
-            .subscribe((item) => {
-                this.items.splice(this.items.indexOf(item), 1, item);
-                this.isUpdating = false;
-                this.updateIsLoading();
-                this.updateCounts();
-                this.updateFilteredItems();
+            .subscribe({
+                next: (item) => {
+                    this.items.splice(this.items.indexOf(item), 1, item);
+                    this.isUpdating = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+                error: this.handleError,
             });
     }
 
@@ -104,29 +134,53 @@ export class ImperativeComponent implements OnInit, OnDestroy {
         this.isUpdating = true;
         this.updateIsLoading();
         this.todoService
-            .updateManyTodos(this.items, { completed: true })
+            .updateAllTodos({ completed: true })
             .pipe(takeUntil(this.destroy$))
-            .subscribe((items) => {
-                this.items = items;
-                this.isUpdating = false;
-                this.updateIsLoading();
-                this.updateCounts();
-                this.updateFilteredItems();
+            .subscribe({
+                next: (items) => {
+                    this.items = items;
+                    this.isUpdating = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+                error: this.handleError,
             });
     }
 
-    protected unCompleteAll() {
+    protected uncompleteAll() {
         this.isUpdating = true;
         this.updateIsLoading();
         this.todoService
-            .updateManyTodos(this.items, { completed: false })
+            .updateAllTodos({ completed: false })
             .pipe(takeUntil(this.destroy$))
-            .subscribe((items) => {
-                this.items = items;
-                this.isUpdating = false;
-                this.updateIsLoading();
-                this.updateCounts();
-                this.updateFilteredItems();
+            .subscribe({
+                next: (items) => {
+                    this.items = items;
+                    this.isUpdating = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+                error: this.handleError,
+            });
+    }
+
+    protected deleteItem(id: TodoItem['id']) {
+        this.isUpdating = true;
+        this.updateIsLoading();
+        this.todoService
+            .deleteTodo(id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (item) => {
+                    this.items.splice(this.items.indexOf(item), 1);
+                    this.isUpdating = false;
+                    this.updateIsLoading();
+                    this.updateCounts();
+                    this.updateFilteredItems();
+                },
+                error: this.handleError,
             });
     }
 
@@ -162,6 +216,12 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     }
 
     protected updateIsLoading() {
-        this.isLoading = this.areItemsLoading || this.areCategoriesLoading || this.isUpdating;
+        this.isLoading = this.areItemsLoading || this.areCategoriesLoading;
     }
+
+    private handleError = (err: unknown) => {
+        console.error(err);
+        this.isUpdating = false;
+        this.updateIsLoading();
+    };
 }
