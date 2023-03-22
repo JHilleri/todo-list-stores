@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "serve:todo-list": "nx serve todo-list"
+    "serve:todo-list": "nx serve todo-list",
+    "open:todo-list-e2e": "nx run todo-list-e2e:e2e --watch"
   },
   "private": true,
   "dependencies": {
@@ -52,11 +53,12 @@
     "@nrwl/nx-cloud": "latest",
     "@nrwl/workspace": "15.7.2",
     "@schematics/angular": "~15.1.0",
+    "@testing-library/cypress": "^9.0.0",
     "@types/jest": "28.1.1",
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
-    "cypress": "^12.2.0",
+    "cypress": "^12.8.1",
     "eslint": "~8.15.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.10.3",
