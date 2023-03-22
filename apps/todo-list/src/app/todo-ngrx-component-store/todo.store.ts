@@ -42,7 +42,7 @@ export class TodoStore extends ComponentStore<TodoState> {
 
     readonly createItem = this.effect((params$: Observable<TodoItemCreationParams>) => {
         return params$.pipe(
-            tap(() => this.patchState({ isUpdating: true })),
+            tap(() => this.patchState({ isUpdating: true, isDialogCreateItemOpen: false })),
             mergeMap((params) => {
                 return this.todoService.createTodo(params);
             }),
