@@ -39,6 +39,10 @@ export const todoFeature = createFeature({
                 isUpdating: false,
             })
         ),
+        on(todoActions.add_failed, (state) => ({
+            ...state,
+            isUpdating: false,
+        })),
         on(todoActions.update_show_completed, (state, { showCompleted }) => ({
             ...state,
             showCompleted,
@@ -47,15 +51,19 @@ export const todoFeature = createFeature({
             ...state,
             isUpdating: true,
         })),
-        on(todoActions.update_item_completed, (state, { result }) =>
+        on(todoActions.update_item_completed, (state, { item }) =>
             adapter.updateOne(
-                { id: result.id, changes: result },
+                { id: item.id, changes: item },
                 {
                     ...state,
                     isUpdating: false,
                 }
             )
         ),
+        on(todoActions.update_item_failed, (state) => ({
+            ...state,
+            isUpdating: false,
+        })),
         on(todoActions.complete_all, (state) => ({
             ...state,
             isUpdating: true,
@@ -66,6 +74,10 @@ export const todoFeature = createFeature({
                 isUpdating: false,
             })
         ),
+        on(todoActions.complete_all_failed, (state) => ({
+            ...state,
+            isUpdating: false,
+        })),
         on(todoActions.uncomplete_all, (state) => ({
             ...state,
             isUpdating: true,
@@ -76,6 +88,10 @@ export const todoFeature = createFeature({
                 isUpdating: false,
             })
         ),
+        on(todoActions.uncomplete_all_failed, (state) => ({
+            ...state,
+            isUpdating: false,
+        })),
         on(todoActions.load_items_completed, (state, { items }) =>
             adapter.setAll(items, {
                 ...state,
@@ -86,6 +102,10 @@ export const todoFeature = createFeature({
             ...state,
             categories,
             areCategoriesLoading: false,
+        })),
+        on(todoActions.load_items_failed, (state) => ({
+            ...state,
+            areItemsLoading: false,
         })),
         on(todoActions.load, (state) => ({
             ...state,
