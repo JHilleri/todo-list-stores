@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
+import { SettingsService } from '@todo-lists/settings/data-access';
 import { of } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
-import { SettingsService } from './settings/settings.service';
 
 @Injectable({
     providedIn: 'root',

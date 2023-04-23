@@ -1,29 +1,35 @@
-<header>
-    <a routerLink="/">
-        <h1>todo-list</h1>
-    </a>
-    <nav>
-        <ul>
-            <li *ngFor="let link of links">
-                <a
-                    routerLinkActive="active-route"
-                    [routerLink]="link.path"
-                >
-                    {{ link.label }}
-                </a>
-            </li>
-        </ul>
-        <div class="separator"></div>
-        <ul>
-            <li>
-                <a
-                    routerLink="/settings"
-                    routerLinkActive="active-route"
-                >
-                    Settings
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-<router-outlet></router-outlet>
+<div
+    *rxLet="vm$ as vm"
+    [todoListsThemeLoader]="vm.theme"
+    [todoListsColorsLoader]="vm.styleSeetContent"
+>
+    <header>
+        <a routerLink="/">
+            <h1>todo-list</h1>
+        </a>
+        <nav>
+            <ul>
+                <li *ngFor="let link of links">
+                    <a
+                        routerLinkActive="active-route"
+                        [routerLink]="link.path"
+                    >
+                        {{ link.label }}
+                    </a>
+                </li>
+            </ul>
+            <div class="separator"></div>
+            <ul>
+                <li>
+                    <a
+                        routerLink="/settings"
+                        routerLinkActive="active-route"
+                    >
+                        Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <router-outlet></router-outlet>
+</div>
