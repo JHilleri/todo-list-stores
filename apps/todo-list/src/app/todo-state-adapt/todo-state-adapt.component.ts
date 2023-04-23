@@ -1,7 +1,7 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LetModule } from '@rx-angular/template/let';
+import { LetDirective } from '@rx-angular/template/let';
 import { adaptNgrx } from '@state-adapt/ngrx';
 import { getRequestSources, Source } from '@state-adapt/rxjs';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
@@ -25,7 +25,7 @@ const initialState: TodoState = {
 @Component({
     selector: 'todo-lists-todo-state-adapt',
     standalone: true,
-    imports: [LetModule, NgIf, FormsModule, UiComponentsModule],
+    imports: [LetDirective, NgIf, FormsModule, UiComponentsModule],
     templateUrl: './todo-state-adapt.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,28 +45,28 @@ export class TodoStateAdaptComponent {
     protected dialogCreateItemOpened$ = new Source<void>('[stateAdapt] open create dialog item');
 
     // api actions
-    private todoItemsLoaded = getRequestSources(this.todoService.getTodos(), '[stateAdapt] loaded items');
+    private todoItemsLoaded = getRequestSources('[stateAdapt] loaded items', this.todoService.getTodos());
     private categoriesLoaded = getRequestSources(
-        this.categoryService.getCategories(),
-        '[stateAdapt] loaded categories'
+        '[stateAdapt] loaded categories',
+        this.categoryService.getCategories()
     );
     private createdItem = getRequestSources(
-        this.createItem$.pipe(mergeMap(({ payload }) => this.todoService.createTodo(payload))),
-        '[stateAdapt] created item'
+        '[stateAdapt] created item',
+        this.createItem$.pipe(mergeMap(({ payload }) => this.todoService.createTodo(payload)))
     );
     private updatedItem = getRequestSources(
+        '[stateAdapt] updated item',
         this.updateItem$.pipe(
             mergeMap(({ payload: { itemId, changes } }) => this.todoService.updateTodo(itemId, changes))
-        ),
-        '[stateAdapt] updated item'
+        )
     );
     private completedAll = getRequestSources(
-        this.completeAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: true }))),
-        '[stateAdapt] marked all as completed'
+        '[stateAdapt] marked all as completed',
+        this.completeAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: true })))
     );
     private uncompletedAll = getRequestSources(
-        this.uncompleteAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: false }))),
-        '[stateAdapt] marked all as uncompleted'
+        '[stateAdapt] marked all as uncompleted',
+        this.uncompleteAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: false })))
     );
 
     private store = adaptNgrx(['stateAdapt', initialState, todoStateAdapter], {

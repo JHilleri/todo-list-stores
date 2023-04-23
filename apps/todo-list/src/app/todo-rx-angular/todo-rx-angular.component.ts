@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { insert } from '@rx-angular/cdk/transformations';
 import { RxState } from '@rx-angular/state';
 import { RxActionFactory } from '@rx-angular/state/actions';
-import { LetModule } from '@rx-angular/template/let';
+import { LetDirective } from '@rx-angular/template/let';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { combineLatest, merge, mergeMap, share } from 'rxjs';
@@ -38,7 +38,7 @@ interface TodoEvents {
 @Component({
     selector: 'todo-lists-todo-rx-angular',
     standalone: true,
-    imports: [LetModule, NgIf, FormsModule, UiComponentsModule],
+    imports: [LetDirective, NgIf, FormsModule, UiComponentsModule],
     templateUrl: './todo-rx-angular.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
