@@ -1,25 +1,23 @@
 import { RouterModule } from '@angular/router';
-import {
-    ChangeDetectionStrategy,
-    Component,
-    inject,
-    OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgFor } from '@angular/common';
-import { SettingsService } from './settings/settings.service';
 import { FormsModule } from '@angular/forms';
 import { LetModule } from '@rx-angular/template/let';
+import { SettingsService } from '@todo-lists/settings/data-access';
+import { ColorsLoaderDirective, ThemeLoaderDirective } from '@todo-lists/settings/feature';
 
 @Component({
     standalone: true,
-    imports: [RouterModule, FormsModule, LetModule, NgFor],
+    imports: [RouterModule, FormsModule, LetModule, LetModule, NgFor, ThemeLoaderDirective, ColorsLoaderDirective],
     selector: 'todo-lists-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     private settingsService = inject(SettingsService);
+
+    protected readonly vm$ = this.settingsService.vm$;
 
     protected readonly links = [
         { path: '/imperative', label: 'Imperative' },
@@ -29,9 +27,4 @@ export class AppComponent implements OnInit {
         { path: '/state-adapt', label: 'State Adapt' },
         { path: '/rx-angular', label: 'Rx Angular' },
     ];
-
-    ngOnInit() {
-        this.settingsService.effect$.subscribe();
-        document.adoptedStyleSheets = [this.settingsService.customCssStyleSheet];
-    }
 }

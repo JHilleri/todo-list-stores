@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LetModule } from '@rx-angular/template/let';
 import { FormsModule } from '@angular/forms';
-import { SettingsService } from './settings.service';
 import { ButtonComponent, FieldComponent } from '@todo-lists/todo/ui';
+import { SettingsService } from '@todo-lists/settings/data-access';
 
 @Component({
     selector: 'todo-lists-settings',

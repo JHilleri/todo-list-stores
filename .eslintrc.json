@@ -1,42 +1,58 @@
 {
-  "root": true,
-  "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@nrwl/nx/enforce-module-boundaries": [
-          "error",
-          {
-            "enforceBuildableLibDependency": true,
-            "allow": [],
-            "depConstraints": [
-              {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nrwl/nx/typescript"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nrwl/nx/javascript"],
-      "rules": {}
-    },
-    {
-      "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
-      "env": {
-        "jest": true
-      },
-      "rules": {}
-    }
-  ]
+    "root": true,
+    "ignorePatterns": ["**/*"],
+    "plugins": ["@nrwl/nx"],
+    "overrides": [
+        {
+            "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+            "rules": {
+                "@nrwl/nx/enforce-module-boundaries": [
+                    "error",
+                    {
+                        "enforceBuildableLibDependency": true,
+                        "allow": [],
+                        "depConstraints": [
+                            {
+                                "sourceTag": "type:app",
+                                "onlyDependOnLibsWithTags": ["type:ui", "type:util", "type:feature", "type:data-access"]
+                            },
+                            {
+                                "sourceTag": "type:ui",
+                                "onlyDependOnLibsWithTags": ["type:util", "type:ui"]
+                            },
+                            {
+                                "sourceTag": "type:util",
+                                "onlyDependOnLibsWithTags": ["type:util"]
+                            },
+                            {
+                                "sourceTag": "type:feature",
+                                "onlyDependOnLibsWithTags": ["type:ui", "type:util", "type:data-access", "type:feature"]
+                            },
+                            {
+                                "sourceTag": "type:data-access",
+                                "onlyDependOnLibsWithTags": ["type:util", "type:data-access"]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "files": ["*.ts", "*.tsx"],
+            "extends": ["plugin:@nrwl/nx/typescript"],
+            "rules": {}
+        },
+        {
+            "files": ["*.js", "*.jsx"],
+            "extends": ["plugin:@nrwl/nx/javascript"],
+            "rules": {}
+        },
+        {
+            "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
+            "env": {
+                "jest": true
+            },
+            "rules": {}
+        }
+    ]
 }

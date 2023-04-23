@@ -15,10 +15,7 @@
                 "polyfills": ["zone.js"],
                 "tsConfig": "apps/todo-list/tsconfig.app.json",
                 "inlineStyleLanguage": "scss",
-                "assets": [
-                    "apps/todo-list/src/favicon.ico",
-                    "apps/todo-list/src/assets"
-                ],
+                "assets": ["apps/todo-list/src/favicon.ico", "apps/todo-list/src/assets"],
                 "styles": ["apps/todo-list/src/styles.scss"],
                 "scripts": []
             },
@@ -71,10 +68,7 @@
             "executor": "@nrwl/linter:eslint",
             "outputs": ["{options.outputFile}"],
             "options": {
-                "lintFilePatterns": [
-                    "apps/todo-list/**/*.ts",
-                    "apps/todo-list/**/*.html"
-                ]
+                "lintFilePatterns": ["apps/todo-list/**/*.ts", "apps/todo-list/**/*.html"]
             }
         },
         "test": {
@@ -92,5 +86,5 @@
             }
         }
     },
-    "tags": []
+    "tags": ["type:app"]
 }
