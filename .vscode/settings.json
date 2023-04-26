@@ -1,3 +1,18 @@
 {
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "cucumber.glue": [
+        "apps/todo-list-e2e/src/e2e/features/**/*.ts",
+        "src/test/**/*.java",
+        "features/**/*.js",
+        "features/**/*.jsx",
+        "features/**/*.ts",
+        "features/**/*.tsx",
+        "features/**/*.php",
+        "features/**/*.py",
+        "tests/**/*.py",
+        "tests/**/*.rs",
+        "features/**/*.rs",
+        "features/**/*.rb",
+        "*specs*/**/.cs"
+    ]
 }
