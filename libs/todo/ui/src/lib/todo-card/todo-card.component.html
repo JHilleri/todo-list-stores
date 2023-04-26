@@ -1,11 +1,22 @@
-<ng-container *ngIf="item !== undefined">
+<article
+    *ngIf="item !== undefined"
+    [attr.aria-labelledby]="headerId"
+>
     <div class="card-header">
-        <h3>{{ item.title }}</h3>
+        <h3 [id]="headerId">{{ item.title }}</h3>
         <div class="badges">
-            <span *ngIf="item.completed" data-testid="tag" class="badge badge--completed">
+            <span
+                *ngIf="item.completed"
+                data-testid="tag"
+                class="badge badge--completed"
+            >
                 Completed
             </span>
-            <span *ngFor="let tag of item.tags" data-testid="tag" class="badge badge--tag">
+            <span
+                *ngFor="let tag of item.tags"
+                data-testid="tag"
+                class="badge badge--tag"
+            >
                 {{ tag }}
             </span>
         </div>
@@ -26,4 +37,4 @@
             Mark as completed
         </button>
     </div>
-</ng-container>
+</article>

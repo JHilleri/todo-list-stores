@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { TodoItem } from '@todo-lists/todo/util';
 import { ButtonComponent } from '../button/button.component';
 
+let nextId = 0;
+
 @Component({
     selector: 'tdl-todo-card',
     standalone: true,
@@ -16,6 +18,8 @@ export class TodoCardComponent {
     public item?: TodoItem;
     @Output()
     public completedChange = new EventEmitter<boolean>();
+
+    protected headerId = `todo-card-header-${nextId++}`;
 
     protected updateCompleted(isCompleted: boolean) {
         this.completedChange.emit(isCompleted);
