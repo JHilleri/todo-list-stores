@@ -2,13 +2,13 @@ import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LetModule } from '@rx-angular/template/let';
+import { LetDirective } from '@rx-angular/template/let';
 import { SettingsService } from '@todo-lists/settings/data-access';
 import { ColorsLoaderDirective, ThemeLoaderDirective } from '@todo-lists/settings/feature';
 
 @Component({
     standalone: true,
-    imports: [RouterModule, FormsModule, LetModule, LetModule, NgFor, ThemeLoaderDirective, ColorsLoaderDirective],
+    imports: [RouterModule, FormsModule, LetDirective, NgFor, ThemeLoaderDirective, ColorsLoaderDirective],
     selector: 'todo-lists-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
@@ -26,5 +26,6 @@ export class AppComponent {
         { path: '/ngrx-component-store', label: 'Ngrx Component Store' },
         { path: '/state-adapt', label: 'State Adapt' },
         { path: '/rx-angular', label: 'Rx Angular' },
+        { path: 'signal', label: 'Signal' },
     ];
 }
