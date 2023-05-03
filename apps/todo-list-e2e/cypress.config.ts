@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import { nxE2EPreset } from '@nrwl/cypress/plugins/cypress-preset';
+import { nxE2EPreset } from '@nx/cypress/plugins/cypress-preset';
 import createEsbuildPlugin from '@badeball/cypress-cucumber-preprocessor/esbuild';
 import { addCucumberPreprocessorPlugin } from '@badeball/cypress-cucumber-preprocessor';
 import * as createBundler from '@bahmutov/cypress-esbuild-preprocessor';
