@@ -51,4 +51,9 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('@todo-lists/settings/feature').then((m) => m.SettingsComponent),
         title: 'Settings',
     },
+    {
+        path: 'signal',
+        loadComponent: () => import('./todo-signal/signal.component').then((m) => m.SignalComponent),
+        title: 'Signal',
+    },
 ];

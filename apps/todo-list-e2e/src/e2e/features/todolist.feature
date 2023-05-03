@@ -15,10 +15,12 @@ Fonctionnalité: todo liste
       | ngrx-component-store |
       | state-adapt          |
       | rx-angular           |
+      | signal               |
 
   Plan du scénario: Completion d'une tâche <path>
     Etant donné que je suis sur la page "<path>".
     Quand je crée une tâche "item-1" dans la catégorie "category 1".
+    Et que je crée une tâche "item-2" dans la catégorie "category 1".
     Et que je marque la tâche "item-1" comme complétée.
     Alors je ne vois pas "item-1" dans la liste des taches.
     Et je vois "item-1" dans la liste des tâches complétées.
@@ -32,6 +34,7 @@ Fonctionnalité: todo liste
       | ngrx-component-store |
       | state-adapt          |
       | rx-angular           |
+      | signal               |
 
   Plan du scénario: Uncompletion d'une tâche <path>
     Etant donné que je suis sur la page "<path>".
@@ -49,3 +52,4 @@ Fonctionnalité: todo liste
       | ngrx-component-store |
       | state-adapt          |
       | rx-angular           |
+      | signal               |
