@@ -173,8 +173,8 @@ export class ImperativeComponent implements OnInit, OnDestroy {
             .deleteTodo(id)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (item) => {
-                    this.items.splice(this.items.indexOf(item), 1);
+                next: (itemId) => {
+                    this.items.splice(this.items.findIndex(it => it.id === itemId), 1);
                     this.isUpdating = false;
                     this.updateIsLoading();
                     this.updateCounts();

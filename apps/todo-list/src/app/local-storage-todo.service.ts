@@ -51,6 +51,6 @@ export class LocalStorageTodoService {
         const items = this.getTodosSync();
         const updatedItems = items.filter((item) => item.id !== todoId);
         this.helper.set(updatedItems);
-        return of();
+        return of(todoId);
     }
 }

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { SettingsService } from '@todo-lists/settings/data-access';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { combineLatest } from 'rxjs';
-import { delay, switchMap } from 'rxjs/operators';
+import { delay, switchMap, take } from 'rxjs/operators';
 import { LocalStorageTodoService } from './local-storage-todo.service';
 
 @Injectable({
@@ -24,7 +24,8 @@ export class TodoService {
                     throw new Error('Simulated server error');
                 }
                 return this.localTodoItemStorage.getTodos().pipe(delay(serverDelay));
-            })
+            }),
+            take(1)
         );
     }
 
@@ -38,7 +39,8 @@ export class TodoService {
                     throw new Error('Simulated server error');
                 }
                 return this.localTodoItemStorage.createTodo(params).pipe(delay(serverDelay));
-            })
+            }),
+            take(1)
         );
     }
 
@@ -52,7 +54,8 @@ export class TodoService {
                     throw new Error('Simulated server error');
                 }
                 return this.localTodoItemStorage.updateTodo(todoId, params).pipe(delay(serverDelay));
-            })
+            }),
+            take(1)
         );
     }
 
@@ -66,7 +69,8 @@ export class TodoService {
                     throw new Error('Simulated server error');
                 }
                 return this.localTodoItemStorage.updateManyTodos(todos, params).pipe(delay(serverDelay));
-            })
+            }),
+            take(1)
         );
     }
 
@@ -80,7 +84,8 @@ export class TodoService {
                     throw new Error('Simulated server error');
                 }
                 return this.localTodoItemStorage.updateAllTodos(params).pipe(delay(serverDelay));
-            })
+            }),
+            take(1)
         );
     }
 
@@ -94,7 +99,8 @@ export class TodoService {
                     throw new Error('Simulated server error');
                 }
                 return this.localTodoItemStorage.deleteTodoItem(todoId).pipe(delay(serverDelay));
-            })
+            }),
+            take(1)
         );
     }
 }
