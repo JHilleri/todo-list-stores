@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { catchError, merge, Observable, of, Subject, switchMap, tap, map, pipe } from 'rxjs';
+import { catchError, Observable, of, Subject, switchMap, tap, EMPTY, finalize } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 
@@ -16,10 +16,18 @@ import { TodoService } from '../todo.service';
     changeDetection: ChangeDetectionStrategy.Default,
     imports: [CommonModule, FormsModule, UiComponentsModule],
 })
-export class SignalComponent implements OnInit {
+export class SignalComponent {
     private readonly todoService = inject(TodoService);
     private readonly categoryService = inject(CategoryService);
     private readonly categories$ = this.categoryService.getCategories().pipe(catchError(() => of(new Array<string>())));
+
+    protected readonly events = {
+        createItem$: new Subject<TodoItemCreationParams>(),
+        updateCompleted$: new Subject<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>(),
+        completeAll$: new Subject<void>(),
+        uncompleteAll$: new Subject<void>(),
+        deleteItem$: new Subject<TodoItem['id']>(),
+    };
 
     // state
     protected items = signal<TodoItem[]>([]);
@@ -47,91 +55,64 @@ export class SignalComponent implements OnInit {
     protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
     protected isLoading = computed(() => this.areItemsLoading() || this.categories() === undefined);
 
-    protected readonly events = {
-        openItemCreationModal$: new Subject<void>(),
-        closeItemCreateModal$: new Subject<void>(),
-        createItem$: new Subject<TodoItemCreationParams>(),
-        updateCompleted$: new Subject<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>(),
-        completeAll$: new Subject<void>(),
-        uncompleteAll$: new Subject<void>(),
-        deleteItem$: new Subject<TodoItem['id']>(),
-        updateFilter$: new Subject<string>(),
-        updateShowCompleted$: new Subject<boolean>(),
-    };
-
-    private readonly updateItemsEffects$ = merge(
-        this.todoService.getTodos().pipe(
-            tap({
-                error: console.error,
-                finalize: () => this.areItemsLoading.set(false),
-            })
-        ),
-        this.events.createItem$.pipe(
-            handleItemQuery(this.isUpdating, {
-                query: (item) => this.todoService.createTodo(item).pipe(map((result) => [...this.items(), result])),
-                start: () => this.isDialogCreateItemOpen.set(false),
-            })
-        ),
-        this.events.updateCompleted$.pipe(
-            handleItemQuery(this.isUpdating, {
-                query: ({ itemId, changes }) => this.todoService.updateTodo(itemId, changes),
-                mapper: (item) => this.items().map((it) => (it.id === item.id ? item : it)),
-            })
-        ),
-        this.events.completeAll$.pipe(
-            handleItemQuery(this.isUpdating, {
-                query: () => this.todoService.updateAllTodos({ completed: true }),
-            })
-        ),
-        this.events.uncompleteAll$.pipe(
-            handleItemQuery(this.isUpdating, {
-                query: () => this.todoService.updateAllTodos({ completed: false }),
-            })
-        ),
-        this.events.deleteItem$.pipe(
-            handleItemQuery(this.isUpdating, {
-                query: (itemId) => this.todoService.deleteTodo(itemId),
-                mapper: (itemId) => this.items().filter((item) => item.id !== itemId),
-            })
-        )
-    ).pipe(tap(this.items.set));
-
-    private readonly effects = merge(
-        this.events.openItemCreationModal$.pipe(tap(() => this.isDialogCreateItemOpen.set(true))),
-        this.events.closeItemCreateModal$.pipe(tap(() => this.isDialogCreateItemOpen.set(false))),
-        this.events.updateFilter$.pipe(tap(this.filter.set)),
-        this.events.updateShowCompleted$.pipe(tap(this.showCompleted.set)),
-        this.updateItemsEffects$
-    ).pipe(takeUntilDestroyed());
-
-    ngOnInit(): void {
-        this.effects.subscribe();
+    constructor() {
+        handleQuery(() => this.todoService.getTodos(), {
+            loadingStatus: this.areItemsLoading,
+            next: this.items.set,
+        });
+        handleQuery((params) => this.todoService.createTodo(params), {
+            trigger$: this.events.createItem$,
+            loadingStatus: this.isUpdating,
+            before: () => this.isDialogCreateItemOpen.set(false),
+            next: (item) => this.items.update((items) => [...items, item]),
+        });
+        handleQuery(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes), {
+            trigger$: this.events.updateCompleted$,
+            loadingStatus: this.isUpdating,
+            next: (item) => this.items.update((items) => items.map((it) => (it.id === item.id ? item : it))),
+        });
+        handleQuery(() => this.todoService.updateAllTodos({ completed: true }), {
+            trigger$: this.events.completeAll$,
+            loadingStatus: this.isUpdating,
+            next: this.items.set,
+        });
+        handleQuery(() => this.todoService.updateAllTodos({ completed: false }), {
+            trigger$: this.events.uncompleteAll$,
+            loadingStatus: this.isUpdating,
+            next: this.items.set,
+        });
+        handleQuery((itemId) => this.todoService.deleteTodo(itemId), {
+            trigger$: this.events.deleteItem$,
+            loadingStatus: this.isUpdating,
+            next: (itemId) => this.items.update((items) => items.filter((item) => item.id !== itemId)),
+        });
     }
 }
 
-function handleItemQuery<I, T>(
-    updatingSignal: WritableSignal<boolean>,
-    config:
-        | { query: (value: I) => Observable<T>; start?: () => void; mapper: (value: T) => TodoItem[] }
-        | { query: (value: I) => Observable<TodoItem[]>; start?: () => void }
+function handleQuery<T, R>(
+    query: (value: T) => Observable<R>,
+    config: {
+        loadingStatus: WritableSignal<boolean>;
+        trigger$?: Observable<T>;
+        before?: () => void;
+        next: (result: R) => void;
+    }
 ) {
-    return pipe(
-        switchMap((value: I) => {
-            const observer = {
-                subscribe: () => {
-                    updatingSignal.set(true);
-                    config.start?.();
-                },
-                finalize: () => updatingSignal.set(false),
-            };
-            if ('mapper' in config) {
-                return config.query(value).pipe(map(config.mapper), tap(observer));
-            }
-            return config.query(value).pipe(tap(observer));
-        }),
-        catchError((error, caught) => {
-            console.error(error);
-            return caught;
-        })
-    );
+    return (config.trigger$ ?? (of(undefined) as Observable<T>))
+        .pipe(
+            switchMap((value) => {
+                config.loadingStatus.set(true);
+                config.before?.();
+                return query(value).pipe(
+                    finalize(() => config.loadingStatus.set(false)),
+                    tap(config.next),
+                    catchError((error: unknown) => {
+                        console.error(error);
+                        return EMPTY;
+                    })
+                );
+            }),
+            takeUntilDestroyed()
+        )
+        .subscribe();
 }
