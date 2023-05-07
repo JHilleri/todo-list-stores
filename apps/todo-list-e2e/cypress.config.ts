@@ -7,6 +7,7 @@ import * as createBundler from '@bahmutov/cypress-esbuild-preprocessor';
 export default defineConfig({
     e2e: {
         ...nxE2EPreset(__dirname),
+        projectId: "8r14dc",
         baseUrl: 'http://localhost:4200',
         specPattern: ['**/*.feature', '**/*.cy.ts'],
         async setupNodeEvents(

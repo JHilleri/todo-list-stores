@@ -1,0 +1,17 @@
+[build]
+    command = "pnpm run build:todo-list"
+    publish = "dist/apps/todo-list/"
+
+[build.environment]
+    CYPRESS_CACHE_FOLDER = "./node_modules/CypressBinary"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[plugins]]
+    package = "netlify-plugin-cypress"
+    [plugins.inputs]
+        record = true
+        configFile = "apps/todo-list-e2e/cypress.config.ts"
