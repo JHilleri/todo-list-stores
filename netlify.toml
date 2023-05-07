@@ -5,6 +5,8 @@
 [build.environment]
     CYPRESS_CACHE_FOLDER = "./node_modules/CypressBinary"
     CYPRESS_SUPPORT_FILE = "apps/todo-list-e2e/src/support/e2e.ts"
+    CYPRESS_SCREENSHOTS_FOLDER = "dist/cypress/app/todo-list-e2e/screenshots"
+    CYPRESS_VIDEOS_FOLDER = "dist/cypress/app/todo-list-e2e/videos"
 
 [[redirects]]
   from = "/*"
