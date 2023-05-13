@@ -100,7 +100,7 @@ export class TodoStateAdaptComponent {
                 this.completedAll.error$,
                 this.uncompletedAll.error$,
                 this.todoItemsLoaded.error$,
-                this.categoriesLoaded.error$
+                this.categoriesLoaded.error$,
             )
                 .pipe(tap((error) => console.error(error)))
                 .subscribe(),

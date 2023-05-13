@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
-import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { Subject } from 'rxjs';
+import { filterTodoItems, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
@@ -94,94 +94,44 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     }
 
     protected createItem(item: TodoItemCreationParams) {
-        this.isUpdating = true;
-        this.isDialogCreateItemOpen = false;
-        this.updateIsLoading();
-        this.todoService
-            .createTodo(item)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (item) => {
-                    this.items.push(item);
-                    this.isUpdating = false;
-                    this.updateIsLoading();
-                    this.updateCounts();
-                    this.updateFilteredItems();
-                },
-                error: this.handleError,
-            });
+        this.handleQueryWithLoading(this.todoService.createTodo(item), {
+            next: (item) => this.items.push(item),
+            before: () => (this.isDialogCreateItemOpen = false),
+
+        });
     }
 
     protected updateCompleted({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) {
-        this.isUpdating = true;
-        this.updateIsLoading();
-        this.todoService
-            .updateTodo(itemId, changes)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (item) => {
-                    this.items.splice(this.items.findIndex(i => i.id === item.id), 1, item);
-                    this.isUpdating = false;
-                    this.updateIsLoading();
-                    this.updateCounts();
-                    this.updateFilteredItems();
-                },
-                error: this.handleError,
-            });
+        this.handleQueryWithLoading(this.todoService.updateTodo(itemId, changes), {
+            next: (item) =>
+                this.items.splice(
+                    this.items.findIndex((i) => i.id === item.id),
+                    1,
+                    item
+                ),
+        });
     }
 
     protected completeAll() {
-        this.isUpdating = true;
-        this.updateIsLoading();
-        this.todoService
-            .updateAllTodos({ completed: true })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (items) => {
-                    this.items = items;
-                    this.isUpdating = false;
-                    this.updateIsLoading();
-                    this.updateCounts();
-                    this.updateFilteredItems();
-                },
-                error: this.handleError,
-            });
+        this.handleQueryWithLoading(this.todoService.updateAllTodos({ completed: true }), {
+            next: (items) => (this.items = items),
+        });
     }
 
     protected uncompleteAll() {
-        this.isUpdating = true;
-        this.updateIsLoading();
-        this.todoService
-            .updateAllTodos({ completed: false })
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (items) => {
-                    this.items = items;
-                    this.isUpdating = false;
-                    this.updateIsLoading();
-                    this.updateCounts();
-                    this.updateFilteredItems();
-                },
-                error: this.handleError,
-            });
+        this.handleQueryWithLoading(this.todoService.updateAllTodos({ completed: false }), {
+            next: (items) => (this.items = items),
+        });
     }
 
     protected deleteItem(id: TodoItem['id']) {
-        this.isUpdating = true;
-        this.updateIsLoading();
-        this.todoService
-            .deleteTodo(id)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (itemId) => {
-                    this.items.splice(this.items.findIndex(it => it.id === itemId), 1);
-                    this.isUpdating = false;
-                    this.updateIsLoading();
-                    this.updateCounts();
-                    this.updateFilteredItems();
-                },
-                error: this.handleError,
-            });
+        this.handleQueryWithLoading(this.todoService.deleteTodo(id), {
+            next: (itemId) =>
+                this.items.splice(
+                    this.items.findIndex((it) => it.id === itemId),
+                    1
+                ),
+        });
     }
 
     protected updateShowCompleted(showCompleted: boolean) {
@@ -204,14 +154,9 @@ export class ImperativeComponent implements OnInit, OnDestroy {
 
     private updateFilteredItems() {
         if (this.isLoading) return;
-        this.filteredItems = this.items.filter((item) => {
-            const matchCompleted = this.showCompleted || !item.completed;
-            const matchFilter = this.filter
-                ? item.title.includes(this.filter) ||
-                  item.text.includes(this.filter) ||
-                  item.tags.some((tag) => tag.includes(this.filter))
-                : true;
-            return matchCompleted && matchFilter;
+        this.filteredItems = filterTodoItems(this.items, {
+            showCompleted: this.showCompleted,
+            filter: this.filter,
         });
     }
 
@@ -219,9 +164,25 @@ export class ImperativeComponent implements OnInit, OnDestroy {
         this.isLoading = this.areItemsLoading || this.areCategoriesLoading;
     }
 
-    private handleError = (err: unknown) => {
-        console.error(err);
-        this.isUpdating = false;
+    // utils
+
+    private handleQueryWithLoading<T>(query: Observable<T>, { next, before }: { next: (value: T) => void, before?: () => void }) {
+        this.isUpdating = true;
+        before?.();
         this.updateIsLoading();
-    };
+        query.pipe(takeUntil(this.destroy$)).subscribe({
+            next: (value) => {
+                next(value);
+                this.isUpdating = false;
+                this.updateIsLoading();
+                this.updateCounts();
+                this.updateFilteredItems();
+            },
+            error: (err: unknown) => {
+                console.error(err);
+                this.isUpdating = false;
+                this.updateIsLoading();
+            },
+        });
+    }
 }

@@ -15,12 +15,12 @@
             [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
             (updateShowCompleted)="showCompleted$.next($event)"
             (updateFilter)="filter$.next($event)"
-            (openDialogCreateItem)="dialogCreateItemOpen$.next()"
+            (openDialogCreateItem)="isDialogCreateItemOpen$.next(true)"
             (completeAll)="completeAll$.next()"
             (uncompleteAll)="uncompleteAll$.next()"
             (updadteItem)="updateItemCompletion$.next($event)"
             (createItem)="createTodoItem$.next($event)"
-            (dialogCreateItemClosed)="dialogCreateItemClose$.next()"
+            (dialogCreateItemClosed)="isDialogCreateItemOpen$.next(false)"
         />
     </ng-container>
 

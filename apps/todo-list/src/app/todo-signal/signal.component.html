@@ -21,7 +21,7 @@
         [filteredItems]="filteredItems()"
         [completedCount]="completedCount()"
         [uncompletedCount]="uncompletedCount()"
-        [categories]="categories() ?? []"
+        [categories]="categories()"
         [isUpdating]="isUpdating()"
         [isDialogCreateItemOpen]="isDialogCreateItemOpen()"
         (updateShowCompleted)="showCompleted.set($event)"

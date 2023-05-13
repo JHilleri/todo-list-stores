@@ -6,7 +6,7 @@ import { RxState } from '@rx-angular/state';
 import { RxActionFactory } from '@rx-angular/state/actions';
 import { LetDirective } from '@rx-angular/template/let';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
-import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
+import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { combineLatest, merge, mergeMap, share } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
@@ -45,7 +45,7 @@ interface TodoEvents {
     providers: [RxActionFactory, RxState],
 })
 export class TodoRxAngularComponent {
-    private actionFactory = inject(RxActionFactory<TodoEvents>);
+    private actionFactory = inject<RxActionFactory<TodoEvents>>(RxActionFactory);
     private store = inject<RxState<TodoState>>(RxState);
     private todoService = inject(TodoService);
     private categoryService = inject(CategoryService);
@@ -65,17 +65,7 @@ export class TodoRxAngularComponent {
 
     private filteredItems$ = this.store.select(
         ['items', 'showCompleted', 'filter'],
-        ({ items, filter, showCompleted }) => {
-            return items.filter((todo) => {
-                const matchCompleted = showCompleted || !todo.completed;
-                const matchFilter = filter
-                    ? todo.title.includes(filter) ||
-                      todo.text.includes(filter) ||
-                      todo.tags.some((tag) => tag.includes(filter))
-                    : true;
-                return matchCompleted && matchFilter;
-            });
-        }
+        ({ items, filter, showCompleted }) => filterTodoItems(items, { filter, showCompleted })
     );
     private completedCount$ = this.store.select('items', (items) => {
         return items.filter((item) => item.completed).length;
@@ -96,30 +86,22 @@ export class TodoRxAngularComponent {
     private categoriesLoaded$ = this.categoryService.getCategories().pipe(share());
 
     private createdItem$ = this.uiActions.createItem$.pipe(
-        mergeMap((params) => {
-            return this.todoService.createTodo(params);
-        }),
+        mergeMap((params) => this.todoService.createTodo(params)),
         share()
     );
 
     private updatedItem$ = this.uiActions.updateCompleted$.pipe(
-        mergeMap(({ itemId, changes }) => {
-            return this.todoService.updateTodo(itemId, changes);
-        }),
+        mergeMap(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes)),
         share()
     );
 
     private completedAll$ = this.uiActions.completeAll$.pipe(
-        mergeMap(() => {
-            return this.todoService.updateAllTodos({ completed: true });
-        }),
+        mergeMap(() => this.todoService.updateAllTodos({ completed: true })),
         share()
     );
 
     private uncompletedAll$ = this.uiActions.uncompleteAll$.pipe(
-        mergeMap(() => {
-            return this.todoService.updateAllTodos({ completed: false });
-        }),
+        mergeMap(() => this.todoService.updateAllTodos({ completed: false })),
         share()
     );
 

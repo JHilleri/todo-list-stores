@@ -1,6 +1,6 @@
 import { createAdapter, joinAdapters } from '@state-adapt/core';
 import { booleanAdapter } from '@state-adapt/core/adapters';
-import { TodoItem } from '@todo-lists/todo/util';
+import { TodoItem, filterTodoItems } from '@todo-lists/todo/util';
 
 export interface TodoState {
     items: TodoItem[];
@@ -35,16 +35,8 @@ export const todoStateAdapter = joinAdapters<TodoState>()({
     filter: createAdapter<string>()({}),
     isDialogCreateItemOpen: booleanAdapter,
 })({
-    filteredTodos: (selectors) => {
-        return selectors.items.filter((todo) => {
-            const matchCompleted = selectors.showCompleted || !todo.completed;
-            const matchFilter = selectors.filter
-                ? todo.title.includes(selectors.filter) ||
-                  todo.text.includes(selectors.filter) ||
-                  todo.tags.some((tag) => tag.includes(selectors.filter))
-                : true;
-            return matchCompleted && matchFilter;
-        });
+    filteredTodos: ({ items, showCompleted, filter }) => {
+        return filterTodoItems(items, { showCompleted, filter });
     },
     isLoading: (selectors) => {
         return selectors.areItemsLoading || selectors.areCategoriesLoading;

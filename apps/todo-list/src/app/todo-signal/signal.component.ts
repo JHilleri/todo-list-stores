@@ -1,25 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal, WritableSignal } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
-import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { catchError, Observable, of, Subject, switchMap, tap, EMPTY, finalize } from 'rxjs';
+import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
+import { Subject } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
+import { handleQuery } from './handle-query';
 
 @Component({
     selector: 'todo-lists-signal',
     standalone: true,
     templateUrl: './signal.component.html',
     styleUrls: ['../todo.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Default,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, FormsModule, UiComponentsModule],
 })
 export class SignalComponent {
     private readonly todoService = inject(TodoService);
     private readonly categoryService = inject(CategoryService);
-    private readonly categories$ = this.categoryService.getCategories().pipe(catchError(() => of(new Array<string>())));
 
     protected readonly events = {
         createItem$: new Subject<TodoItemCreationParams>(),
@@ -31,34 +30,33 @@ export class SignalComponent {
 
     // state
     protected items = signal<TodoItem[]>([]);
+    protected areItemsLoading = signal(true);
+    protected categories = signal<string[]>([]);
+    protected areCategoriesLoading = signal(true);
+    protected isUpdating = signal(false);
     protected showCompleted = signal(false);
     protected filter = signal('');
-    protected categories = toSignal(this.categories$);
-    protected areItemsLoading = signal(true);
-    protected isUpdating = signal(false);
     protected isDialogCreateItemOpen = signal(false);
 
     // derived state
-    protected filteredItems = computed(() => {
-        if (this.isLoading()) return [];
-        return this.items().filter((item) => {
-            const matchCompleted = this.showCompleted() || !item.completed;
-            const matchFilter = this.filter
-                ? item.title.includes(this.filter()) ||
-                  item.text.includes(this.filter()) ||
-                  item.tags.some((tag) => tag.includes(this.filter()))
-                : true;
-            return matchCompleted && matchFilter;
-        });
-    });
     protected completedCount = computed(() => this.items().filter((item) => item.completed).length);
     protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
     protected isLoading = computed(() => this.areItemsLoading() || this.categories() === undefined);
+    protected filteredItems = computed(() => {
+        return filterTodoItems(this.items(), {
+            showCompleted: this.showCompleted(),
+            filter: this.filter(),
+        });
+    });
 
     constructor() {
         handleQuery(() => this.todoService.getTodos(), {
             loadingStatus: this.areItemsLoading,
             next: this.items.set,
+        });
+        handleQuery(() => this.categoryService.getCategories(), {
+            loadingStatus: this.areCategoriesLoading,
+            next: this.categories.set,
         });
         handleQuery((params) => this.todoService.createTodo(params), {
             trigger$: this.events.createItem$,
@@ -87,32 +85,4 @@ export class SignalComponent {
             next: (itemId) => this.items.update((items) => items.filter((item) => item.id !== itemId)),
         });
     }
-}
-
-function handleQuery<T, R>(
-    query: (value: T) => Observable<R>,
-    config: {
-        loadingStatus: WritableSignal<boolean>;
-        trigger$?: Observable<T>;
-        before?: () => void;
-        next: (result: R) => void;
-    }
-) {
-    return (config.trigger$ ?? (of(undefined) as Observable<T>))
-        .pipe(
-            switchMap((value) => {
-                config.loadingStatus.set(true);
-                config.before?.();
-                return query(value).pipe(
-                    finalize(() => config.loadingStatus.set(false)),
-                    tap(config.next),
-                    catchError((error: unknown) => {
-                        console.error(error);
-                        return EMPTY;
-                    })
-                );
-            }),
-            takeUntilDestroyed()
-        )
-        .subscribe();
 }
