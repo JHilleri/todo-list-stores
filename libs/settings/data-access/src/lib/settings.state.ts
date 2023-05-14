@@ -1,5 +1,5 @@
 import { createAdapter, joinAdapters } from '@state-adapt/core';
-import { Theme } from './theme';
+import { Theme } from '../../../utils/src/lib/theme';
 
 export interface SettingsState {
     theme: Theme;

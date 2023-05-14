@@ -17,6 +17,8 @@
         "paths": {
             "@todo-lists/settings/data-access": ["libs/settings/data-access/src/index.ts"],
             "@todo-lists/settings/feature": ["libs/settings/feature/src/index.ts"],
+            "@todo-lists/settings/ui": ["libs/settings/ui/src/index.ts"],
+            "@todo-lists/settings/utils": ["libs/settings/utils/src/index.ts"],
             "@todo-lists/todo/ui": ["libs/todo/ui/src/index.ts"],
             "@todo-lists/todo/util": ["libs/todo/util/src/index.ts"]
         }

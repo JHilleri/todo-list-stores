@@ -126,6 +126,9 @@ devDependencies:
   '@nx/jest':
     specifier: 16.1.0
     version: 16.1.0(@types/node@16.11.7)(nx@16.1.0)(ts-node@10.9.1)(typescript@5.0.4)
+  '@nx/js':
+    specifier: 16.1.0
+    version: 16.1.0(nx@16.1.0)(typescript@5.0.4)
   '@nx/linter':
     specifier: 16.1.0
     version: 16.1.0(eslint@8.39.0)(nx@16.1.0)(typescript@5.0.4)

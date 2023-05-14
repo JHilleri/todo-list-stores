@@ -4,7 +4,7 @@ import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LetDirective } from '@rx-angular/template/let';
 import { SettingsService } from '@todo-lists/settings/data-access';
-import { ColorsLoaderDirective, ThemeLoaderDirective } from '@todo-lists/settings/feature';
+import { ColorsLoaderDirective, ThemeLoaderDirective } from '@todo-lists/settings/ui';
 
 @Component({
     standalone: true,

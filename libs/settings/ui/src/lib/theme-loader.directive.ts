@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Directive, Input, Renderer2, inject } from '@angular/core';
-import { Theme, THEMES, THEMES_CLASSES } from '@todo-lists/settings/data-access';
+import { Theme, THEMES, THEMES_CLASSES } from '@todo-lists/settings/utils';
 
 @Directive({
     selector: '[todoListsThemeLoader]',
