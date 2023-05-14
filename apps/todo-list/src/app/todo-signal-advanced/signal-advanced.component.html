@@ -11,11 +11,11 @@
     (updateShowCompleted)="showCompleted.set($event)"
     (updateFilter)="filter.set($event)"
     (openDialogCreateItem)="isDialogCreateItemOpen.set(true)"
-    (completeAll)="events.completeAll$.next()"
-    (uncompleteAll)="events.uncompleteAll$.next()"
-    (updadteItem)="events.updateCompleted$.next($event)"
-    (deleteItem)="events.deleteItem$.next($event)"
-    (createItem)="events.createItem$.next($event)"
+    (completeAll)="updateAllCompletion(true)"
+    (uncompleteAll)="updateAllCompletion(false)"
+    (updadteItem)="updateItem($event)"
+    (deleteItem)="deleteItem($event)"
+    (createItem)="createItem($event)"
     (dialogCreateItemClosed)="isDialogCreateItemOpen.set(false)"
 />
 

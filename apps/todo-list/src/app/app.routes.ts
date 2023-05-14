@@ -56,4 +56,9 @@ export const appRoutes: Route[] = [
         loadComponent: () => import('./todo-signal/signal.component').then((m) => m.SignalComponent),
         title: 'Signal',
     },
+    {
+        path: 'signal-advanced',
+        loadComponent: () => import('./todo-signal-advanced/signal-advanced.component'),
+        title: 'Signal Advanced',
+    },
 ];

@@ -1,8 +1,4 @@
-<main
-    *ngrxLet="vm$; let vm"
-    [tdlLogState]="vm"
-    tdlLogStateName="ngrx-component-store"
->
+<ng-container *ngrxLet="vm$; let vm">
     <ng-container *ngIf="!vm.isLoading; else loading">
         <tdl-todo-list
             [showCompleted]="vm.showCompleted"
@@ -27,4 +23,4 @@
     <ng-template #loading>
         <tdl-loading></tdl-loading>
     </ng-template>
-</main>
+</ng-container>

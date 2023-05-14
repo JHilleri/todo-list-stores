@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
-import { Subject } from 'rxjs';
+import { Subject, merge } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 import { handleQuery } from './handle-query';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'todo-lists-signal',
@@ -16,7 +17,7 @@ import { handleQuery } from './handle-query';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, FormsModule, UiComponentsModule],
 })
-export class SignalComponent {
+export class SignalComponent implements OnInit {
     private readonly todoService = inject(TodoService);
     private readonly categoryService = inject(CategoryService);
 
@@ -49,40 +50,44 @@ export class SignalComponent {
         });
     });
 
-    constructor() {
+    protected effects$ = merge(
         handleQuery(() => this.todoService.getTodos(), {
             loadingStatus: this.areItemsLoading,
             next: this.items.set,
-        });
+        }),
         handleQuery(() => this.categoryService.getCategories(), {
             loadingStatus: this.areCategoriesLoading,
             next: this.categories.set,
-        });
+        }),
         handleQuery((params) => this.todoService.createTodo(params), {
             trigger$: this.events.createItem$,
             loadingStatus: this.isUpdating,
             before: () => this.isDialogCreateItemOpen.set(false),
             next: (item) => this.items.update((items) => [...items, item]),
-        });
+        }),
         handleQuery(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes), {
             trigger$: this.events.updateCompleted$,
             loadingStatus: this.isUpdating,
             next: (item) => this.items.update((items) => items.map((it) => (it.id === item.id ? item : it))),
-        });
+        }),
         handleQuery(() => this.todoService.updateAllTodos({ completed: true }), {
             trigger$: this.events.completeAll$,
             loadingStatus: this.isUpdating,
             next: this.items.set,
-        });
+        }),
         handleQuery(() => this.todoService.updateAllTodos({ completed: false }), {
             trigger$: this.events.uncompleteAll$,
             loadingStatus: this.isUpdating,
             next: this.items.set,
-        });
+        }),
         handleQuery((itemId) => this.todoService.deleteTodo(itemId), {
             trigger$: this.events.deleteItem$,
             loadingStatus: this.isUpdating,
             next: (itemId) => this.items.update((items) => items.filter((item) => item.id !== itemId)),
-        });
+        })
+    ).pipe(takeUntilDestroyed());
+
+    ngOnInit() {
+        this.effects$.subscribe();
     }
 }

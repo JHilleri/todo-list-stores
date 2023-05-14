@@ -16,6 +16,7 @@ Fonctionnalité: todo liste
       | state-adapt          |
       | rx-angular           |
       | signal               |
+      | signal-advanced      |
 
   Plan du scénario: Completion d'une tâche <path>
     Etant donné que je suis sur la page "<path>".
@@ -35,6 +36,7 @@ Fonctionnalité: todo liste
       | state-adapt          |
       | rx-angular           |
       | signal               |
+      | signal-advanced      |
 
   Plan du scénario: Uncompletion d'une tâche <path>
     Etant donné que je suis sur la page "<path>".
@@ -53,3 +55,4 @@ Fonctionnalité: todo liste
       | state-adapt          |
       | rx-angular           |
       | signal               |
+      | signal-advanced      |

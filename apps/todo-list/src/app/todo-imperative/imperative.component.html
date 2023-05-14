@@ -1,41 +1,23 @@
-<main
+<tdl-todo-list
     *ngIf="!isLoading; else loading"
-    [tdlLogState]="{
-        items: items,
-        showCompleted: showCompleted,
-        filter: filter,
-        categories: categories,
-        areItemsLoading: areItemsLoading,
-        areCategoriesLoading: areCategoriesLoading,
-        isUpdating: isUpdating,
-        isDialogCreateItemOpen: isDialogCreateItemOpen,
-        filteredItems: filteredItems,
-        completedCount: completedCount,
-        uncompletedCount: uncompletedCount,
-        isLoading: isLoading
-    }"
-    tdlLogStateName="imperative"
->
-    <tdl-todo-list
-        [showCompleted]="showCompleted"
-        [filter]="filter"
-        [filteredItems]="filteredItems"
-        [completedCount]="completedCount"
-        [uncompletedCount]="uncompletedCount"
-        [categories]="categories"
-        [isUpdating]="isUpdating"
-        [isDialogCreateItemOpen]="isDialogCreateItemOpen"
-        (updateShowCompleted)="updateShowCompleted($event)"
-        (updateFilter)="updateFilter($event)"
-        (openDialogCreateItem)="openDialogCreateItem()"
-        (completeAll)="completeAll()"
-        (uncompleteAll)="uncompleteAll()"
-        (updadteItem)="updateCompleted($event)"
-        (deleteItem)="deleteItem($event)"
-        (createItem)="createItem($event)"
-        (dialogCreateItemClosed)="dialogCreateItemClosed()"
-    />
-</main>
+    [showCompleted]="showCompleted"
+    [filter]="filter"
+    [filteredItems]="filteredItems"
+    [completedCount]="completedCount"
+    [uncompletedCount]="uncompletedCount"
+    [categories]="categories"
+    [isUpdating]="isUpdating"
+    [isDialogCreateItemOpen]="isDialogCreateItemOpen"
+    (updateShowCompleted)="updateShowCompleted($event)"
+    (updateFilter)="updateFilter($event)"
+    (openDialogCreateItem)="openDialogCreateItem()"
+    (completeAll)="completeAll()"
+    (uncompleteAll)="uncompleteAll()"
+    (updadteItem)="updateCompleted($event)"
+    (deleteItem)="deleteItem($event)"
+    (createItem)="createItem($event)"
+    (dialogCreateItemClosed)="dialogCreateItemClosed()"
+/>
 
 <ng-template #loading>
     <tdl-loading />

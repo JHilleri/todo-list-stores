@@ -26,6 +26,7 @@ export class AppComponent {
         { path: '/ngrx-component-store', label: 'Ngrx Component Store' },
         { path: '/state-adapt', label: 'State Adapt' },
         { path: '/rx-angular', label: 'Rx Angular' },
-        { path: 'signal', label: 'Signal' },
+        { path: '/signal', label: 'Signal' },
+        { path: '/signal-advanced', label: 'Signal Advanced' },
     ];
 }
