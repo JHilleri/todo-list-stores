@@ -25,6 +25,13 @@ nav {
     gap: 0.5rem;
 }
 
+
+main {
+    margin: 1rem;
+    display: grid;
+    gap: 1rem;
+}
+
 ul {
     display: flex;
     flex-direction: row;

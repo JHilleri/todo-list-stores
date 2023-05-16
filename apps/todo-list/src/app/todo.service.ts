@@ -14,7 +14,7 @@ export class TodoService {
     private serverDelay = this.settingsService.simulateServerDelay$;
     private serverErrors = this.settingsService.simulateServerErrors$;
 
-    public getTodos() {
+    public readonly getTodos = () => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -27,9 +27,9 @@ export class TodoService {
             }),
             take(1)
         );
-    }
+    };
 
-    public createTodo(params: TodoItemCreationParams) {
+    public readonly createTodo = (params: TodoItemCreationParams) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -42,9 +42,9 @@ export class TodoService {
             }),
             take(1)
         );
-    }
+    };
 
-    public updateTodo(todoId: TodoItem['id'], params: Partial<TodoItem>) {
+    public readonly updateTodo = (todoId: TodoItem['id'], params: Partial<TodoItem>) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -57,9 +57,9 @@ export class TodoService {
             }),
             take(1)
         );
-    }
+    };
 
-    public updateManyTodos(todos: TodoItem['id'][], params: Partial<TodoItem>) {
+    public readonly updateManyTodos = (todos: TodoItem['id'][], params: Partial<TodoItem>) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -72,9 +72,9 @@ export class TodoService {
             }),
             take(1)
         );
-    }
+    };
 
-    public updateAllTodos(params: Partial<TodoItem>) {
+    public readonly updateAllTodos = (params: Partial<TodoItem>) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -87,9 +87,9 @@ export class TodoService {
             }),
             take(1)
         );
-    }
+    };
 
-    public deleteTodo(todoId: TodoItem['id']) {
+    public readonly deleteTodo = (todoId: TodoItem['id']) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -102,5 +102,5 @@ export class TodoService {
             }),
             take(1)
         );
-    }
+    };
 }

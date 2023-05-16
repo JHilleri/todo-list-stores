@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { filterTodoItems, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'todo-lists-imperative',
@@ -16,11 +16,10 @@ import { TodoService } from '../todo.service';
     changeDetection: ChangeDetectionStrategy.Default,
     imports: [CommonModule, FormsModule, UiComponentsModule],
 })
-export class ImperativeComponent implements OnInit, OnDestroy {
-    private todoService = inject(TodoService);
-    private categoryService = inject(CategoryService);
-
-    private destroy$ = new Subject<void>();
+export class ImperativeComponent implements OnInit {
+    private readonly todoService = inject(TodoService);
+    private readonly categoryService = inject(CategoryService);
+    private readonly destroyRef = inject(DestroyRef);
 
     // state
     protected items: TodoItem[] = [];
@@ -41,7 +40,7 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.todoService
             .getTodos()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: (items) => {
                     this.items = items;
@@ -61,7 +60,7 @@ export class ImperativeComponent implements OnInit, OnDestroy {
             });
         this.categoryService
             .getCategories()
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: (categories) => {
                     this.categories = categories;
@@ -78,13 +77,7 @@ export class ImperativeComponent implements OnInit, OnDestroy {
         this.updateIsLoading();
     }
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     // event handlers
-
     protected openDialogCreateItem() {
         this.isDialogCreateItemOpen = true;
     }
@@ -94,10 +87,9 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     }
 
     protected createItem(item: TodoItemCreationParams) {
+        this.isDialogCreateItemOpen = false;
         this.handleQueryWithLoading(this.todoService.createTodo(item), {
             next: (item) => this.items.push(item),
-            before: () => (this.isDialogCreateItemOpen = false),
-
         });
     }
 
@@ -145,7 +137,6 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     }
 
     // update derived state
-
     private updateCounts() {
         if (this.isLoading) return;
         this.completedCount = this.items.filter((item) => item.completed).length;
@@ -165,12 +156,10 @@ export class ImperativeComponent implements OnInit, OnDestroy {
     }
 
     // utils
-
-    private handleQueryWithLoading<T>(query: Observable<T>, { next, before }: { next: (value: T) => void, before?: () => void }) {
+    private handleQueryWithLoading<T>(query: Observable<T>, { next }: { next: (value: T) => void }) {
         this.isUpdating = true;
-        before?.();
         this.updateIsLoading();
-        query.pipe(takeUntil(this.destroy$)).subscribe({
+        query.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (value) => {
                 next(value);
                 this.isUpdating = false;

@@ -11,7 +11,7 @@ export class CategoryService {
     private simulateServerDelay$ = this.settingsService.simulateServerDelay$;
     private categories$ = of(['', 'category 1', 'category 2', 'category 3']);
 
-    getCategories() {
+    readonly getCategories = () => {
         return this.simulateServerDelay$.pipe(
             switchMap((serverDelay) => {
                 return this.categories$.pipe(delay(serverDelay));

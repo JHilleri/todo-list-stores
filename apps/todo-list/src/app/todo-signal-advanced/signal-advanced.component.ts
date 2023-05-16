@@ -5,7 +5,7 @@ import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
-import { createCollectionSignal } from './array-signal';
+import { createCollectionSignal } from './collection-signal';
 import { createQueryHandler } from './create-query-handler';
 
 @Component({
@@ -33,7 +33,7 @@ export default class SignalComponent implements OnInit {
     // derived state
     protected completedCount = computed(() => this.items().filter((item) => item.completed).length);
     protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
-    protected isLoading = computed(() => this.areItemsLoading() || this.categories() === undefined);
+    protected isLoading = computed(() => this.areItemsLoading() || this.areCategoriesLoading());
     protected filteredItems = computed(() => {
         return filterTodoItems(this.items(), {
             showCompleted: this.showCompleted(),
@@ -44,14 +44,14 @@ export default class SignalComponent implements OnInit {
     // handlers
     protected loadItems = createQueryHandler({
         query: () => this.todoService.getTodos(),
-        then: this.items.set,
-        loadingStatus: this.areItemsLoading,
+        next: this.items.set,
+        loadingStatus: this.areItemsLoading.set,
     });
 
     protected loadCategories = createQueryHandler({
-        query: () => this.categoryService.getCategories(),
-        then: this.categories.set,
-        loadingStatus: this.areCategoriesLoading,
+        query: this.categoryService.getCategories,
+        next: this.categories.set,
+        loadingStatus: this.areCategoriesLoading.set,
     });
 
     protected createItem = createQueryHandler({
@@ -59,27 +59,27 @@ export default class SignalComponent implements OnInit {
             this.isDialogCreateItemOpen.set(false);
             return this.todoService.createTodo(params);
         },
-        then: this.items.add,
-        loadingStatus: this.isUpdating,
+        next: this.items.push,
+        loadingStatus: this.isUpdating.set,
     });
 
     protected updateItem = createQueryHandler({
         query: ({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) =>
             this.todoService.updateTodo(itemId, changes),
-        then: this.items.updateItem,
-        loadingStatus: this.isUpdating,
+        next: this.items.updateItem,
+        loadingStatus: this.isUpdating.set,
     });
 
     protected updateAllCompletion = createQueryHandler({
         query: (completed: boolean) => this.todoService.updateAllTodos({ completed }),
-        then: this.items.set,
-        loadingStatus: this.isUpdating,
+        next: this.items.set,
+        loadingStatus: this.isUpdating.set,
     });
 
     protected deleteItem = createQueryHandler({
-        query: (itemId: TodoItem['id']) => this.todoService.deleteTodo(itemId),
-        then: this.items.remove,
-        loadingStatus: this.isUpdating,
+        query: this.todoService.deleteTodo,
+        next: this.items.remove,
+        loadingStatus: this.isUpdating.set,
     });
 
     ngOnInit() {

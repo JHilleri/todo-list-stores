@@ -42,7 +42,7 @@ export class SignalComponent implements OnInit {
     // derived state
     protected completedCount = computed(() => this.items().filter((item) => item.completed).length);
     protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
-    protected isLoading = computed(() => this.areItemsLoading() || this.categories() === undefined);
+    protected isLoading = computed(() => this.areItemsLoading() || this.areCategoriesLoading());
     protected filteredItems = computed(() => {
         return filterTodoItems(this.items(), {
             showCompleted: this.showCompleted(),

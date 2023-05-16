@@ -1,23 +1,24 @@
-import { DestroyRef, WritableSignal, inject } from '@angular/core';
+import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, Observable, catchError, finalize, tap } from 'rxjs';
 
 export function createQueryHandler<Events extends unknown[], QueryResult>({
     query,
-    then,
+    next,
     loadingStatus,
 }: {
     query: (...events: Events) => Observable<QueryResult>;
-    then: (result: QueryResult) => void;
-    loadingStatus?: WritableSignal<boolean>;
+    next: (result: QueryResult) => void;
+    loadingStatus?: (value: boolean) => void;
 }) {
     const destroyRef = inject(DestroyRef);
+
     return (...events: Events) => {
-        loadingStatus?.set(true);
+        loadingStatus?.(true);
         query(...events)
             .pipe(
-                tap(then),
-                finalize(() => loadingStatus?.set(false)),
+                tap(next),
+                finalize(() => loadingStatus?.(false)),
                 takeUntilDestroyed(destroyRef),
                 catchError((error: unknown) => {
                     console.error(error);
