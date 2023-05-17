@@ -12,10 +12,10 @@
             (updateShowCompleted)="updateShowCompleted$.next($event)"
             (updateFilter)="updateFilter$.next($event)"
             (openDialogCreateItem)="dialogCreateItemOpened$.next()"
-            (completeAll)="completeAll$.next()"
-            (uncompleteAll)="uncompleteAll$.next()"
-            (updadteItem)="updateItem$.next($event)"
-            (createItem)="createItem$.next($event)"
+            (completeAll)="requests.completeAll.next()"
+            (uncompleteAll)="requests.uncompleteAll.next()"
+            (updadteItem)="requests.updateItem.next($event)"
+            (createItem)="requests.createItem.next($event)"
             (dialogCreateItemClosed)="dialogCreateItemClosed$.next()"
         />
     </ng-container>
