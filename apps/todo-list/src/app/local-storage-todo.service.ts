@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createTodoItem, LocalStorageHelper, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -40,7 +40,7 @@ export class LocalStorageTodoService {
         return of(updatedItems);
     }
 
-    public updateAllTodos(params: Partial<TodoItem>) {
+    public updateAllTodos(params: Partial<TodoItem>): Observable<TodoItem[]> {
         const items = this.getTodosSync();
         const updatedItems = items.map((item) => ({ ...item, ...params }));
         this.helper.set(updatedItems);
