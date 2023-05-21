@@ -2,6 +2,19 @@ import { createAdapter, joinAdapters } from '@state-adapt/core';
 import { booleanAdapter } from '@state-adapt/core/adapters';
 import { TodoItem, filterTodoItems } from '@todo-lists/todo/util';
 
+const todoListAdapter = createAdapter<TodoItem[]>()({
+    add: (items, param: TodoItem) => [...items, param],
+    update: (items, change: TodoItem) => items.map((item) => (item.id === change.id ? change : item)),
+    remove: (items, id: TodoItem['id']) => items.filter((item) => item.id !== id),
+    selectors: {
+        items: (items) => items,
+        completedCount: (items) => items.filter((item) => item.completed).length,
+        uncompletedCount: (items) => items.filter((item) => !item.completed).length,
+    },
+});
+
+const categoryListAdapter = createAdapter<string[]>()({});
+
 export interface TodoState {
     items: TodoItem[];
     showCompleted: boolean;
@@ -12,18 +25,6 @@ export interface TodoState {
     filter: string;
     isDialogCreateItemOpen: boolean;
 }
-
-const todoListAdapter = createAdapter<TodoItem[]>()({
-    add: (items, param: TodoItem) => [...items, param],
-    update: (items, change: TodoItem) => items.map((item) => (item.id === change.id ? change : item)),
-    selectors: {
-        items: (items) => items,
-        completedCount: (items) => items.filter((item) => item.completed).length,
-        uncompletedCount: (items) => items.filter((item) => !item.completed).length,
-    },
-});
-
-const categoryListAdapter = createAdapter<string[]>()({});
 
 export const todoStateAdapter = joinAdapters<TodoState>()({
     items: todoListAdapter,

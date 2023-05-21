@@ -9,14 +9,14 @@
             [categories]="vm.categories"
             [isUpdating]="vm.isUpdating"
             [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
-            (updateShowCompleted)="updateShowCompleted$.next($event)"
-            (updateFilter)="updateFilter$.next($event)"
-            (openDialogCreateItem)="dialogCreateItemOpened$.next()"
-            (completeAll)="requests.completeAll.next()"
-            (uncompleteAll)="requests.uncompleteAll.next()"
-            (updadteItem)="requests.updateItem.next($event)"
-            (createItem)="requests.createItem.next($event)"
-            (dialogCreateItemClosed)="dialogCreateItemClosed$.next()"
+            (updateShowCompleted)="sources.updateShowCompleted.next($event)"
+            (updateFilter)="sources.updateFilter.next($event)"
+            (openDialogCreateItem)="sources.dialogCreateItemOpened.next()"
+            (completeAll)="sources.completeAll.next()"
+            (uncompleteAll)="sources.uncompleteAll.next()"
+            (updadteItem)="sources.updateItem.next($event)"
+            (createItem)="sources.createItem.next($event)"
+            (dialogCreateItemClosed)="sources.dialogCreateItemClosed.next()"
         />
     </ng-container>
 

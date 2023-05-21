@@ -3,14 +3,15 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LetDirective } from '@rx-angular/template/let';
 import { adaptNgrx } from '@state-adapt/ngrx';
-import { Source } from '@state-adapt/rxjs';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
-import { TodoItemCreationParams, UpdateItemParams } from '@todo-lists/todo/util';
+import { UpdateItemParams } from '@todo-lists/todo/util';
 import { merge, tap, using } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 import { TodoState, todoStateAdapter } from './todo-state-adapter';
-import { createRequestsGroup } from './create-request';
+import { createSourceGroup } from './sources-helpers/create-source-group';
+import { withImediatRequests, withRequests } from './sources-helpers/with-request';
+import { withSources, sourceBuilder } from './sources-helpers/with-sources';
 
 const initialState: TodoState = {
     items: [],
@@ -35,60 +36,72 @@ export class TodoStateAdaptComponent {
     private todoService = inject(TodoService);
     private categoryService = inject(CategoryService);
 
-    // ui actions
-    protected updateShowCompleted$ = new Source<boolean>('[stateAdapt] update show completed');
-    protected updateFilter$ = new Source<string>('[stateAdapt] update filter');
-    protected dialogCreateItemClosed$ = new Source<void>('[stateAdapt] close create dialog item');
-    protected dialogCreateItemOpened$ = new Source<void>('[stateAdapt] open create dialog item');
-
-    protected requests = createRequestsGroup('create item', {
-        todoItemsLoad: this.todoService.getTodos(),
-        categoriesLoad: this.categoryService.getCategories(),
-        createItem: (args: TodoItemCreationParams) => this.todoService.createTodo(args),
-        updateItem: ({ itemId, changes }: UpdateItemParams) => this.todoService.updateTodo(itemId, changes),
-        completeAll: (_: void) => this.todoService.updateAllTodos({ completed: true }),
-        uncompleteAll: (_: void) => this.todoService.updateAllTodos({ completed: false }),
-    });
+    protected sources = createSourceGroup(
+        'stateAdapt',
+        withSources({
+            updateShowCompleted: sourceBuilder<boolean>(),
+            updateFilter: sourceBuilder<string>(),
+            dialogCreateItemClosed: sourceBuilder<void>(),
+            dialogCreateItemOpened: sourceBuilder<void>(),
+            deleteItem: sourceBuilder<string>(),
+        }),
+        withImediatRequests({
+            todoItemsLoad: this.todoService.getTodos(),
+            categoriesLoad: this.categoryService.getCategories(),
+        }),
+        withRequests({
+            createItem: this.todoService.createTodo,
+            updateItem: ({ itemId, changes }: UpdateItemParams) => this.todoService.updateTodo(itemId, changes),
+            completeAll: () => this.todoService.updateAllTodos({ completed: true }),
+            uncompleteAll: () => this.todoService.updateAllTodos({ completed: false }),
+            deleteItem: this.todoService.deleteTodo,
+        })
+    );
 
     private store = adaptNgrx(['stateAdapt', initialState, todoStateAdapter], {
-        setLoadedItems: this.requests.todoItemsLoad.success$,
-        setLoadedCategories: this.requests.categoriesLoad.success$,
-        setShowCompleted: this.updateShowCompleted$,
-        setFilter: this.updateFilter$,
-        addItems: this.requests.createItem.success$,
-        updateItems: this.requests.updateItem.success$,
-        setItems: [this.requests.completeAll.success$, this.requests.uncompleteAll.success$],
-        setIsDialogCreateItemOpenTrue: this.dialogCreateItemOpened$,
-        setIsDialogCreateItemOpenFalse: [this.dialogCreateItemClosed$, this.requests.createItem.source$],
+        setLoadedItems: this.sources.todoItemsLoad.success$,
+        setLoadedCategories: this.sources.categoriesLoad.success$,
+        setShowCompleted: this.sources.updateShowCompleted,
+        setFilter: this.sources.updateFilter,
+        addItems: this.sources.createItem.success$,
+        updateItems: this.sources.updateItem.success$,
+        setItems: [this.sources.completeAll.success$, this.sources.uncompleteAll.success$],
+        removeItems: this.sources.deleteItem.success$,
+        setIsDialogCreateItemOpenTrue: this.sources.dialogCreateItemOpened,
+        setIsDialogCreateItemOpenFalse: [this.sources.dialogCreateItemClosed, this.sources.createItem.source$],
         setIsUpdatingTrue: [
-            this.requests.createItem.source$,
-            this.requests.updateItem.source$,
-            this.requests.completeAll.source$,
-            this.requests.uncompleteAll.source$,
+            this.sources.createItem.source$,
+            this.sources.updateItem.source$,
+            this.sources.completeAll.source$,
+            this.sources.uncompleteAll.source$,
+            this.sources.deleteItem.source$,
         ],
         setIsUpdatingFalse: [
-            this.requests.createItem.success$,
-            this.requests.createItem.error$,
-            this.requests.updateItem.success$,
-            this.requests.updateItem.error$,
-            this.requests.completeAll.success$,
-            this.requests.completeAll.error$,
-            this.requests.uncompleteAll.success$,
-            this.requests.uncompleteAll.error$,
+            this.sources.createItem.success$,
+            this.sources.createItem.error$,
+            this.sources.updateItem.success$,
+            this.sources.updateItem.error$,
+            this.sources.completeAll.success$,
+            this.sources.completeAll.error$,
+            this.sources.uncompleteAll.success$,
+            this.sources.uncompleteAll.error$,
+            this.sources.deleteItem.success$,
+            this.sources.deleteItem.error$,
         ],
     });
 
     protected vm$ = using(
         () =>
             merge(
-                this.requests.createItem.error$,
-                this.requests.updateItem.error$,
-                this.requests.completeAll.error$,
-                this.requests.uncompleteAll.error$,
-                this.requests.todoItemsLoad.error$,
-                this.requests.categoriesLoad.error$
+                this.sources.categoriesLoad.error$,
+                this.sources.todoItemsLoad.error$,
+                this.sources.createItem.error$,
+                this.sources.updateItem.error$,
+                this.sources.completeAll.error$,
+                this.sources.uncompleteAll.error$,
+                this.sources.deleteItem.error$
             )
-                .pipe(tap((error) => console.error(error)))
+                .pipe(tap(console.error))
                 .subscribe(),
         () => this.store.vm$
     );
