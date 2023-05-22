@@ -6,7 +6,17 @@ function createItem(title: string, category: string) {
 }
 
 describe('scenario simple', () => {
-    const pathsToTest = ['imperative', 'rxjs', 'ngrx', 'ngrx-component-store', 'state-adapt', 'rx-angular', 'signal', 'signal-advanced'];
+    const pathsToTest = [
+        'imperative',
+        'rxjs',
+        'ngrx',
+        'ngrx-component-store',
+        'state-adapt',
+        'rx-angular',
+        'signal',
+        'signal-advanced',
+        'reactive-signal',
+    ];
     for (const path of pathsToTest) {
         it(`pass with ${path}`, () => {
             cy.visit(path);

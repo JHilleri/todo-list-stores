@@ -27,6 +27,7 @@ export class AppComponent {
         { path: '/state-adapt', label: 'State Adapt' },
         { path: '/rx-angular', label: 'Rx Angular' },
         { path: '/signal', label: 'Signal' },
+        { path: '/reactive-signal', label: 'Reactive Signal'},
         { path: '/signal-advanced', label: 'Signal Advanced' },
     ];
 }
