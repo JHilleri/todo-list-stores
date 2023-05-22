@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { LetDirective } from '@rx-angular/template/let';
 import { adaptNgrx } from '@state-adapt/ngrx';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
-import { UpdateItemParams } from '@todo-lists/todo/util';
 import { merge, tap, using } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
@@ -51,7 +50,7 @@ export class TodoStateAdaptComponent {
         }),
         withRequests({
             createItem: this.todoService.createTodo,
-            updateItem: ({ itemId, changes }: UpdateItemParams) => this.todoService.updateTodo(itemId, changes),
+            updateItem: this.todoService.updateTodo,
             completeAll: () => this.todoService.updateAllTodos({ completed: true }),
             uncompleteAll: () => this.todoService.updateAllTodos({ completed: false }),
             deleteItem: this.todoService.deleteTodo,

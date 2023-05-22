@@ -7,7 +7,7 @@ export const todoActions = createActionGroup({
         add: props<{ params: TodoItemCreationParams }>(),
         add_completed: props<{ item: TodoItem }>(),
         add_failed: props<{ error: unknown }>(),
-        update_item: props<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>(),
+        update_item: props<{ id: TodoItem['id']; value: Partial<TodoItem> }>(),
         update_item_completed: props<{ item: TodoItem }>(),
         update_item_failed: props<{ error: unknown }>(),
         complete_all: emptyProps(),

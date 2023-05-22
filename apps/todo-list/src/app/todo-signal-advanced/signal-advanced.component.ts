@@ -64,8 +64,7 @@ export default class SignalComponent implements OnInit {
     });
 
     protected updateItem = createQueryHandler({
-        query: ({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) =>
-            this.todoService.updateTodo(itemId, changes),
+        query: this.todoService.updateTodo,
         next: this.items.updateItem,
         loadingStatus: this.isUpdating.set,
     });

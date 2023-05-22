@@ -23,7 +23,7 @@ export class TodoRxjsComponent {
 
     // actions
     protected createTodoItem$ = new Subject<TodoItemCreationParams>();
-    protected updateItemCompletion$ = new Subject<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>();
+    protected updateItemCompletion$ = new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>();
     protected completeAll$ = new Subject<void>();
     protected uncompleteAll$ = new Subject<void>();
 
@@ -77,7 +77,7 @@ export class TodoRxjsComponent {
             next: (item) => this.items$.next([...this.items$.value, item]),
             before: () => this.isDialogCreateItemOpen$.next(false),
         }),
-        handleQuery(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes), {
+        handleQuery(this.todoService.updateTodo, {
             trigger$: this.updateItemCompletion$,
             loadingStatus: this.isUpdating$,
             next: (result) => {
