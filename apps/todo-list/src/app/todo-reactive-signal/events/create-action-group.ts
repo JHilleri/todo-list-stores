@@ -1,7 +1,9 @@
 import { pipeFromArray } from '@rx-angular/state/selections';
-import { UnaryFunction } from 'rxjs';
+import { ReplaySubject, UnaryFunction } from 'rxjs';
 
-const actionGroupBase = {} as const;
+const actionGroupBase = {
+    init$: new ReplaySubject<void>(1),
+} as const;
 type ActionGroupBase = typeof actionGroupBase;
 
 export function createActionGroup<R extends ActionGroupBase>(project: UnaryFunction<ActionGroupBase, R>): R;

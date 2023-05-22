@@ -3,23 +3,16 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@a
 import { FormsModule } from '@angular/forms';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
-import { ReplaySubject, Subject, map, pipe } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 import { ErrorService } from './error.service';
 import { createQuery, withEvents, withRequests } from './events';
 import { createActionGroup } from './events/create-action-group';
-import {
-    createArraySignal,
-    createBooleanSignal,
-    createCollectionSignal,
-    createSignal,
-    extendsSignal,
-} from './signal/create-signal';
-import { withLoading, withUpdating } from './signal/with-loading';
+import { reactiveCollectionSignal, reactiveBooleanSignal, reactiveArraySignal, reactiveSignal } from './signal';
 
 @Component({
-    selector: 'todo-lists-signal',
+    selector: 'todo-lists-reactive-signal',
     standalone: true,
     templateUrl: './reactive-signal.component.html',
     styleUrls: ['../todo.component.scss'],
@@ -32,16 +25,19 @@ export default class ReactiveSignalComponent implements OnInit {
     private readonly errorService = inject(ErrorService);
 
     // state
-    protected items = extendsSignal(createCollectionSignal<TodoItem>(), pipe(withLoading(), withUpdating()));
-    protected categories = extendsSignal(createArraySignal<string>(), withLoading());
-    protected showCompleted = createBooleanSignal(false);
-    protected filter = createSignal('');
-    protected isDialogCreateItemOpen = createBooleanSignal(false);
+    protected items = reactiveCollectionSignal<TodoItem>();
+    protected items_isLoading = reactiveBooleanSignal();
+    protected items_isUpdating = reactiveBooleanSignal();
+    protected categories = reactiveArraySignal<string>();
+    protected categories_isLoading = reactiveBooleanSignal();
+    protected showCompleted = reactiveBooleanSignal();
+    protected filter = reactiveSignal({ initialValue: '' });
+    protected isDialogCreateItemOpen = reactiveBooleanSignal();
 
     // derived state
     protected completedCount = computed(() => this.items().filter((item) => item.completed).length);
     protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
-    protected isLoading = computed(() => this.items.isLoading() || this.categories.isLoading());
+    protected isLoading = computed(() => this.items_isLoading() || this.categories_isLoading());
     protected filteredItems = computed(() => {
         return filterTodoItems(this.items(), {
             showCompleted: this.showCompleted(),
@@ -51,7 +47,6 @@ export default class ReactiveSignalComponent implements OnInit {
 
     protected actions = createActionGroup(
         withEvents({
-            init$: new ReplaySubject<void>(1),
             openCreateItemDialog$: new Subject<void>(),
             closeCreateItemDialog$: new Subject<void>(),
             updateShowCompleted$: new Subject<boolean>(),
@@ -66,7 +61,7 @@ export default class ReactiveSignalComponent implements OnInit {
             loadItems: createQuery(init$, this.todoService.getTodos),
             loadCategories: createQuery(init$, this.categoryService.getCategories),
             createItem: createQuery(createItem$, this.todoService.createTodo),
-            updateCompleted: createQuery(updateCompleted$, ({ itemId, changes }) =>
+            updateItem: createQuery(updateCompleted$, ({ itemId, changes }) =>
                 this.todoService.updateTodo(itemId, changes)
             ),
             completeAll: createQuery(completeAll$, () => this.todoService.updateAllTodos({ completed: true })),
@@ -76,32 +71,24 @@ export default class ReactiveSignalComponent implements OnInit {
     );
 
     constructor() {
-        this.errorService.effects.handleError([
-            this.actions.loadCategories.error$,
-            this.actions.loadItems.error$,
-            this.actions.createItem.error$,
-            this.actions.updateCompleted.error$,
-            this.actions.completeAll.error$,
-            this.actions.uncompleteAll.error$,
-            this.actions.deleteItem.error$,
-        ]);
-        this.categories.updater.set(this.actions.loadCategories.success$);
-        this.categories.isLoading.updater.set([
-            this.actions.init$.pipe(map(() => true)),
-            this.actions.loadCategories.success$.pipe(map(() => false)),
-        ]);
-        this.items.updater.set([
+        this.categories.set(this.actions.loadCategories.success$);
+        this.categories_isLoading.setFalse(this.actions.loadCategories.success$);
+        this.categories_isLoading.setTrue(this.actions.init$);
+        this.items.set([
             this.actions.loadItems.success$,
             this.actions.completeAll.success$,
             this.actions.uncompleteAll.success$,
         ]);
-        this.items.isLoading.updater.setFalse([this.actions.loadItems.success$, this.actions.loadItems.error$]);
-        this.items.isLoading.updater.setTrue(this.actions.init$);
-        this.items.isUpdating.updater.setFalse([
+        this.items.addItem(this.actions.createItem.success$);
+        this.items.replaceItem(this.actions.updateItem.success$);
+        this.items.removeItem(this.actions.deleteItem.success$);
+        this.items_isLoading.setFalse([this.actions.loadItems.success$, this.actions.loadItems.error$]);
+        this.items_isLoading.setTrue(this.actions.init$);
+        this.items_isUpdating.setFalse([
             this.actions.createItem.success$,
             this.actions.createItem.error$,
-            this.actions.updateCompleted.success$,
-            this.actions.updateCompleted.error$,
+            this.actions.updateItem.success$,
+            this.actions.updateItem.error$,
             this.actions.completeAll.success$,
             this.actions.completeAll.error$,
             this.actions.uncompleteAll.success$,
@@ -109,20 +96,26 @@ export default class ReactiveSignalComponent implements OnInit {
             this.actions.deleteItem.success$,
             this.actions.deleteItem.error$,
         ]);
-        this.items.isUpdating.updater.setTrue([
+        this.items_isUpdating.setTrue([
             this.actions.createItem$,
             this.actions.updateCompleted$,
             this.actions.completeAll$,
             this.actions.uncompleteAll$,
             this.actions.deleteItem$,
         ]);
-        this.items.updater.push(this.actions.createItem.success$);
-        this.items.updater.replaceItem(this.actions.updateCompleted.success$);
-        this.items.updater.removeItem(this.actions.deleteItem.success$);
-        this.isDialogCreateItemOpen.updater.setTrue(this.actions.openCreateItemDialog$);
-        this.isDialogCreateItemOpen.updater.setFalse([this.actions.createItem$, this.actions.closeCreateItemDialog$]);
-        this.showCompleted.updater.set(this.actions.updateShowCompleted$);
-        this.filter.updater.set(this.actions.updateFilter$);
+        this.isDialogCreateItemOpen.setTrue(this.actions.openCreateItemDialog$);
+        this.isDialogCreateItemOpen.setFalse([this.actions.createItem$, this.actions.closeCreateItemDialog$]);
+        this.showCompleted.set(this.actions.updateShowCompleted$);
+        this.filter.set(this.actions.updateFilter$);
+        this.errorService.effects.handleError([
+            this.actions.loadCategories.error$,
+            this.actions.loadItems.error$,
+            this.actions.createItem.error$,
+            this.actions.updateItem.error$,
+            this.actions.completeAll.error$,
+            this.actions.uncompleteAll.error$,
+            this.actions.deleteItem.error$,
+        ]);
     }
 
     ngOnInit() {

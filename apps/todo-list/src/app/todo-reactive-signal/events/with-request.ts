@@ -1,48 +1,30 @@
-import {
-    Observable,
-    ObservableNotification,
-    OperatorFunction,
-    Subject,
-    dematerialize,
-    map,
-    materialize,
-    merge,
-    of,
-    partition,
-    pipe,
-    share,
-} from 'rxjs';
+import { Observable, ObservableNotification, dematerialize, map, materialize, partition, share } from 'rxjs';
 
-export function splitErrors<T>() {
-    return pipe(
-        materialize(),
-        (source$) => partition(source$, (n) => n.kind !== 'E'),
-        ([next$, error$]) => ({
-            success$: next$.pipe(dematerialize()) as Observable<T>,
-            error$: error$.pipe(
-                map((notif): ObservableNotification<unknown> => ({ kind: 'N', value: notif.error })),
-                dematerialize()
-            ),
-        })
-    );
+export function splitErrors<T>(source$: Observable<T>) {
+    const notifications$ = source$.pipe(share(), materialize());
+    const [next$, error$] = partition(notifications$, (n) => n.kind !== 'E');
+    return {
+        success$: next$.pipe(dematerialize()) as Observable<T>,
+        error$: error$.pipe(
+            map((notif): ObservableNotification<unknown> => ({ kind: 'N', value: notif.error })),
+            dematerialize()
+        ),
+    };
 }
 
 export interface Request<T> {
     success$: Observable<T>;
     error$: Observable<any>;
-    trigger: (value: any) => void;
 }
 
 export function withRequests<Base, T extends Record<string, Observable<any>>>(project: (base: Base) => T) {
     return (base: Base) => {
         const requests = {} as Record<string, Request<unknown>>;
-        for (const [key, value] of Object.entries(project(base))) {
-            const subject = new Subject<unknown>();
-            const { success$, error$ } = pipe(share(), splitErrors())(value);
+        for (const [key, value$] of Object.entries(project(base))) {
+            const { success$, error$ } = splitErrors(value$);
             requests[key] = {
                 success$,
                 error$,
-                trigger: subject.next.bind(subject),
             };
         }
         return {
