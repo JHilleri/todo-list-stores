@@ -37,8 +37,8 @@ export class TodoNgrxComponent implements OnInit {
         this.store.dispatch(todoActions.update_show_completed({ showCompleted }));
     }
 
-    protected updateItem({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) {
-        this.store.dispatch(todoActions.update_item({ itemId, changes }));
+    protected updateItem({ id, value }: { id: TodoItem['id']; value: Partial<TodoItem> }) {
+        this.store.dispatch(todoActions.update_item({ id, value }));
     }
 
     protected completeAll() {

@@ -17,13 +17,13 @@ export class TodoCardGridComponent {
 
     @Output()
     public updateCompleted = new EventEmitter<{
-        itemId: TodoItem['id'];
-        changes: Partial<TodoItem>;
+        id: TodoItem['id'];
+        value: Partial<TodoItem>;
     }>();
 
     protected trackBy: TrackByFunction<TodoItem> = (_, item) => item.id;
 
     protected updateCompletedItem(item: TodoItem, completed: boolean) {
-        this.updateCompleted.emit({ itemId: item.id, changes: { completed } });
+        this.updateCompleted.emit({ id: item.id, value: { completed } });
     }
 }

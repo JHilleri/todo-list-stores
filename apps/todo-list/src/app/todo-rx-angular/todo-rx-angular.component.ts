@@ -26,7 +26,7 @@ export interface TodoState {
 interface TodoEvents {
     createItem: TodoItemCreationParams;
     updateShowCompleted: boolean;
-    updateCompleted: { itemId: TodoItem['id']; changes: Partial<TodoItem> };
+    updateCompleted: { id: TodoItem['id']; value: Partial<TodoItem> };
     completeAll: void;
     uncompleteAll: void;
     updateFilter: string;
@@ -53,7 +53,7 @@ export class TodoRxAngularComponent {
     protected uiActions = this.actionFactory.create({
         createItem: (params: TodoItemCreationParams) => params,
         updateShowCompleted: (showCompleted: boolean) => showCompleted,
-        updateCompleted: (params: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) => params,
+        updateCompleted: (params: { id: TodoItem['id']; value: Partial<TodoItem> }) => params,
         completeAll: () => null,
         uncompleteAll: () => null,
         updateFilter: (filter: string) => filter,
@@ -90,10 +90,7 @@ export class TodoRxAngularComponent {
         share()
     );
 
-    private updatedItem$ = this.uiActions.updateCompleted$.pipe(
-        mergeMap(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes)),
-        share()
-    );
+    private updatedItem$ = this.uiActions.updateCompleted$.pipe(mergeMap(this.todoService.updateTodo), share());
 
     private completedAll$ = this.uiActions.completeAll$.pipe(
         mergeMap(() => this.todoService.updateAllTodos({ completed: true })),

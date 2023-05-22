@@ -56,27 +56,25 @@ export class TodoStore extends ComponentStore<TodoState> {
         return { ...state, showCompleted };
     });
 
-    readonly updateCompleted = this.effect(
-        (params$: Observable<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>) => {
-            return params$.pipe(
-                tap(() => this.patchState({ isUpdating: true })),
-                mergeMap(({ itemId: itemId, changes }) => {
-                    return this.todoService.updateTodo(itemId, changes);
-                }),
-                tap((item) => {
-                    this.patchState((state) =>
-                        adapter.updateOne(
-                            {
-                                id: item.id,
-                                changes: item,
-                            },
-                            { ...state, isUpdating: false }
-                        )
-                    );
-                })
-            );
-        }
-    );
+    readonly updateCompleted = this.effect((params$: Observable<{ id: TodoItem['id']; value: Partial<TodoItem> }>) => {
+        return params$.pipe(
+            tap(() => this.patchState({ isUpdating: true })),
+            mergeMap((params) => {
+                return this.todoService.updateTodo(params);
+            }),
+            tap((item) => {
+                this.patchState((state) =>
+                    adapter.updateOne(
+                        {
+                            id: item.id,
+                            changes: item,
+                        },
+                        { ...state, isUpdating: false }
+                    )
+                );
+            })
+        );
+    });
 
     readonly completeAll = this.effect((event$: Observable<void>) => {
         return event$.pipe(

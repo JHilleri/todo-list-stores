@@ -93,8 +93,8 @@ export class ImperativeComponent implements OnInit {
         });
     }
 
-    protected updateCompleted({ itemId, changes }: { itemId: TodoItem['id']; changes: Partial<TodoItem> }) {
-        this.handleQueryWithLoading(this.todoService.updateTodo(itemId, changes), {
+    protected updateCompleted(params: { id: TodoItem['id']; value: Partial<TodoItem> }) {
+        this.handleQueryWithLoading(this.todoService.updateTodo(params), {
             next: (item) =>
                 this.items.splice(
                     this.items.findIndex((i) => i.id === item.id),

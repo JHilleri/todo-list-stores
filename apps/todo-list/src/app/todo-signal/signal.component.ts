@@ -23,7 +23,7 @@ export class SignalComponent implements OnInit {
 
     protected readonly events = {
         createItem$: new Subject<TodoItemCreationParams>(),
-        updateCompleted$: new Subject<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>(),
+        updateCompleted$: new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>(),
         completeAll$: new Subject<void>(),
         uncompleteAll$: new Subject<void>(),
         deleteItem$: new Subject<TodoItem['id']>(),
@@ -65,7 +65,7 @@ export class SignalComponent implements OnInit {
             before: () => this.isDialogCreateItemOpen.set(false),
             next: (item) => this.items.update((items) => [...items, item]),
         }),
-        handleQuery(({ itemId, changes }) => this.todoService.updateTodo(itemId, changes), {
+        handleQuery(this.todoService.updateTodo, {
             trigger$: this.events.updateCompleted$,
             loadingStatus: this.isUpdating,
             next: (item) => this.items.update((items) => items.map((it) => (it.id === item.id ? item : it))),

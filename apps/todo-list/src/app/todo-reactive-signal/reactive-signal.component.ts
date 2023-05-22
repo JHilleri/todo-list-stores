@@ -52,7 +52,7 @@ export default class ReactiveSignalComponent implements OnInit {
             updateShowCompleted$: new Subject<boolean>(),
             updateFilter$: new Subject<string>(),
             createItem$: new Subject<TodoItemCreationParams>(),
-            updateCompleted$: new Subject<{ itemId: TodoItem['id']; changes: Partial<TodoItem> }>(),
+            updateCompleted$: new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>(),
             completeAll$: new Subject<void>(),
             uncompleteAll$: new Subject<void>(),
             deleteItem$: new Subject<TodoItem['id']>(),
@@ -61,9 +61,7 @@ export default class ReactiveSignalComponent implements OnInit {
             loadItems: createQuery(init$, this.todoService.getTodos),
             loadCategories: createQuery(init$, this.categoryService.getCategories),
             createItem: createQuery(createItem$, this.todoService.createTodo),
-            updateItem: createQuery(updateCompleted$, ({ itemId, changes }) =>
-                this.todoService.updateTodo(itemId, changes)
-            ),
+            updateItem: createQuery(updateCompleted$, this.todoService.updateTodo),
             completeAll: createQuery(completeAll$, () => this.todoService.updateAllTodos({ completed: true })),
             uncompleteAll: createQuery(uncompleteAll$, () => this.todoService.updateAllTodos({ completed: false })),
             deleteItem: createQuery(deleteItem$, this.todoService.deleteTodo),
@@ -107,7 +105,7 @@ export default class ReactiveSignalComponent implements OnInit {
         this.isDialogCreateItemOpen.setFalse([this.actions.createItem$, this.actions.closeCreateItemDialog$]);
         this.showCompleted.set(this.actions.updateShowCompleted$);
         this.filter.set(this.actions.updateFilter$);
-        this.errorService.effects.handleError([
+        this.errorService.handleError([
             this.actions.loadCategories.error$,
             this.actions.loadItems.error$,
             this.actions.createItem.error$,

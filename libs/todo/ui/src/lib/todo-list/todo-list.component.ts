@@ -40,8 +40,8 @@ export class TodoListComponent {
     @Output() public completeAll = new EventEmitter<void>();
     @Output() public uncompleteAll = new EventEmitter<void>();
     @Output() public updadteItem = new EventEmitter<{
-        itemId: TodoItem['id'];
-        changes: Partial<TodoItem>;
+        id: TodoItem['id'];
+        value: Partial<TodoItem>;
     }>();
     @Output() public deleteItem = new EventEmitter<TodoItem['id']>();
     @Output() public createItem = new EventEmitter<TodoItemCreationParams>();

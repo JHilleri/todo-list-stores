@@ -60,8 +60,8 @@ export class TodoEffectsService {
     updateTodo$ = createEffect(() =>
         this.actions$.pipe(
             ofType(todoActions.update_item),
-            mergeMap(({ itemId, changes }) =>
-                this.todoService.updateTodo(itemId, changes).pipe(
+            mergeMap((param) =>
+                this.todoService.updateTodo(param).pipe(
                     map((item) => todoActions.update_item_completed({ item })),
                     catchError((error) => of(todoActions.update_item_failed({ error })))
                 )

@@ -44,7 +44,7 @@ export class TodoService {
         );
     };
 
-    public readonly updateTodo = (todoId: TodoItem['id'], params: Partial<TodoItem>) => {
+    public readonly updateTodo = ({ id, value }: { id: TodoItem['id']; value: Partial<TodoItem> }) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -53,13 +53,13 @@ export class TodoService {
                 if (serverErrors.updateTodo) {
                     throw new Error('Simulated server error');
                 }
-                return this.localTodoItemStorage.updateTodo(todoId, params).pipe(delay(serverDelay));
+                return this.localTodoItemStorage.updateTodo(id, value).pipe(delay(serverDelay));
             }),
             take(1)
         );
     };
 
-    public readonly updateManyTodos = (todos: TodoItem['id'][], params: Partial<TodoItem>) => {
+    public readonly updateManyTodos = ({ids, value}: {ids: TodoItem['id'][], value: Partial<TodoItem>}) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -68,7 +68,7 @@ export class TodoService {
                 if (serverErrors.completeAllTodos) {
                     throw new Error('Simulated server error');
                 }
-                return this.localTodoItemStorage.updateManyTodos(todos, params).pipe(delay(serverDelay));
+                return this.localTodoItemStorage.updateManyTodos(ids, value).pipe(delay(serverDelay));
             }),
             take(1)
         );
