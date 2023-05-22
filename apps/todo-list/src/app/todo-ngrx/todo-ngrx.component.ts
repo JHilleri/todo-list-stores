@@ -1,7 +1,7 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LetModule } from '@ngrx/component';
+import { LetDirective } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { UiComponentsModule } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
@@ -14,7 +14,7 @@ import { selectViewModel } from './state/todo.selectors';
     templateUrl: './todo-ngrx.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgIf, FormsModule, LetModule, UiComponentsModule],
+    imports: [NgIf, FormsModule, LetDirective, UiComponentsModule],
 })
 export class TodoNgrxComponent implements OnInit {
     private store = inject(Store);
@@ -56,5 +56,4 @@ export class TodoNgrxComponent implements OnInit {
     protected dialogCreateItemClosed() {
         this.store.dispatch(todoActions.close_dialog_create_item());
     }
-
 }
