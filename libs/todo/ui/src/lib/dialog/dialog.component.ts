@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
-import { LetModule } from '@rx-angular/template/let';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { OpenDialogDirective } from './open-dialog.directive';
+import { ReplaySubject, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { LetDirective } from '@rx-angular/template/let';
 
 @Component({
     selector: 'tdl-dialog',
     standalone: true,
-    imports: [LetModule, OpenDialogDirective],
+    imports: [LetDirective, OpenDialogDirective],
     template: `
         <dialog
             #dialog
@@ -44,7 +44,7 @@ import { OpenDialogDirective } from './open-dialog.directive';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent {
-    protected open$ = new Subject<boolean>();
+    protected open$ = new ReplaySubject<boolean>(1);
 
     @Input() set open(value: boolean) {
         this.open$.next(value);
