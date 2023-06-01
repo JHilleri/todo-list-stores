@@ -1,9 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { Observable } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map, mergeMap, tap } from 'rxjs/operators';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 
@@ -25,7 +25,11 @@ export class TodoStore extends ComponentStore<TodoState> {
     private categoryService = inject(CategoryService);
 
     constructor() {
-        super(
+        super();
+    }
+
+    init() {
+        this.setState(
             adapter.getInitialState({
                 showCompleted: false,
                 isUpdating: false,
@@ -44,10 +48,18 @@ export class TodoStore extends ComponentStore<TodoState> {
         return params$.pipe(
             tap(() => this.patchState({ isUpdating: true, isDialogCreateItemOpen: false })),
             mergeMap((params) => {
-                return this.todoService.createTodo(params);
-            }),
-            tap((item) => {
-                this.patchState((state) => adapter.addOne(item, { ...state, isUpdating: false }));
+                return this.todoService.createTodo(params).pipe(
+                    map((item) => {
+                        this.patchState((state) => adapter.addOne(item, { ...state }));
+                    }),
+                    catchError((error) => {
+                        console.log(error);
+                        return of(undefined);
+                    }),
+                    finalize(() => {
+                        this.patchState({ isUpdating: false });
+                    })
+                );
             })
         );
     });
@@ -124,76 +136,27 @@ export class TodoStore extends ComponentStore<TodoState> {
         return { ...state, isDialogCreateItemOpen: false };
     });
 
-    private readonly allItems$ = this.select(this.state$, (state) => {
-        return adapter.getSelectors().selectAll(state);
+    private readonly allItems = this.selectSignal((state) => adapter.getSelectors().selectAll(state));
+    private readonly areItemsLoading = this.selectSignal((state) => state.areItemsLoading);
+    private readonly areCategoriesLoading = this.selectSignal((state) => state.areCategoriesLoading);
+
+    public readonly showCompleted = this.selectSignal((state) => state.showCompleted);
+    public readonly isUpdating = this.selectSignal((state) => state.isUpdating);
+    public readonly categories = this.selectSignal((state) => state.categories);
+    public readonly filter = this.selectSignal((state) => state.filter);
+    public readonly isDialogCreateItemOpen = this.selectSignal((state) => state.isDialogCreateItemOpen);
+    public readonly isLoading = computed(() => this.areItemsLoading() || this.areCategoriesLoading());
+    public readonly filteredItems = computed(() => {
+        return this.allItems().filter((todo) => {
+            const matchCompleted = this.showCompleted() || !todo.completed;
+            const matchFilter = this.filter()
+                ? todo.title.includes(this.filter()) ||
+                  todo.text.includes(this.filter()) ||
+                  todo.tags.some((tag) => tag.includes(this.filter()))
+                : true;
+            return matchCompleted && matchFilter;
+        });
     });
-
-    readonly showCompleted$ = this.select(this.state$, (state) => {
-        return state.showCompleted;
-    });
-
-    readonly isUpdating$ = this.select(this.state$, (state) => {
-        return state.isUpdating;
-    });
-
-    readonly areItemsLoading$ = this.select(this.state$, (state) => {
-        return state.areItemsLoading;
-    });
-
-    readonly areCategoriesLoading$ = this.select(this.state$, (state) => {
-        return state.areCategoriesLoading;
-    });
-
-    readonly categories$ = this.select(this.state$, (state) => {
-        return state.categories;
-    });
-
-    readonly filter$ = this.select(this.state$, (state) => {
-        return state.filter;
-    });
-
-    readonly isDialogCreateItemOpen$ = this.select(this.state$, (state) => {
-        return state.isDialogCreateItemOpen;
-    });
-
-    readonly isLoading$ = this.select(
-        this.areItemsLoading$,
-        this.areCategoriesLoading$,
-        (areItemsLoading, areCategoriesLoading) => {
-            return areItemsLoading || areCategoriesLoading;
-        }
-    );
-
-    readonly filteredItems$ = this.select(
-        this.allItems$,
-        this.showCompleted$,
-        this.filter$,
-        (items, showCompleted, filter) => {
-            return items.filter((todo) => {
-                const matchCompleted = showCompleted || !todo.completed;
-                const matchFilter = filter
-                    ? todo.title.includes(filter) ||
-                      todo.text.includes(filter) ||
-                      todo.tags.some((tag) => tag.includes(filter))
-                    : true;
-                return matchCompleted && matchFilter;
-            });
-        }
-    );
-
-    readonly completedCount$ = this.select(this.allItems$, (items) => items.filter((item) => item.completed).length);
-
-    readonly uncompletedCount$ = this.select(this.allItems$, (items) => items.filter((item) => !item.completed).length);
-
-    readonly vm$ = this.select({
-        filteredTodos: this.filteredItems$,
-        completedCount: this.completedCount$,
-        uncompletedCount: this.uncompletedCount$,
-        showCompleted: this.showCompleted$,
-        categories: this.categories$,
-        isLoading: this.isLoading$,
-        filter: this.filter$,
-        isUpdating: this.isUpdating$,
-        isDialogCreateItemOpen: this.isDialogCreateItemOpen$,
-    });
+    public readonly completedCount = computed(() => this.allItems().filter((item) => item.completed).length);
+    public readonly uncompletedCount = computed(() => this.allItems().filter((item) => !item.completed).length);
 }

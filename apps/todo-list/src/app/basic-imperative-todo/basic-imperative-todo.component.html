@@ -1,0 +1,24 @@
+<tdl-todo-list
+    *ngIf="!isLoading; else loading"
+    [showCompleted]="showCompleted"
+    [filter]="filter"
+    [filteredItems]="filteredItems"
+    [completedCount]="completedCount"
+    [uncompletedCount]="uncompletedCount"
+    [categories]="categories"
+    [isUpdating]="isUpdating"
+    [isDialogCreateItemOpen]="isDialogCreateItemOpen"
+    (updateShowCompleted)="updateShowCompleted($event)"
+    (updateFilter)="updateFilter($event)"
+    (openDialogCreateItem)="openDialogCreateItem()"
+    (completeAll)="completeAll()"
+    (uncompleteAll)="uncompleteAll()"
+    (updadteItem)="updateCompleted($event)"
+    (deleteItem)="deleteItem($event)"
+    (createItem)="createItem($event)"
+    (dialogCreateItemClosed)="dialogCreateItemClosed()"
+/>
+
+<ng-template #loading>
+    <tdl-loading />
+</ng-template>

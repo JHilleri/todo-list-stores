@@ -16,8 +16,8 @@ export class TodoEffectsService {
             ofType(todoActions.load),
             switchMap(() =>
                 this.todoService.getTodos().pipe(
-                    map((items) => todoActions.load_items_completed({ items })),
-                    catchError((error) => of(todoActions.load_items_failed({ error })))
+                    map((items) => todoActions.loadItemsCompleted({ items })),
+                    catchError((error) => of(todoActions.loadItemsFailed({ error })))
                 )
             )
         )
@@ -26,7 +26,7 @@ export class TodoEffectsService {
     loadItemsError$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(todoActions.load_items_failed),
+                ofType(todoActions.loadItemsFailed),
                 tap(({ error }) => {
                     console.error(error);
                 })
@@ -39,8 +39,8 @@ export class TodoEffectsService {
             ofType(todoActions.add),
             mergeMap((action) =>
                 this.todoService.createTodo(action.params).pipe(
-                    map((item) => todoActions.add_completed({ item })),
-                    catchError((error) => of(todoActions.add_failed({ error })))
+                    map((item) => todoActions.addCompleted({ item })),
+                    catchError((error) => of(todoActions.addFailed({ error })))
                 )
             )
         )
@@ -49,7 +49,7 @@ export class TodoEffectsService {
     addTodoError$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(todoActions.add_failed),
+                ofType(todoActions.addFailed),
                 tap(({ error }) => {
                     console.error(error);
                 })
@@ -59,11 +59,11 @@ export class TodoEffectsService {
 
     updateTodo$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(todoActions.update_item),
+            ofType(todoActions.updateItem),
             mergeMap((param) =>
                 this.todoService.updateTodo(param).pipe(
-                    map((item) => todoActions.update_item_completed({ item })),
-                    catchError((error) => of(todoActions.update_item_failed({ error })))
+                    map((item) => todoActions.updateItemCompleted({ item })),
+                    catchError((error) => of(todoActions.updateItemFailed({ error })))
                 )
             )
         )
@@ -72,7 +72,7 @@ export class TodoEffectsService {
     updateTodoError$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(todoActions.update_item_failed),
+                ofType(todoActions.updateItemFailed),
                 tap(({ error }) => {
                     console.error(error);
                 })
@@ -82,11 +82,11 @@ export class TodoEffectsService {
 
     completeAll$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(todoActions.complete_all),
+            ofType(todoActions.completeAll),
             mergeMap(() =>
                 this.todoService.updateAllTodos({ completed: true }).pipe(
-                    map((items) => todoActions.complete_all_completed({ items })),
-                    catchError((error) => of(todoActions.complete_all_failed({ error })))
+                    map((items) => todoActions.completeAllCompleted({ items })),
+                    catchError((error) => of(todoActions.completeAllFailed({ error })))
                 )
             )
         )
@@ -95,7 +95,7 @@ export class TodoEffectsService {
     completeAllError$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(todoActions.complete_all_failed),
+                ofType(todoActions.completeAllFailed),
                 tap(({ error }) => {
                     console.error(error);
                 })
@@ -105,11 +105,11 @@ export class TodoEffectsService {
 
     uncompleteAll$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(todoActions.uncomplete_all),
+            ofType(todoActions.uncompleteAll),
             mergeMap(() =>
                 this.todoService.updateAllTodos({ completed: false }).pipe(
-                    map((items) => todoActions.uncomplete_all_completed({ items })),
-                    catchError((error) => of(todoActions.uncomplete_all_failed({ error })))
+                    map((items) => todoActions.uncompleteAllCompleted({ items })),
+                    catchError((error) => of(todoActions.uncompleteAllFailed({ error })))
                 )
             )
         )
@@ -118,7 +118,7 @@ export class TodoEffectsService {
     uncompleteAllError$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(todoActions.uncomplete_all_failed),
+                ofType(todoActions.uncompleteAllFailed),
                 tap(({ error }) => {
                     console.error(error);
                 })
@@ -131,8 +131,8 @@ export class TodoEffectsService {
             ofType(todoActions.load),
             switchMap(() =>
                 this.categoryService.getCategories().pipe(
-                    map((categories) => todoActions.load_categories_completed({ categories })),
-                    catchError((error) => of(todoActions.load_categories_failed({ error })))
+                    map((categories) => todoActions.loadCategoriesCompleted({ categories })),
+                    catchError((error) => of(todoActions.loadCategoriesFailed({ error })))
                 )
             )
         )
@@ -141,7 +141,7 @@ export class TodoEffectsService {
     loadCategoriesError$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(todoActions.load_categories_failed),
+                ofType(todoActions.loadCategoriesFailed),
                 tap(({ error }) => {
                     console.error(error);
                 })

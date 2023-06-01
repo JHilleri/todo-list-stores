@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { Subject } from 'rxjs';
 import { CategoryService } from '../category.service';
@@ -17,33 +16,12 @@ import { reactiveCollectionSignal, reactiveBooleanSignal, reactiveArraySignal, r
     templateUrl: './reactive-signal.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, UiComponentsModule],
+    imports: [CommonModule, LoadingComponent, TodoListComponent],
 })
 export default class ReactiveSignalComponent implements OnInit {
     private readonly todoService = inject(TodoService);
     private readonly categoryService = inject(CategoryService);
     private readonly errorService = inject(ErrorService);
-
-    // state
-    protected items = reactiveCollectionSignal<TodoItem>();
-    protected items_isLoading = reactiveBooleanSignal();
-    protected items_isUpdating = reactiveBooleanSignal();
-    protected categories = reactiveArraySignal<string>();
-    protected categories_isLoading = reactiveBooleanSignal();
-    protected showCompleted = reactiveBooleanSignal();
-    protected filter = reactiveSignal({ initialValue: '' });
-    protected isDialogCreateItemOpen = reactiveBooleanSignal();
-
-    // derived state
-    protected completedCount = computed(() => this.items().filter((item) => item.completed).length);
-    protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
-    protected isLoading = computed(() => this.items_isLoading() || this.categories_isLoading());
-    protected filteredItems = computed(() => {
-        return filterTodoItems(this.items(), {
-            showCompleted: this.showCompleted(),
-            filter: this.filter(),
-        });
-    });
 
     protected actions = createActionGroup(
         withEvents({
@@ -67,6 +45,27 @@ export default class ReactiveSignalComponent implements OnInit {
             deleteItem: createQuery(deleteItem$, this.todoService.deleteTodo),
         }))
     );
+
+    // state
+    protected items = reactiveCollectionSignal<TodoItem>();
+    protected items_isLoading = reactiveBooleanSignal();
+    protected items_isUpdating = reactiveBooleanSignal();
+    protected categories = reactiveArraySignal<string>();
+    protected categories_isLoading = reactiveBooleanSignal();
+    protected showCompleted = reactiveBooleanSignal();
+    protected filter = reactiveSignal({ initialValue: '' });
+    protected isDialogCreateItemOpen = reactiveBooleanSignal();
+
+    // derived state
+    protected completedCount = computed(() => this.items().filter((item) => item.completed).length);
+    protected uncompletedCount = computed(() => this.items().filter((item) => !item.completed).length);
+    protected isLoading = computed(() => this.items_isLoading() || this.categories_isLoading());
+    protected filteredItems = computed(() => {
+        return filterTodoItems(this.items(), {
+            showCompleted: this.showCompleted(),
+            filter: this.filter(),
+        });
+    });
 
     constructor() {
         this.categories.set(this.actions.loadCategories.success$);

@@ -1,11 +1,10 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { insert } from '@rx-angular/cdk/transformations';
 import { RxState } from '@rx-angular/state';
 import { RxActionFactory } from '@rx-angular/state/actions';
 import { LetDirective } from '@rx-angular/template/let';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { combineLatest, merge, mergeMap, share } from 'rxjs';
 import { CategoryService } from '../category.service';
@@ -38,7 +37,7 @@ interface TodoEvents {
 @Component({
     selector: 'todo-lists-todo-rx-angular',
     standalone: true,
-    imports: [LetDirective, NgIf, FormsModule, UiComponentsModule],
+    imports: [LetDirective, NgIf, LoadingComponent, TodoListComponent],
     templateUrl: './todo-rx-angular.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,7 +61,6 @@ export class TodoRxAngularComponent {
     });
 
     // derived state
-
     private filteredItems$ = this.store.select(
         ['items', 'showCompleted', 'filter'],
         ({ items, filter, showCompleted }) => filterTodoItems(items, { filter, showCompleted })
@@ -81,7 +79,6 @@ export class TodoRxAngularComponent {
     );
 
     // async operations
-
     private itemsLoaded$ = this.todoService.getTodos().pipe(share());
     private categoriesLoaded$ = this.categoryService.getCategories().pipe(share());
 

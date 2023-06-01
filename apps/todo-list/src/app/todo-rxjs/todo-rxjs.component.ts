@@ -1,7 +1,6 @@
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { BehaviorSubject, combineLatest, Subject, using } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,7 +11,7 @@ import { handleQuery } from './handle-query';
 @Component({
     selector: 'todo-lists-todo-rxjs',
     standalone: true,
-    imports: [NgIf, AsyncPipe, FormsModule, UiComponentsModule],
+    imports: [NgIf, AsyncPipe, LoadingComponent, TodoListComponent],
     templateUrl: './todo-rxjs.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +25,7 @@ export class TodoRxjsComponent {
     protected updateItemCompletion$ = new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>();
     protected completeAll$ = new Subject<void>();
     protected uncompleteAll$ = new Subject<void>();
+    protected deleteItem$ = new Subject<TodoItem['id']>();
 
     // state
     protected items$ = new BehaviorSubject<TodoItem[]>([]);
@@ -93,6 +93,11 @@ export class TodoRxjsComponent {
             trigger$: this.uncompleteAll$,
             loadingStatus: this.isUpdating$,
             next: (items) => this.items$.next(items),
+        }),
+        handleQuery(this.todoService.deleteTodo, {
+            trigger$: this.deleteItem$,
+            loadingStatus: this.isUpdating$,
+            next: (id) => this.items$.next(this.items$.value.filter((item) => item.id !== id)),
         }),
     ]);
 

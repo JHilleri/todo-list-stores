@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
@@ -14,7 +13,7 @@ import { createQueryHandler } from './create-query-handler';
     templateUrl: './signal-advanced.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, UiComponentsModule],
+    imports: [CommonModule, LoadingComponent, TodoListComponent],
 })
 export default class SignalComponent implements OnInit {
     private readonly todoService = inject(TodoService);

@@ -33,25 +33,25 @@ export const todoFeature = createFeature({
             isUpdating: true,
             isDialogCreateItemOpen: false,
         })),
-        on(todoActions.add_completed, (state, { item }) =>
+        on(todoActions.addCompleted, (state, { item }) =>
             adapter.addOne(item, {
                 ...state,
                 isUpdating: false,
             })
         ),
-        on(todoActions.add_failed, (state) => ({
+        on(todoActions.addFailed, (state) => ({
             ...state,
             isUpdating: false,
         })),
-        on(todoActions.update_show_completed, (state, { showCompleted }) => ({
+        on(todoActions.updateShowCompleted, (state, { showCompleted }) => ({
             ...state,
             showCompleted,
         })),
-        on(todoActions.update_item, (state) => ({
+        on(todoActions.updateItem, (state) => ({
             ...state,
             isUpdating: true,
         })),
-        on(todoActions.update_item_completed, (state, { item }) =>
+        on(todoActions.updateItemCompleted, (state, { item }) =>
             adapter.updateOne(
                 { id: item.id, changes: item },
                 {
@@ -60,50 +60,50 @@ export const todoFeature = createFeature({
                 }
             )
         ),
-        on(todoActions.update_item_failed, (state) => ({
+        on(todoActions.updateItemFailed, (state) => ({
             ...state,
             isUpdating: false,
         })),
-        on(todoActions.complete_all, (state) => ({
+        on(todoActions.completeAll, (state) => ({
             ...state,
             isUpdating: true,
         })),
-        on(todoActions.complete_all_completed, (state, { items }) =>
+        on(todoActions.completeAllCompleted, (state, { items }) =>
             adapter.setAll(items, {
                 ...state,
                 isUpdating: false,
             })
         ),
-        on(todoActions.complete_all_failed, (state) => ({
+        on(todoActions.completeAllFailed, (state) => ({
             ...state,
             isUpdating: false,
         })),
-        on(todoActions.uncomplete_all, (state) => ({
+        on(todoActions.uncompleteAll, (state) => ({
             ...state,
             isUpdating: true,
         })),
-        on(todoActions.uncomplete_all_completed, (state, { items }) =>
+        on(todoActions.uncompleteAllCompleted, (state, { items }) =>
             adapter.setAll(items, {
                 ...state,
                 isUpdating: false,
             })
         ),
-        on(todoActions.uncomplete_all_failed, (state) => ({
+        on(todoActions.uncompleteAllFailed, (state) => ({
             ...state,
             isUpdating: false,
         })),
-        on(todoActions.load_items_completed, (state, { items }) =>
+        on(todoActions.loadItemsCompleted, (state, { items }) =>
             adapter.setAll(items, {
                 ...state,
                 areItemsLoading: false,
             })
         ),
-        on(todoActions.load_categories_completed, (state, { categories }) => ({
+        on(todoActions.loadCategoriesCompleted, (state, { categories }) => ({
             ...state,
             categories,
             areCategoriesLoading: false,
         })),
-        on(todoActions.load_items_failed, (state) => ({
+        on(todoActions.loadItemsFailed, (state) => ({
             ...state,
             areItemsLoading: false,
         })),
@@ -112,19 +112,18 @@ export const todoFeature = createFeature({
             areItemsLoading: true,
             areCategoriesLoading: true,
         })),
-        on(todoActions.update_filter, (state, { filter }) => ({
+        on(todoActions.updateFilter, (state, { filter }) => ({
             ...state,
             filter,
         })),
-        on(todoActions.open_dialog_create_item, (state) => ({
+        on(todoActions.openDialogCreateItem, (state) => ({
             ...state,
             isDialogCreateItemOpen: true,
         })),
-        on(todoActions.close_dialog_create_item, (state) => ({
+        on(todoActions.closeDialogCreateItem, (state) => ({
             ...state,
             isDialogCreateItemOpen: false,
         }))
     ),
+    extraSelectors: ({ selectTodoNgrxState }) => adapter.getSelectors(selectTodoNgrxState),
 });
-
-export const { selectAll } = adapter.getSelectors();

@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { filterTodoItems, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -14,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './imperative.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
-    imports: [CommonModule, FormsModule, UiComponentsModule],
+    imports: [CommonModule, LoadingComponent, TodoListComponent],
 })
 export class ImperativeComponent implements OnInit {
     private readonly todoService = inject(TodoService);
@@ -118,11 +117,7 @@ export class ImperativeComponent implements OnInit {
 
     protected deleteItem(id: TodoItem['id']) {
         this.handleQueryWithLoading(this.todoService.deleteTodo(id), {
-            next: (itemId) =>
-                this.items.splice(
-                    this.items.findIndex((it) => it.id === itemId),
-                    1
-                ),
+            next: (itemId) => (this.items = this.items.filter((it) => it.id !== itemId)),
         });
     }
 
@@ -159,19 +154,26 @@ export class ImperativeComponent implements OnInit {
     private handleQueryWithLoading<T>(query: Observable<T>, { next }: { next: (value: T) => void }) {
         this.isUpdating = true;
         this.updateIsLoading();
-        query.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: (value) => {
-                next(value);
-                this.isUpdating = false;
-                this.updateIsLoading();
-                this.updateCounts();
-                this.updateFilteredItems();
-            },
-            error: (err: unknown) => {
-                console.error(err);
-                this.isUpdating = false;
-                this.updateIsLoading();
-            },
-        });
+        query
+            .pipe(
+                tap({
+                    next: (value) => {
+                        next(value);
+                        this.updateCounts();
+                        this.updateFilteredItems();
+                    },
+                    error: (err: unknown) => {
+                        console.error(err);
+                        this.isUpdating = false;
+                        this.updateIsLoading();
+                    },
+                    finalize: () => {
+                        this.isUpdating = false;
+                        this.updateIsLoading();
+                    },
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
     }
 }

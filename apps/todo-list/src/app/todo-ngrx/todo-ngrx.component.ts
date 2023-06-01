@@ -1,9 +1,8 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { LetDirective } from '@ngrx/component';
 import { Store } from '@ngrx/store';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { todoActions } from './state/todo.actions';
 import { selectViewModel } from './state/todo.selectors';
@@ -14,7 +13,7 @@ import { selectViewModel } from './state/todo.selectors';
     templateUrl: './todo-ngrx.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgIf, FormsModule, LetDirective, UiComponentsModule],
+    imports: [NgIf, LetDirective, LoadingComponent, TodoListComponent],
 })
 export class TodoNgrxComponent implements OnInit {
     private store = inject(Store);
@@ -26,7 +25,7 @@ export class TodoNgrxComponent implements OnInit {
     }
 
     protected openDialogCreateItem() {
-        this.store.dispatch(todoActions.open_dialog_create_item());
+        this.store.dispatch(todoActions.openDialogCreateItem());
     }
 
     protected createItem(params: TodoItemCreationParams) {
@@ -34,26 +33,26 @@ export class TodoNgrxComponent implements OnInit {
     }
 
     protected updateShowCompleted(showCompleted: boolean) {
-        this.store.dispatch(todoActions.update_show_completed({ showCompleted }));
+        this.store.dispatch(todoActions.updateShowCompleted({ showCompleted }));
     }
 
     protected updateItem({ id, value }: { id: TodoItem['id']; value: Partial<TodoItem> }) {
-        this.store.dispatch(todoActions.update_item({ id, value }));
+        this.store.dispatch(todoActions.updateItem({ id, value }));
     }
 
     protected completeAll() {
-        this.store.dispatch(todoActions.complete_all());
+        this.store.dispatch(todoActions.completeAll());
     }
 
     protected uncompleteAll() {
-        this.store.dispatch(todoActions.uncomplete_all());
+        this.store.dispatch(todoActions.uncompleteAll());
     }
 
     protected updateFilter(filter: string) {
-        this.store.dispatch(todoActions.update_filter({ filter }));
+        this.store.dispatch(todoActions.updateFilter({ filter }));
     }
 
     protected dialogCreateItemClosed() {
-        this.store.dispatch(todoActions.close_dialog_create_item());
+        this.store.dispatch(todoActions.closeDialogCreateItem());
     }
 }

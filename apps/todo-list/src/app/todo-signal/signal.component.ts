@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { UiComponentsModule } from '@todo-lists/todo/ui';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
-import { Subject, merge } from 'rxjs';
+import { tap } from 'rxjs';
 import { CategoryService } from '../category.service';
 import { TodoService } from '../todo.service';
-import { handleQuery } from './handle-query';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'todo-lists-signal',
@@ -15,19 +13,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './signal.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, UiComponentsModule],
+    imports: [CommonModule, LoadingComponent, TodoListComponent],
 })
 export class SignalComponent implements OnInit {
     private readonly todoService = inject(TodoService);
     private readonly categoryService = inject(CategoryService);
-
-    protected readonly events = {
-        createItem$: new Subject<TodoItemCreationParams>(),
-        updateCompleted$: new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>(),
-        completeAll$: new Subject<void>(),
-        uncompleteAll$: new Subject<void>(),
-        deleteItem$: new Subject<TodoItem['id']>(),
-    };
+    private readonly destroyRef = inject(DestroyRef);
 
     // state
     protected items = signal<TodoItem[]>([]);
@@ -50,44 +41,131 @@ export class SignalComponent implements OnInit {
         });
     });
 
-    protected effects$ = merge(
-        handleQuery(() => this.todoService.getTodos(), {
-            loadingStatus: this.areItemsLoading,
-            next: this.items.set,
-        }),
-        handleQuery(() => this.categoryService.getCategories(), {
-            loadingStatus: this.areCategoriesLoading,
-            next: this.categories.set,
-        }),
-        handleQuery((params) => this.todoService.createTodo(params), {
-            trigger$: this.events.createItem$,
-            loadingStatus: this.isUpdating,
-            before: () => this.isDialogCreateItemOpen.set(false),
-            next: (item) => this.items.update((items) => [...items, item]),
-        }),
-        handleQuery(this.todoService.updateTodo, {
-            trigger$: this.events.updateCompleted$,
-            loadingStatus: this.isUpdating,
-            next: (item) => this.items.update((items) => items.map((it) => (it.id === item.id ? item : it))),
-        }),
-        handleQuery(() => this.todoService.updateAllTodos({ completed: true }), {
-            trigger$: this.events.completeAll$,
-            loadingStatus: this.isUpdating,
-            next: this.items.set,
-        }),
-        handleQuery(() => this.todoService.updateAllTodos({ completed: false }), {
-            trigger$: this.events.uncompleteAll$,
-            loadingStatus: this.isUpdating,
-            next: this.items.set,
-        }),
-        handleQuery((itemId) => this.todoService.deleteTodo(itemId), {
-            trigger$: this.events.deleteItem$,
-            loadingStatus: this.isUpdating,
-            next: (itemId) => this.items.update((items) => items.filter((item) => item.id !== itemId)),
-        })
-    ).pipe(takeUntilDestroyed());
-
     ngOnInit() {
-        this.effects$.subscribe();
+        this.loadItems();
+        this.loadCategories();
+    }
+
+    // handlers
+    protected updateShowCompleted(value: boolean) {
+        this.showCompleted.set(value);
+    }
+
+    protected updateFilter(value: string) {
+        this.filter.set(value);
+    }
+
+    protected openDialogCreateItem() {
+        this.isDialogCreateItemOpen.set(true);
+    }
+
+    protected closeDialogCreateItem() {
+        this.isDialogCreateItemOpen.set(false);
+    }
+
+    protected createItem(params: TodoItemCreationParams) {
+        this.isUpdating.set(true);
+        this.isDialogCreateItemOpen.set(false);
+        this.todoService
+            .createTodo(params)
+            .pipe(
+                tap({
+                    next: (item) => this.items.update((items) => [...items, item]),
+                    error: (error) => console.error(error),
+                    finalize: () => this.isUpdating.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    protected updateItem(params: { id: TodoItem['id']; value: Partial<TodoItem> }) {
+        this.isUpdating.set(true);
+        this.todoService
+            .updateTodo(params)
+            .pipe(
+                tap({
+                    next: (item) => this.items.update((items) => items.map((it) => (it.id === item.id ? item : it))),
+                    error: (error) => console.error(error),
+                    finalize: () => this.isUpdating.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    protected completeAll() {
+        this.isUpdating.set(true);
+        this.todoService
+            .updateAllTodos({ completed: true })
+            .pipe(
+                tap({
+                    next: this.items.set,
+                    error: (error) => console.error(error),
+                    finalize: () => this.isUpdating.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    protected uncompleteAll() {
+        this.isUpdating.set(true);
+        this.todoService
+            .updateAllTodos({ completed: false })
+            .pipe(
+                tap({
+                    next: this.items.set,
+                    error: (error) => console.error(error),
+                    finalize: () => this.isUpdating.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    protected deleteItem(itemId: TodoItem['id']) {
+        this.isUpdating.set(true);
+        this.todoService
+            .deleteTodo(itemId)
+            .pipe(
+                tap({
+                    next: (itemId) => this.items.update((items) => items.filter((item) => item.id !== itemId)),
+                    error: (error) => console.error(error),
+                    finalize: () => this.isUpdating.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    private loadItems() {
+        this.areItemsLoading.set(true);
+        this.todoService
+            .getTodos()
+            .pipe(
+                tap({
+                    next: this.items.set,
+                    error: (error) => console.error(error),
+                    finalize: () => this.areItemsLoading.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
+    }
+
+    private loadCategories() {
+        this.areCategoriesLoading.set(true);
+        this.categoryService
+            .getCategories()
+            .pipe(
+                tap({
+                    next: this.categories.set,
+                    error: (error) => console.error(error),
+                    finalize: () => this.areCategoriesLoading.set(false),
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe();
     }
 }
