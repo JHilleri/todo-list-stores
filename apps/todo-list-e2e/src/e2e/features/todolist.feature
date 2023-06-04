@@ -18,6 +18,7 @@
       | signal               |
       | signal-advanced      |
       | reactive-signal      |
+      | signal-store         |
 
       Plan du scénario: Completion d'une tâche <path>
       Etant donné que je suis sur la page "<path>".
@@ -39,6 +40,7 @@
       | signal               |
       | signal-advanced      |
       | reactive-signal      |
+      | signal-store         |
 
       Plan du scénario: Uncompletion d'une tâche <path>
       Etant donné que je suis sur la page "<path>".
@@ -59,3 +61,4 @@
       | signal               |
       | signal-advanced      |
       | reactive-signal      |
+      | signal-store         |

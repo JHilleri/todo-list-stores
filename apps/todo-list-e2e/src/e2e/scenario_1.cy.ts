@@ -16,6 +16,7 @@ describe('scenario simple', () => {
         'signal',
         'signal-advanced',
         'reactive-signal',
+        'signal-store'
     ];
     for (const path of pathsToTest) {
         it(`pass with ${path}`, () => {

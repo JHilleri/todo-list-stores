@@ -29,5 +29,6 @@ export class AppComponent {
         { path: '/signal', label: 'Signal' },
         { path: '/reactive-signal', label: 'Reactive Signal'},
         { path: '/signal-advanced', label: 'Signal Advanced' },
+        { path: '/signal-store', label: 'Signal Store' },
     ];
 }
