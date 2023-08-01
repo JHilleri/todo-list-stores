@@ -1,11 +1,6 @@
-import { signal } from '@angular/core';
-import { createSignalWithApi, defaultUpdaters } from './create-signal-with-api';
-import { createUpdater } from "./create-updater";
+import { Signal } from '@angular/core';
+import { createReactiveSignal } from './create-reactive-signal';
 
-export function reactiveArraySignal<T>(config?: { initialValue?: T[] }) {
-    const initialSignal = signal(config?.initialValue ?? []);
-    return createSignalWithApi(initialSignal.asReadonly(), {
-        ...defaultUpdaters(initialSignal),
-        addItem: createUpdater((value: T) => initialSignal.set([...initialSignal(), value])),
-    });
-}
+export const reactiveArraySignal = createReactiveSignal(<T>(state: Signal<T[]>) => ({
+    addItem: (item: T) => [...state(), item],
+}));
