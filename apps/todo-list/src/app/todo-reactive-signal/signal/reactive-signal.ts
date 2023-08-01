@@ -1,7 +1,4 @@
-import { signal } from '@angular/core';
-import { createSignalWithApi, defaultUpdaters } from './create-signal-with-api';
+import { Signal } from '@angular/core';
+import { createReactiveSignal } from './create-reactive-signal';
 
-export function reactiveSignal<T>(config: { initialValue: T }) {
-    const initialSignal = signal(config.initialValue);
-    return createSignalWithApi(initialSignal.asReadonly(), defaultUpdaters(initialSignal));
-}
+export const reactiveSignal = createReactiveSignal(<T>(_: Signal<T>) => ({}));

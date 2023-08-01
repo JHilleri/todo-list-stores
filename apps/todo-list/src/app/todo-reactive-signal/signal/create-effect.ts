@@ -1,18 +1,13 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, merge } from 'rxjs';
+import { Observable } from 'rxjs';
 
-type Effect<Args extends [] | [any] = []> = Args extends [infer Arg] ? (value: Observable<Arg> | Observable<Arg>[]) => void : (value?: Observable<any> | Observable<any>[]) => void;
+type TypeOrUnknown<T> = T extends undefined ? unknown : T;
+export type Effect<T> = (first: Observable<TypeOrUnknown<T>>, ...rest: Observable<TypeOrUnknown<T>>[]) => void;
 
-export function createEffect<V>(project: (value: V) => void): Effect<[V]>;
-export function createEffect(project: () => void): Effect;
-export function createEffect<V = void>(project: (value: V) => void | (() => void)) {
-    return (value: Observable<V> | Observable<V>[]) => {
-        if (Array.isArray(value)) {
-            merge(...value)
-                .pipe(takeUntilDestroyed())
-                .subscribe(project);
-            return;
+export function createEffect<T = unknown>(project: (value: T) => void) {
+    return (first: Observable<T>, ...rest: Observable<T>[]) => {
+        for (const item of [first, ...rest]) {
+            item.pipe(takeUntilDestroyed()).subscribe(project);
         }
-        value.pipe(takeUntilDestroyed()).subscribe(project);
     };
 }

@@ -1,17 +1,13 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, isObservable } from 'rxjs';
+import { Observable } from 'rxjs';
 
-
-export function createUpdater(set: () => void): (value: Observable<unknown> | Observable<unknown>[]) => void;
-export function createUpdater<T>(set: (value: T) => void): (value: Observable<T> | Observable<T>[]) => void;
-export function createUpdater<T>(set: (value: T) => void) {
-    return (value: Observable<T> | Observable<T>[]) => {
-        if (isObservable(value)) {
-            value.pipe(takeUntilDestroyed()).subscribe(set);
-            return;
-        }
-        for (const item of value) {
+export function createUpdater<T = unknown>(set: (value: T) => void) {
+    return (first: Observable<T>, ...rest: Observable<T>[]) => {
+        for (const item of [first, ...rest]) {
             item.pipe(takeUntilDestroyed()).subscribe(set);
         }
     };
 }
+
+type TypeOrUnknown<T> = T extends undefined ? unknown : T;
+export type Updater<T> = (first: Observable<TypeOrUnknown<T>>, ...rest: Observable<TypeOrUnknown<T>>[]) => void;

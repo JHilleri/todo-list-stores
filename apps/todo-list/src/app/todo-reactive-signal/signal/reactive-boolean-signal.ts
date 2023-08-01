@@ -1,13 +1,8 @@
-import { signal } from '@angular/core';
-import { createSignalWithApi, defaultUpdaters } from './create-signal-with-api';
-import { createUpdater } from "./create-updater";
+import { createReactiveSignal } from './create-reactive-signal';
+import { Signal } from '@angular/core';
 
-export function reactiveBooleanSignal(config?: { initialValue?: boolean }) {
-    const initialSignal = signal(config?.initialValue ?? false);
-    return createSignalWithApi(initialSignal.asReadonly(), {
-        ...defaultUpdaters(initialSignal),
-        setTrue: createUpdater(() => initialSignal.set(true)),
-        setFalse: createUpdater(() => initialSignal.set(false)),
-        switch: createUpdater(() => initialSignal.update((value) => !value)),
-    });
-}
+export const reactiveBooleanSignal = createReactiveSignal((state: Signal<boolean>) => ({
+    setTrue: () => true,
+    setFalse: () => false,
+    switch: () => !state(),
+}));
