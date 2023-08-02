@@ -8,7 +8,7 @@ import { TodoService } from '../todo.service';
 import { ErrorService } from './error.service';
 import { withEvents, withRequests } from './events';
 import { createActionGroup } from './events/create-action-group';
-import { reactiveCollectionSignal, reactiveBooleanSignal, reactiveArraySignal, reactiveSignal } from './signal';
+import { reactiveArraySignal, reactiveBooleanSignal, reactiveCollectionSignal, reactiveSignal } from './signal';
 
 @Component({
     selector: 'todo-lists-reactive-signal',
