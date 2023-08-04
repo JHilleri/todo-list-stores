@@ -1,4 +1,3 @@
-export * from './create-effect';
 export * from './reactive-array-signal';
 export * from './reactive-boolean-signal';
 export * from './reactive-collection-signal';

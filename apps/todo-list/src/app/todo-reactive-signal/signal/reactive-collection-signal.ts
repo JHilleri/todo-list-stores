@@ -1,10 +1,13 @@
-import { Signal } from '@angular/core';
-import { createReactiveSignal } from './create-reactive-signal';
+import { signal } from '@angular/core';
+import { createReactive, usingSignal, withUpdaters } from './../reactive';
 
-export const reactiveCollectionSignal = createReactiveSignal(
-    <T extends { id: string | number }>(state: Signal<T[]>) => ({
-        addItem: (item: T) => [...state(), item],
-        replaceItem: (item: T) => state().map((it) => (it.id === item.id ? item : it)),
-        removeItem: (id: T['id']) => state().filter((it) => it.id !== id),
-    })
+type BasicCollectionItem = { id: string | number };
+
+export const reactiveCollectionSignal = createReactive(
+    usingSignal(<T extends BasicCollectionItem>(initial: T[]) => signal(initial)),
+    withUpdaters(<T extends BasicCollectionItem>(getState: () => T[]) => ({
+        addItem: (item: T) => [...getState(), item],
+        updateItem: (item: T) => getState().map((current) => (current.id === item.id ? item : current)),
+        removeItem: (id: T['id']) => getState().filter((it) => it.id !== id),
+    }))
 );

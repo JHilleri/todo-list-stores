@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createEffect } from './signal';
+import { createEffect } from './reactive';
 
 @Injectable({
     providedIn: 'root',
