@@ -47,10 +47,10 @@ export default class ReactiveSignalComponent implements OnInit {
     );
 
     // state
-    protected items = reactiveCollectionSignal<TodoItem>([], ({ set, addItem, removeItem, replaceItem }) => {
+    protected items = reactiveCollectionSignal<TodoItem>([], ({ set, addItem, removeItem, updateItem }) => {
         set(this.actions.loadItems.success$, this.actions.completeAll.success$, this.actions.uncompleteAll.success$);
         addItem(this.actions.createItem.success$);
-        replaceItem(this.actions.updateItem.success$);
+        updateItem(this.actions.updateItem.success$);
         removeItem(this.actions.deleteItem.success$);
     });
     protected items_isLoading = reactiveBooleanSignal(false, ({ setTrue, setFalse }) => {

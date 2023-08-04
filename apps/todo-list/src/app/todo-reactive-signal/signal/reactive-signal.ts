@@ -1,4 +1,4 @@
-import { Signal } from '@angular/core';
-import { createReactiveSignal } from './create-reactive-signal';
+import { signal } from '@angular/core';
+import { createReactive, usingSignal, withUpdaters } from './../reactive';
 
-export const reactiveSignal = createReactiveSignal(<T>(_: Signal<T>) => ({}));
+export const reactiveSignal = createReactive(usingSignal(signal), withUpdaters());
