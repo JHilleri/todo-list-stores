@@ -59,7 +59,7 @@ export class TodoService {
         );
     };
 
-    public readonly updateManyTodos = ({ids, value}: {ids: TodoItem['id'][], value: Partial<TodoItem>}) => {
+    public readonly updateManyTodos = ({ ids, value }: { ids: TodoItem['id'][]; value: Partial<TodoItem> }) => {
         return combineLatest({
             serverDelay: this.serverDelay,
             serverErrors: this.serverErrors,
@@ -87,6 +87,14 @@ export class TodoService {
             }),
             take(1)
         );
+    };
+
+    public readonly completeAllTodos = () => {
+        return this.updateAllTodos({ completed: true });
+    };
+
+    public readonly uncompleteAllTodos = () => {
+        return this.updateAllTodos({ completed: false });
     };
 
     public readonly deleteTodo = (todoId: TodoItem['id']) => {

@@ -10,13 +10,13 @@
     [isDialogCreateItemOpen]="isDialogCreateItemOpen()"
     (updateShowCompleted)="actions.updateShowCompleted$.next($event)"
     (updateFilter)="actions.updateFilter$.next($event)"
-    (openDialogCreateItem)="actions.openCreateItemDialog$.next()"
+    (openDialogCreateItem)="actions.openItemCreation$.next()"
     (completeAll)="actions.completeAll$.next()"
     (uncompleteAll)="actions.uncompleteAll$.next()"
-    (updadteItem)="actions.updateCompleted$.next($event)"
+    (updadteItem)="actions.completeItem$.next($event)"
     (deleteItem)="actions.deleteItem$.next($event)"
     (createItem)="actions.createItem$.next($event)"
-    (dialogCreateItemClosed)="actions.closeCreateItemDialog$.next()"
+    (dialogCreateItemClosed)="actions.closeItemCreation$.next()"
 />
 
 <ng-template #loading>
