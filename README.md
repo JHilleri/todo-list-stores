@@ -3,6 +3,7 @@
 # TodoLists
 
 This project serve to experiment with differents angolar store libraries.
+Main environement: https://main--jhilleri-todo-list.netlify.app
 
 ## Development server
 
