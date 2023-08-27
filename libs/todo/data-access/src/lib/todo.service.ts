@@ -111,4 +111,8 @@ export class TodoService {
             take(1)
         );
     };
+
+    public readonly deleteAllTodos = () => {
+        this.localTodoItemStorage.deleteAllTodoItems();
+    };
 }
