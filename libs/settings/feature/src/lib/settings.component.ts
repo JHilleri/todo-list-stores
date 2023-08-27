@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { LetDirective } from '@rx-angular/template/let';
+import { RxLet } from '@rx-angular/template/let';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent, FieldComponent } from '@todo-lists/todo/ui';
 import { SettingsService } from '@todo-lists/settings/data-access';
@@ -7,7 +7,7 @@ import { SettingsService } from '@todo-lists/settings/data-access';
 @Component({
     selector: 'todo-lists-settings',
     standalone: true,
-    imports: [LetDirective, FormsModule, FieldComponent, ButtonComponent],
+    imports: [RxLet, FormsModule, FieldComponent, ButtonComponent],
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -11,7 +11,8 @@
                 "outputPath": "dist/libs/todo/util",
                 "main": "libs/todo/util/src/index.ts",
                 "tsConfig": "libs/todo/util/tsconfig.lib.json",
-                "assets": ["libs/todo/util/*.md"]
+                "assets": ["libs/todo/util/*.md"],
+                "updateBuildableProjectDepsInPackageJson": true
             }
         },
         "lint": {
