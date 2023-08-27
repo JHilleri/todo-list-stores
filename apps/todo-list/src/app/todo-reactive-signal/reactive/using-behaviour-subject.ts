@@ -7,5 +7,6 @@ export function usingBehaviourSubject<T>(initialValue: T): ContainerFactory<T, O
         getter: () => base.getValue(),
         setter: (value) => base.next(value),
         valueContainer: base.asObservable(),
+        initialValue,
     };
 }
