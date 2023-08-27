@@ -7,8 +7,7 @@ import { RxLet } from '@rx-angular/template/let';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { combineLatest, merge, mergeMap, share } from 'rxjs';
-import { CategoryService } from '../category.service';
-import { TodoService } from '../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { patchItemById } from './transformation-helpers';
 
 export interface TodoState {

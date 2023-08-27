@@ -4,8 +4,7 @@ import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { BehaviorSubject, combineLatest, Subject, using } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CategoryService } from '../category.service';
-import { TodoService } from '../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { handleQuery } from './handle-query';
 
 @Component({

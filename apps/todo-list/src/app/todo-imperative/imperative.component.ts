@@ -3,8 +3,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { filterTodoItems, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { Observable, tap } from 'rxjs';
-import { CategoryService } from '../category.service';
-import { TodoService } from '../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

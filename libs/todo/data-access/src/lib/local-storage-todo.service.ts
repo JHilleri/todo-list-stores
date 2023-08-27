@@ -53,4 +53,8 @@ export class LocalStorageTodoService {
         this.helper.set(updatedItems);
         return of(todoId);
     }
+
+    public deleteAllTodoItems() {
+        this.helper.set([]);
+    }
 }

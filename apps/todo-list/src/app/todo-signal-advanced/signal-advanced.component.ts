@@ -2,8 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
-import { CategoryService } from '../category.service';
-import { TodoService } from '../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { createCollectionSignal } from './collection-signal';
 import { createQueryHandler } from './create-query-handler';
 

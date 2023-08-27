@@ -4,8 +4,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { Observable } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
-import { CategoryService } from '../category.service';
-import { TodoService } from '../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 
 interface TodoState extends EntityState<TodoItem> {
     showCompleted: boolean;

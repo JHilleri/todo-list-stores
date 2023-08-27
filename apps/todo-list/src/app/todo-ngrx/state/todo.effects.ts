@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs';
-import { CategoryService } from '../../category.service';
-import { TodoService } from '../../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { todoActions } from './todo.actions';
 
 @Injectable()

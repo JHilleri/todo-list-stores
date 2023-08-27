@@ -3,8 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, effect, inject } from '@ang
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
 import { Subject } from 'rxjs';
-import { CategoryService } from '../category.service';
-import { TodoService } from '../todo.service';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { ErrorService } from './error.service';
 import { createQuery, withEvents, withRequests } from './events';
 import { createActionGroup } from './events/create-action-group';
