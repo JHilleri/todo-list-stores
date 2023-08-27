@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { insert } from '@rx-angular/cdk/transformations';
 import { RxState } from '@rx-angular/state';
 import { RxActionFactory } from '@rx-angular/state/actions';
-import { LetDirective } from '@rx-angular/template/let';
+import { RxLet } from '@rx-angular/template/let';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { combineLatest, merge, mergeMap, share } from 'rxjs';
@@ -37,7 +37,7 @@ interface TodoEvents {
 @Component({
     selector: 'todo-lists-todo-rx-angular',
     standalone: true,
-    imports: [LetDirective, NgIf, LoadingComponent, TodoListComponent],
+    imports: [RxLet, NgIf, LoadingComponent, TodoListComponent],
     templateUrl: './todo-rx-angular.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

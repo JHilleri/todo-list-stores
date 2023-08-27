@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
-import { LetDirective } from '@rx-angular/template/let';
+import { RxLet } from '@rx-angular/template/let';
 import { Subject } from 'rxjs';
 import { OpenDialogDirective } from './open-dialog.directive';
 
 @Component({
     selector: 'tdl-dialog',
     standalone: true,
-    imports: [LetDirective, OpenDialogDirective],
+    imports: [RxLet, OpenDialogDirective],
     template: `
         <dialog
             #dialog
