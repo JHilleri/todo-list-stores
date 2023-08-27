@@ -8,6 +8,7 @@ export function usingSignal<T>(factory: (initial: T) => WritableSignal<T> = sign
             getter: base,
             setter: base.set,
             valueContainer: base.asReadonly(),
+            initialValue,
         };
     };
 }
