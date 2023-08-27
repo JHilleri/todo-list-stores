@@ -25,69 +25,69 @@ export default class ReactiveSignalComponent implements OnInit {
 
     protected actions = createActionGroup(
         withEvents({
-            openCreateItemDialog$: new Subject<void>(),
-            closeCreateItemDialog$: new Subject<void>(),
+            openItemCreation$: new Subject<void>(),
+            closeItemCreation$: new Subject<void>(),
             updateShowCompleted$: new Subject<boolean>(),
             updateFilter$: new Subject<string>(),
             createItem$: new Subject<TodoItemCreationParams>(),
-            updateCompleted$: new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>(),
+            completeItem$: new Subject<{ id: TodoItem['id']; value: Partial<TodoItem> }>(),
             completeAll$: new Subject<void>(),
             uncompleteAll$: new Subject<void>(),
             deleteItem$: new Subject<TodoItem['id']>(),
         }),
-        withRequests(({ init$, createItem$, completeAll$, uncompleteAll$, deleteItem$, updateCompleted$ }) => ({
-            loadItems: init$.pipe(mergeMap(this.todoService.getTodos)),
-            loadCategories: init$.pipe(mergeMap(this.categoryService.getCategories)),
-            createItem: createItem$.pipe(mergeMap(this.todoService.createTodo)),
-            updateItem: updateCompleted$.pipe(mergeMap(this.todoService.updateTodo)),
-            completeAll: completeAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: true }))),
-            uncompleteAll: uncompleteAll$.pipe(mergeMap(() => this.todoService.updateAllTodos({ completed: false }))),
-            deleteItem: deleteItem$.pipe(mergeMap(this.todoService.deleteTodo)),
+        withRequests(({ init$, createItem$, completeItem$, completeAll$, uncompleteAll$, deleteItem$ }) => ({
+            itemLoading: init$.pipe(mergeMap(this.todoService.getTodos)),
+            categoriesLoading: init$.pipe(mergeMap(this.categoryService.getCategories)),
+            itemCreation: createItem$.pipe(mergeMap(this.todoService.createTodo)),
+            itemUpdate: completeItem$.pipe(mergeMap(this.todoService.updateTodo)),
+            completeAll: completeAll$.pipe(mergeMap(this.todoService.completeAllTodos)),
+            uncompleteAll: uncompleteAll$.pipe(mergeMap(this.todoService.uncompleteAllTodos)),
+            itemDeletion: deleteItem$.pipe(mergeMap(this.todoService.deleteTodo)),
         }))
     );
 
     // state
     protected items = reactiveCollectionSignal<TodoItem>([], ({ set, addItem, removeItem, updateItem }) => {
-        set(this.actions.loadItems.success$, this.actions.completeAll.success$, this.actions.uncompleteAll.success$);
-        addItem(this.actions.createItem.success$);
-        updateItem(this.actions.updateItem.success$);
-        removeItem(this.actions.deleteItem.success$);
+        set(this.actions.itemLoading.success$, this.actions.completeAll.success$, this.actions.uncompleteAll.success$);
+        addItem(this.actions.itemCreation.success$);
+        updateItem(this.actions.itemUpdate.success$);
+        removeItem(this.actions.itemDeletion.success$);
     });
     protected items_isLoading = reactiveBooleanSignal(false, ({ setTrue, setFalse }) => {
         setTrue(this.actions.init$);
-        setFalse(this.actions.loadItems.success$, this.actions.loadItems.error$);
+        setFalse(this.actions.itemLoading.success$, this.actions.itemLoading.error$);
     });
     protected items_isUpdating = reactiveBooleanSignal(false, ({ setTrue, setFalse }) => {
         setTrue(
             this.actions.createItem$,
-            this.actions.updateCompleted$,
+            this.actions.completeItem$,
             this.actions.completeAll$,
             this.actions.uncompleteAll$,
             this.actions.deleteItem$
         );
         setFalse(
-            this.actions.createItem.success$,
-            this.actions.createItem.error$,
-            this.actions.updateItem.success$,
-            this.actions.updateItem.error$,
+            this.actions.itemCreation.success$,
+            this.actions.itemCreation.error$,
+            this.actions.itemUpdate.success$,
+            this.actions.itemUpdate.error$,
             this.actions.completeAll.success$,
             this.actions.completeAll.error$,
             this.actions.uncompleteAll.success$,
             this.actions.uncompleteAll.error$,
-            this.actions.deleteItem.success$,
-            this.actions.deleteItem.error$
+            this.actions.itemDeletion.success$,
+            this.actions.itemDeletion.error$
         );
     });
-    protected categories = reactiveArraySignal<string>([], ({ set }) => set(this.actions.loadCategories.success$));
+    protected categories = reactiveArraySignal<string>([], ({ set }) => set(this.actions.categoriesLoading.success$));
     protected categories_isLoading = reactiveBooleanSignal(false, ({ setTrue, setFalse }) => {
         setTrue(this.actions.init$);
-        setFalse(this.actions.loadCategories.success$);
+        setFalse(this.actions.categoriesLoading.success$);
     });
     protected showCompleted = reactiveBooleanSignal(false, ({ set }) => set(this.actions.updateShowCompleted$));
     protected filter = reactiveSignal('', ({ set }) => set(this.actions.updateFilter$));
     protected isDialogCreateItemOpen = reactiveBooleanSignal(false, ({ setTrue, setFalse }) => {
-        setTrue(this.actions.openCreateItemDialog$);
-        setFalse(this.actions.createItem$, this.actions.closeCreateItemDialog$);
+        setTrue(this.actions.openItemCreation$);
+        setFalse(this.actions.createItem$, this.actions.closeItemCreation$);
     });
 
     // derived state
@@ -103,13 +103,13 @@ export default class ReactiveSignalComponent implements OnInit {
 
     constructor() {
         this.errorService.handleError(
-            this.actions.loadCategories.error$,
-            this.actions.loadItems.error$,
-            this.actions.createItem.error$,
-            this.actions.updateItem.error$,
+            this.actions.categoriesLoading.error$,
+            this.actions.itemLoading.error$,
+            this.actions.itemCreation.error$,
+            this.actions.itemUpdate.error$,
             this.actions.completeAll.error$,
             this.actions.uncompleteAll.error$,
-            this.actions.deleteItem.error$
+            this.actions.itemDeletion.error$
         );
     }
 
