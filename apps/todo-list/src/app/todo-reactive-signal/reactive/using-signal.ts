@@ -7,7 +7,7 @@ export function usingSignal<T>(factory: (initial: T) => WritableSignal<T> = sign
         return {
             getter: base,
             setter: base.set,
-            valueContainer: base.asReadonly(),
+            valueContainer: base,
             initialValue,
         };
     };

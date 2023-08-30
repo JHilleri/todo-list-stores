@@ -1,20 +1,29 @@
-import { Observable, ObservableNotification, dematerialize, map, materialize, partition, share } from 'rxjs';
+import { Observable, Subject, catchError, share, tap, using } from 'rxjs';
 
 export function splitErrors<T>(source$: Observable<T>) {
-    const notifications$ = source$.pipe(share(), materialize());
-    const [next$, error$] = partition(notifications$, (n) => n.kind !== 'E');
+    const errors$ = new Subject<unknown>();
+    const success$ = source$.pipe(
+        catchError((error, caught) => {
+            errors$.next(error);
+            return caught;
+        }),
+        tap({
+            complete: () => errors$.complete(),
+        }),
+        share()
+    );
     return {
-        success$: next$.pipe(dematerialize()) as Observable<T>,
-        error$: error$.pipe(
-            map((notif): ObservableNotification<unknown> => ({ kind: 'N', value: notif.error })),
-            dematerialize()
+        success$,
+        error$: using(
+            () => success$.subscribe(),
+            () => errors$
         ),
     };
 }
 
 export interface Request<T> {
     success$: Observable<T>;
-    error$: Observable<any>;
+    error$: Observable<unknown>;
 }
 
 export function withRequests<Base, T extends Record<string, Observable<any>>>(project: (base: Base) => T) {

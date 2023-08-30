@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
+import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
 import { Subject, mergeMap } from 'rxjs';
-import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { ErrorService } from './error.service';
 import { withEvents, withRequests } from './events';
 import { createActionGroup } from './events/create-action-group';
