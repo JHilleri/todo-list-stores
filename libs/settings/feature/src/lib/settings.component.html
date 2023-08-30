@@ -1,4 +1,4 @@
-<main *rxLet="vm$; let vm">
+<ng-container *rxLet="vm$; let vm">
     <tdl-field>
         <label for="theme">Theme</label>
         <select
@@ -51,6 +51,7 @@
 
         <tdl-field>
             <label for="secondary-color-hue">Secondary color hue</label>
+
             <div class="color-inputs">
                 <input
                     id="secondary-color-hue"
@@ -83,15 +84,62 @@
         </tdl-field>
     </fieldset>
 
-    <div class="checkbox-field">
-        <label for="simulate-server">Simulate server delay</label>
-        <input
-            id="simulate-server"
-            type="number"
-            [ngModel]="vm.simulateServerDelay"
-            (ngModelChange)="setSimulateServerDelay($event)"
-        />
-    </div>
+    <fieldset>
+        <legend>Server simulation</legend>
+
+        <tdl-field>
+            <label for="simulate-server">Delay</label>
+
+            <input
+                id="simulate-server"
+                type="number"
+                [ngModel]="vm.simulateServerDelay"
+                (ngModelChange)="setSimulateServerDelay($event)"
+            />
+        </tdl-field>
+
+        <tdl-field>
+            <div>Errors</div>
+
+            <div class="checkbox-grid">
+                <input
+                    id="simulate-server-add-todo-error"
+                    type="checkbox"
+                    [ngModel]="vm.simulateServerErrors.addTodo"
+                    (ngModelChange)="setSimulateServerErrorsAddTodo($event)"
+                />
+
+                <label for="simulate-server-add-todo-error">add todo</label>
+
+                <input
+                    id="simulate-server-update-todo-error"
+                    type="checkbox"
+                    [ngModel]="vm.simulateServerErrors.updateTodo"
+                    (ngModelChange)="setSimulateServerErrorsUpdateTodo($event)"
+                />
+
+                <label for="simulate-server-update-todo-error">update todo</label>
+
+                <input
+                    id="simulate-server-delete-todo-error"
+                    type="checkbox"
+                    [ngModel]="vm.simulateServerErrors.deleteTodo"
+                    (ngModelChange)="setSimulateServerErrorsDeleteTodo($event)"
+                />
+
+                <label for="simulate-server-delete-todo-error">delete todo</label>
+
+                <input
+                    id="simulate-server-load-todos-error"
+                    type="checkbox"
+                    [ngModel]="vm.simulateServerErrors.loadTodos"
+                    (ngModelChange)="setSimulateServerErrorsLoadTodos($event)"
+                />
+
+                <label for="simulate-server-load-todos-error">load todos</label>
+            </div>
+        </tdl-field>
+    </fieldset>
 
     <button
         tdl-button
@@ -100,4 +148,4 @@
     >
         Reset items
     </button>
-</main>
+</ng-container>

@@ -25,4 +25,9 @@ export class SettingsComponent {
     protected resetSecondaryColorHue = this.settingsService.resetSecondaryColorHue;
     protected setSimulateServerDelay = this.settingsService.setSimulateServerDelay;
     protected resetTodoItems = this.todoItemsService.deleteAllTodos;
+
+    protected setSimulateServerErrorsAddTodo = this.settingsService.setSimulateServerErrorsAddTodo;
+    protected setSimulateServerErrorsUpdateTodo = this.settingsService.setSimulateServerErrorsUpdateTodo;
+    protected setSimulateServerErrorsDeleteTodo = this.settingsService.setSimulateServerErrorsDeleteTodo;
+    protected setSimulateServerErrorsLoadTodos = this.settingsService.setSimulateServerErrorsLoadTodos;
 }
