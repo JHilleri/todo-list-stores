@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { SettingsService } from '@todo-lists/settings/data-access';
 import { TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
-import { combineLatest } from 'rxjs';
-import { delay, switchMap, take } from 'rxjs/operators';
+import { combineLatest, delay, map, switchMap, take, timer } from 'rxjs';
 import { LocalStorageTodoService } from './local-storage-todo.service';
 
 @Injectable({
@@ -21,7 +20,11 @@ export class TodoService {
         }).pipe(
             switchMap(({ serverDelay, serverErrors }) => {
                 if (serverErrors.loadTodos) {
-                    throw new Error('Simulated server error');
+                    return timer(serverDelay).pipe(
+                        map(() => {
+                            throw new Error('Simulated server error');
+                        })
+                    );
                 }
                 return this.localTodoItemStorage.getTodos().pipe(delay(serverDelay));
             }),
@@ -36,7 +39,11 @@ export class TodoService {
         }).pipe(
             switchMap(({ serverDelay, serverErrors }) => {
                 if (serverErrors.addTodo) {
-                    throw new Error('Simulated server error');
+                    return timer(serverDelay).pipe(
+                        map(() => {
+                            throw new Error('Simulated server error');
+                        })
+                    );
                 }
                 return this.localTodoItemStorage.createTodo(params).pipe(delay(serverDelay));
             }),
@@ -51,7 +58,11 @@ export class TodoService {
         }).pipe(
             switchMap(({ serverDelay, serverErrors }) => {
                 if (serverErrors.updateTodo) {
-                    throw new Error('Simulated server error');
+                    return timer(serverDelay).pipe(
+                        map(() => {
+                            throw new Error('Simulated server error');
+                        })
+                    );
                 }
                 return this.localTodoItemStorage.updateTodo(id, value).pipe(delay(serverDelay));
             }),
@@ -66,7 +77,11 @@ export class TodoService {
         }).pipe(
             switchMap(({ serverDelay, serverErrors }) => {
                 if (serverErrors.completeAllTodos) {
-                    throw new Error('Simulated server error');
+                    return timer(serverDelay).pipe(
+                        map(() => {
+                            throw new Error('Simulated server error');
+                        })
+                    );
                 }
                 return this.localTodoItemStorage.updateManyTodos(ids, value).pipe(delay(serverDelay));
             }),
@@ -81,7 +96,11 @@ export class TodoService {
         }).pipe(
             switchMap(({ serverDelay, serverErrors }) => {
                 if (serverErrors.completeAllTodos) {
-                    throw new Error('Simulated server error');
+                    return timer(serverDelay).pipe(
+                        map(() => {
+                            throw new Error('Simulated server error');
+                        })
+                    );
                 }
                 return this.localTodoItemStorage.updateAllTodos(params).pipe(delay(serverDelay));
             }),
@@ -104,7 +123,11 @@ export class TodoService {
         }).pipe(
             switchMap(({ serverDelay, serverErrors }) => {
                 if (serverErrors.deleteTodo) {
-                    throw new Error('Simulated server error');
+                    return timer(serverDelay).pipe(
+                        map(() => {
+                            throw new Error('Simulated server error');
+                        })
+                    );
                 }
                 return this.localTodoItemStorage.deleteTodoItem(todoId).pipe(delay(serverDelay));
             }),
