@@ -67,6 +67,11 @@ export const appRoutes: Route[] = [
         title: 'Reactive Signal',
     },
     {
+        path: 'reactive-signal-2',
+        loadComponent: () => import('./todo-reactive-signal-2/reactive-signal-2.component'),
+        title: 'Reactive Signal',
+    },
+    {
         path: 'signal-store',
         loadComponent: () => import('./todo-signal-store/reactive-signal.component'),
         title: 'Signal Store',
