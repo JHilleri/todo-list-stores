@@ -50,10 +50,10 @@
             "executor": "@angular-devkit/build-angular:dev-server",
             "configurations": {
                 "production": {
-                    "browserTarget": "todo-list:build:production"
+                    "buildTarget": "todo-list:build:production"
                 },
                 "development": {
-                    "browserTarget": "todo-list:build:development"
+                    "buildTarget": "todo-list:build:development"
                 }
             },
             "defaultConfiguration": "development"
@@ -61,28 +61,18 @@
         "extract-i18n": {
             "executor": "@angular-devkit/build-angular:extract-i18n",
             "options": {
-                "browserTarget": "todo-list:build"
+                "buildTarget": "todo-list:build"
             }
         },
         "lint": {
-            "executor": "@nx/linter:eslint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["apps/todo-list/**/*.ts", "apps/todo-list/**/*.html"]
-            }
+            "executor": "@nx/eslint:lint",
+            "outputs": ["{options.outputFile}"]
         },
         "test": {
             "executor": "@nx/jest:jest",
             "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
             "options": {
-                "jestConfig": "apps/todo-list/jest.config.ts",
-                "passWithNoTests": true
-            },
-            "configurations": {
-                "ci": {
-                    "ci": true,
-                    "codeCoverage": true
-                }
+                "jestConfig": "apps/todo-list/jest.config.ts"
             }
         }
     },

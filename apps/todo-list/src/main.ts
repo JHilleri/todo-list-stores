@@ -26,7 +26,7 @@ bootstrapApplication(AppComponent, {
         provideStoreDevtools({
             actionSanitizer,
             stateSanitizer,
-        }),
+        connectInZone: true}),
         provideRouterStore(),
     ],
 }).catch((err) => console.error(err));
