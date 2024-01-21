@@ -1,26 +1,25 @@
 <ng-container *ngrxLet="vm$; let vm">
-    <ng-container *ngIf="!vm.isLoading; else loading">
-        <tdl-todo-list
-            [showCompleted]="vm.showCompleted"
-            [filter]="vm.filter"
-            [filteredItems]="vm.filteredTodos"
-            [completedCount]="vm.completedCount"
-            [uncompletedCount]="vm.uncompletedCount"
-            [categories]="vm.categories"
-            [isUpdating]="vm.isUpdating"
-            [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
-            (updateShowCompleted)="updateShowCompleted($event)"
-            (updateFilter)="updateFilter($event)"
-            (openDialogCreateItem)="openDialogCreateItem()"
-            (completeAll)="completeAll()"
-            (uncompleteAll)="uncompleteAll()"
-            (updadteItem)="updateItem($event)"
-            (createItem)="createItem($event)"
-            (dialogCreateItemClosed)="dialogCreateItemClosed()"
-        />
-    </ng-container>
+  @if (!vm.isLoading) {
+    <tdl-todo-list
+      [showCompleted]="vm.showCompleted"
+      [filter]="vm.filter"
+      [filteredItems]="vm.filteredTodos"
+      [completedCount]="vm.completedCount"
+      [uncompletedCount]="vm.uncompletedCount"
+      [categories]="vm.categories"
+      [isUpdating]="vm.isUpdating"
+      [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
+      (updateShowCompleted)="updateShowCompleted($event)"
+      (updateFilter)="updateFilter($event)"
+      (openDialogCreateItem)="openDialogCreateItem()"
+      (completeAll)="completeAll()"
+      (uncompleteAll)="uncompleteAll()"
+      (updadteItem)="updateItem($event)"
+      (createItem)="createItem($event)"
+      (dialogCreateItemClosed)="dialogCreateItemClosed()"
+      />
+  } @else {
+    <tdl-loading></tdl-loading>
+  }
 
-    <ng-template #loading>
-        <tdl-loading></tdl-loading>
-    </ng-template>
 </ng-container>

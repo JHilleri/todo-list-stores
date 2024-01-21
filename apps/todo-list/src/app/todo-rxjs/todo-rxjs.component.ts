@@ -1,4 +1,4 @@
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { TodoItem, TodoItemCreationParams, filterTodoItems } from '@todo-lists/todo/util';
@@ -10,7 +10,7 @@ import { handleQuery } from './handle-query';
 @Component({
     selector: 'todo-lists-todo-rxjs',
     standalone: true,
-    imports: [NgIf, AsyncPipe, LoadingComponent, TodoListComponent],
+    imports: [AsyncPipe, LoadingComponent, TodoListComponent],
     templateUrl: './todo-rxjs.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

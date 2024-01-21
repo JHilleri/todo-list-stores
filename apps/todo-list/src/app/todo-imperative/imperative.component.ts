@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
 import { filterTodoItems, TodoItem, TodoItemCreationParams } from '@todo-lists/todo/util';
@@ -12,7 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './imperative.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
-    imports: [CommonModule, LoadingComponent, TodoListComponent],
+    imports: [LoadingComponent, TodoListComponent],
 })
 export class ImperativeComponent implements OnInit {
     private readonly todoService = inject(TodoService);

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
@@ -15,7 +15,7 @@ import { reactiveArraySignal, reactiveBooleanSignal, reactiveCollectionSignal, r
     templateUrl: './reactive-signal.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, LoadingComponent, TodoListComponent],
+    imports: [LoadingComponent, TodoListComponent],
 })
 export default class ReactiveSignalComponent implements OnInit {
     private readonly todoService = inject(TodoService);

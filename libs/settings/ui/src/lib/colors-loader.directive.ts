@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Directive, inject, Input, OnInit } from '@angular/core';
+import { Directive, effect, inject, input, OnInit } from '@angular/core';
 
 @Directive({
     selector: '[todoListsColorsLoader]',
@@ -9,9 +9,15 @@ export class ColorsLoaderDirective implements OnInit {
     private customCssStyleSheet = new CSSStyleSheet();
     private document = inject(DOCUMENT);
 
-    @Input('todoListsColorsLoader')
-    set styleSeetContent(styleSeetContent: string) {
-        this.customCssStyleSheet.replaceSync(styleSeetContent);
+    public todoListsColorsLoader = input<string>();
+
+    constructor() {
+        effect(() => {
+            const styleSeetContent = this.todoListsColorsLoader();
+            if (styleSeetContent) {
+                this.customCssStyleSheet.replaceSync(styleSeetContent);
+            }
+        });
     }
 
     ngOnInit() {

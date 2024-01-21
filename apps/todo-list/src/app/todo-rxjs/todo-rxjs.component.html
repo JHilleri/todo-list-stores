@@ -1,26 +1,24 @@
-<ng-container *ngIf="vm$ | async as vm">
-    <ng-container *ngIf="!vm.isLoading; else loading">
-        <tdl-todo-list
-            [showCompleted]="vm.showCompleted"
-            [filter]="vm.filter"
-            [filteredItems]="vm.filteredItems"
-            [completedCount]="vm.completedCount"
-            [uncompletedCount]="vm.uncompletedCount"
-            [categories]="vm.categories"
-            [isUpdating]="vm.isUpdating"
-            [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
-            (updateShowCompleted)="showCompleted$.next($event)"
-            (updateFilter)="filter$.next($event)"
-            (openDialogCreateItem)="isDialogCreateItemOpen$.next(true)"
-            (completeAll)="completeAll$.next()"
-            (uncompleteAll)="uncompleteAll$.next()"
-            (updadteItem)="updateItemCompletion$.next($event)"
-            (createItem)="createTodoItem$.next($event)"
-            (dialogCreateItemClosed)="isDialogCreateItemOpen$.next(false)"
-        />
-    </ng-container>
-
-    <ng-template #loading>
-        <tdl-loading></tdl-loading>
-    </ng-template>
-</ng-container>
+@if (vm$ | async; as vm) {
+  @if (!vm.isLoading) {
+    <tdl-todo-list
+      [showCompleted]="vm.showCompleted"
+      [filter]="vm.filter"
+      [filteredItems]="vm.filteredItems"
+      [completedCount]="vm.completedCount"
+      [uncompletedCount]="vm.uncompletedCount"
+      [categories]="vm.categories"
+      [isUpdating]="vm.isUpdating"
+      [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
+      (updateShowCompleted)="showCompleted$.next($event)"
+      (updateFilter)="filter$.next($event)"
+      (openDialogCreateItem)="isDialogCreateItemOpen$.next(true)"
+      (completeAll)="completeAll$.next()"
+      (uncompleteAll)="uncompleteAll$.next()"
+      (updadteItem)="updateItemCompletion$.next($event)"
+      (createItem)="createTodoItem$.next($event)"
+      (dialogCreateItemClosed)="isDialogCreateItemOpen$.next(false)"
+      />
+  } @else {
+    <tdl-loading></tdl-loading>
+  }
+}

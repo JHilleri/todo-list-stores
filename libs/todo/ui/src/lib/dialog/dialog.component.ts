@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Output, input } from '@angular/core';
 import { RxLet } from '@rx-angular/template/let';
 import { Subject } from 'rxjs';
 import { OpenDialogDirective } from './open-dialog.directive';
@@ -11,7 +11,7 @@ import { OpenDialogDirective } from './open-dialog.directive';
         <dialog
             #dialog
             (close)="closed.next()"
-            [tdlOpenDialog]="open"
+            [tdlOpenDialog]="open()"
         >
             <div>
                 <ng-content></ng-content>
@@ -43,6 +43,7 @@ import { OpenDialogDirective } from './open-dialog.directive';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent {
-    @Input() open = false;
+    open = input(false);
+
     @Output() closed = new Subject<void>();
 }

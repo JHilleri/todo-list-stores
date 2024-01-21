@@ -1,38 +1,40 @@
 <ng-container
-    *rxLet="vm$ as vm"
-    [todoListsThemeLoader]="vm.theme"
-    [todoListsColorsLoader]="vm.styleSeetContent"
->
-    <header>
-        <a routerLink="/">
-            <h1>todo-list</h1>
-        </a>
-        <nav>
-            <ul>
-                <li *ngFor="let link of links">
-                    <a
-                        routerLinkActive="active-route"
-                        [routerLink]="link.path"
-                    >
-                        {{ link.label }}
-                    </a>
-                </li>
-            </ul>
-            <div class="separator"></div>
-            <ul>
-                <li>
-                    <a
-                        routerLink="/settings"
-                        routerLinkActive="active-route"
-                    >
-                        Settings
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+  *rxLet="vm$ as vm"
+  [todoListsThemeLoader]="vm.theme"
+  [todoListsColorsLoader]="vm.styleSeetContent"
+  >
+  <header>
+    <a routerLink="/">
+      <h1>todo-list</h1>
+    </a>
+    <nav>
+      <ul>
+        @for (link of links; track link.path) {
+          <li>
+            <a
+              routerLinkActive="active-route"
+              [routerLink]="link.path"
+              >
+              {{ link.label }}
+            </a>
+          </li>
+        }
+      </ul>
+      <div class="separator"></div>
+      <ul>
+        <li>
+          <a
+            routerLink="/settings"
+            routerLinkActive="active-route"
+            >
+            Settings
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-    <main>
-        <router-outlet></router-outlet>
-    </main>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
 </ng-container>

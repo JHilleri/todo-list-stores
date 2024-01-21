@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FiltersComponent } from '../filters/filters.component';
 import { TodoCardGridComponent } from '../todo-card-grid/todo-card-grid.component';
 import { DialogComponent } from '../dialog/dialog.component';
@@ -14,14 +14,13 @@ import { ButtonComponent } from '../button/button.component';
     templateUrl: './todo-list.component.html',
     styleUrls: ['./todo-list.component.scss'],
     imports: [
-        CommonModule,
-        FiltersComponent,
-        TodoCardGridComponent,
-        DialogComponent,
-        TodoCreationComponent,
-        LoadingComponent,
-        ButtonComponent,
-    ],
+    FiltersComponent,
+    TodoCardGridComponent,
+    DialogComponent,
+    TodoCreationComponent,
+    LoadingComponent,
+    ButtonComponent
+],
 })
 export class TodoListComponent {
     @Input() public showCompleted = false;

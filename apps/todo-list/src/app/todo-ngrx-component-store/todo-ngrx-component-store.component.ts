@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LetDirective } from '@ngrx/component';
@@ -9,7 +9,7 @@ import { TodoStore } from './todo.store';
 @Component({
     selector: 'todo-lists-todo-ngrx-component-store',
     standalone: true,
-    imports: [LetDirective, NgIf, FormsModule, UiComponentsModule],
+    imports: [LetDirective, FormsModule, UiComponentsModule],
     templateUrl: './todo-ngrx-component-store.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

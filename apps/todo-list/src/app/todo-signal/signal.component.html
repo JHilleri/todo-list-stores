@@ -1,5 +1,5 @@
-<tdl-todo-list
-    *ngIf="!isLoading(); else loading"
+@if (!isLoading()) {
+  <tdl-todo-list
     [showCompleted]="showCompleted()"
     [filter]="filter()"
     [filteredItems]="filteredItems()"
@@ -17,8 +17,8 @@
     (deleteItem)="deleteItem($event)"
     (createItem)="createItem($event)"
     (dialogCreateItemClosed)="closeDialogCreateItem()"
-/>
+    />
+} @else {
+  <tdl-loading />
+}
 
-<ng-template #loading>
-    <tdl-loading />
-</ng-template>

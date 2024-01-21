@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
 import { LoadingComponent, TodoListComponent } from '@todo-lists/todo/ui';
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
     templateUrl: './basic-imperative-todo.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
-    imports: [CommonModule, TodoListComponent, LoadingComponent],
+    imports: [TodoListComponent, LoadingComponent],
 })
 export class ImperativeComponent implements OnInit, OnDestroy {
     private todoService = inject(TodoService);

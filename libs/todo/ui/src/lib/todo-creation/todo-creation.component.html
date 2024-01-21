@@ -1,41 +1,42 @@
 <form [formGroup]="form">
-    <div class="field">
-        <label for="todo-title">Title *</label>
-        <input
-            id="todo-title"
-            type="text"
-            formControlName="title"
-        />
-    </div>
+  <div class="field">
+    <label for="todo-title">Title *</label>
+    <input
+      id="todo-title"
+      type="text"
+      formControlName="title"
+      />
+  </div>
 
-    <div class="field">
-        <label for="category">Category</label>
-        <select
-            id="category"
-            formControlName="category"
-        >
-            <option
-                *ngFor="let category of categories"
-                [value]="category"
-            >
-                {{ category }}
-            </option>
-        </select>
-    </div>
+  <div class="field">
+    <label for="category">Category</label>
+    <select
+      id="category"
+      formControlName="category"
+      >
+      @for (category of categories; track category) {
+        <option
+          [value]="category"
+          >
+          {{ category }}
+        </option>
+      }
+    </select>
+  </div>
 
-    <div class="field">
-        <label for="todo-description">Description</label>
-        <textarea
-            id="todo-description"
-            formControlName="text"
-        ></textarea>
-    </div>
+  <div class="field">
+    <label for="todo-description">Description</label>
+    <textarea
+      id="todo-description"
+      formControlName="text"
+    ></textarea>
+  </div>
 
-    <button
-        tdl-button
-        color="primary"
-        (click)="add()"
+  <button
+    tdl-button
+    color="primary"
+    (click)="add()"
     >
-        Add
-    </button>
+    Add
+  </button>
 </form>

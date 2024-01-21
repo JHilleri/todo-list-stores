@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'tdl-field',
     standalone: true,
-    imports: [CommonModule],
+    imports: [],
     template: `<ng-content></ng-content>`,
     styles: [
         `

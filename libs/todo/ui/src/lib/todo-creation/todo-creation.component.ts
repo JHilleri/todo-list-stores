@@ -5,7 +5,7 @@ import {
     Input,
     Output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
     FormControl,
     FormGroup,
@@ -19,7 +19,7 @@ import { TodoItemCreationParams } from '@todo-lists/todo/util';
 @Component({
     selector: 'tdl-todo-creation',
     standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, ButtonComponent],
+    imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
     templateUrl: './todo-creation.component.html',
     styleUrls: ['./todo-creation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

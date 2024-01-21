@@ -1,6 +1,6 @@
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NgFor } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { RxLet } from '@rx-angular/template/let';
 import { SettingsService } from '@todo-lists/settings/data-access';
@@ -8,7 +8,7 @@ import { ColorsLoaderDirective, ThemeLoaderDirective } from '@todo-lists/setting
 
 @Component({
     standalone: true,
-    imports: [RouterModule, FormsModule, RxLet, NgFor, ThemeLoaderDirective, ColorsLoaderDirective],
+    imports: [RouterModule, FormsModule, RxLet, ThemeLoaderDirective, ColorsLoaderDirective],
     selector: 'todo-lists-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],

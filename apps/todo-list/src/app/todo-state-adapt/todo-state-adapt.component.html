@@ -1,26 +1,25 @@
 <ng-container *rxLet="vm$; let vm">
-    <ng-container *ngIf="!vm.isLoading; else loading">
-        <tdl-todo-list
-            [showCompleted]="vm.showCompleted"
-            [filter]="vm.filter"
-            [filteredItems]="vm.filteredTodos"
-            [completedCount]="vm.completedCount"
-            [uncompletedCount]="vm.uncompletedCount"
-            [categories]="vm.categories"
-            [isUpdating]="vm.isUpdating"
-            [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
-            (updateShowCompleted)="sources.updateShowCompleted.next($event)"
-            (updateFilter)="sources.updateFilter.next($event)"
-            (openDialogCreateItem)="sources.dialogCreateItemOpened.next()"
-            (completeAll)="sources.completeAll.next()"
-            (uncompleteAll)="sources.uncompleteAll.next()"
-            (updadteItem)="sources.updateItem.next($event)"
-            (createItem)="sources.createItem.next($event)"
-            (dialogCreateItemClosed)="sources.dialogCreateItemClosed.next()"
-        />
-    </ng-container>
+  @if (!vm.isLoading) {
+    <tdl-todo-list
+      [showCompleted]="vm.showCompleted"
+      [filter]="vm.filter"
+      [filteredItems]="vm.filteredTodos"
+      [completedCount]="vm.completedCount"
+      [uncompletedCount]="vm.uncompletedCount"
+      [categories]="vm.categories"
+      [isUpdating]="vm.isUpdating"
+      [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
+      (updateShowCompleted)="sources.updateShowCompleted.next($event)"
+      (updateFilter)="sources.updateFilter.next($event)"
+      (openDialogCreateItem)="sources.dialogCreateItemOpened.next()"
+      (completeAll)="sources.completeAll.next()"
+      (uncompleteAll)="sources.uncompleteAll.next()"
+      (updadteItem)="sources.updateItem.next($event)"
+      (createItem)="sources.createItem.next($event)"
+      (dialogCreateItemClosed)="sources.dialogCreateItemClosed.next()"
+      />
+    } @else {
+      <tdl-loading></tdl-loading>
+    }
 
-    <ng-template #loading>
-        <tdl-loading></tdl-loading>
-    </ng-template>
-</ng-container>
+  </ng-container>

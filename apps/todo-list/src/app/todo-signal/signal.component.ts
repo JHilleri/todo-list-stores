@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CategoryService, TodoService } from '@todo-lists/todo/data-access';
@@ -12,7 +12,7 @@ import { tap } from 'rxjs';
     templateUrl: './signal.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, LoadingComponent, TodoListComponent],
+    imports: [LoadingComponent, TodoListComponent],
 })
 export class SignalComponent implements OnInit {
     private readonly todoService = inject(TodoService);

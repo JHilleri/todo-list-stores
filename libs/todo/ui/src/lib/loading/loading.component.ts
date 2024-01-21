@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'tdl-loading',
     standalone: true,
-    imports: [CommonModule],
+    imports: [],
     template: `
         Loading ...
         <progress></progress>

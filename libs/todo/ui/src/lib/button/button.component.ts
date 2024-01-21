@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, HostBinding, input } from '@angular/core';
 
 @Component({
     selector: 'tdl-button, [tdl-button]',
@@ -8,10 +8,10 @@ import { Component, HostBinding, Input } from '@angular/core';
     styleUrls: ['./button.component.scss'],
 })
 export class ButtonComponent {
-    @Input() color: 'primary' | 'secondary' | undefined = undefined;
+    color = input<'primary' | 'secondary' | undefined>();
 
     @HostBinding('class')
     get hostClasses() {
-        return this.color ? `tdl-button--${this.color}` : '';
+        return this.color() ? `tdl-button--${this.color()}` : '';
     }
 }

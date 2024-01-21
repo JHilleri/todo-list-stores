@@ -1,26 +1,25 @@
 <ng-container *rxLet="vm$; let vm">
-    <ng-container *ngIf="!vm.isLoading; else loading">
-        <tdl-todo-list
-            [showCompleted]="vm.showCompleted"
-            [filter]="vm.filter"
-            [filteredItems]="vm.filteredItems"
-            [completedCount]="vm.completedCount"
-            [uncompletedCount]="vm.uncompletedCount"
-            [categories]="vm.categories"
-            [isUpdating]="vm.isUpdating"
-            [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
-            (updateShowCompleted)="uiActions.updateShowCompleted($event)"
-            (updateFilter)="uiActions.updateFilter($event)"
-            (openDialogCreateItem)="uiActions.openDialogCreateItem()"
-            (completeAll)="uiActions.completeAll()"
-            (uncompleteAll)="uiActions.uncompleteAll()"
-            (updadteItem)="uiActions.updateCompleted($event)"
-            (createItem)="uiActions.createItem($event)"
-            (dialogCreateItemClosed)="uiActions.dialogCreateItemClosed()"
-        />
-    </ng-container>
+  @if (!vm.isLoading) {
+    <tdl-todo-list
+      [showCompleted]="vm.showCompleted"
+      [filter]="vm.filter"
+      [filteredItems]="vm.filteredItems"
+      [completedCount]="vm.completedCount"
+      [uncompletedCount]="vm.uncompletedCount"
+      [categories]="vm.categories"
+      [isUpdating]="vm.isUpdating"
+      [isDialogCreateItemOpen]="vm.isDialogCreateItemOpen"
+      (updateShowCompleted)="uiActions.updateShowCompleted($event)"
+      (updateFilter)="uiActions.updateFilter($event)"
+      (openDialogCreateItem)="uiActions.openDialogCreateItem()"
+      (completeAll)="uiActions.completeAll()"
+      (uncompleteAll)="uiActions.uncompleteAll()"
+      (updadteItem)="uiActions.updateCompleted($event)"
+      (createItem)="uiActions.createItem($event)"
+      (dialogCreateItemClosed)="uiActions.dialogCreateItemClosed()"
+      />
+  } @else {
+    <tdl-loading></tdl-loading>
+  }
 
-    <ng-template #loading>
-        <tdl-loading></tdl-loading>
-    </ng-template>
 </ng-container>

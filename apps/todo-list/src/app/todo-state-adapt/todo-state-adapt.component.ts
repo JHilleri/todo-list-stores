@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RxLet } from '@rx-angular/template/let';
 import { adaptNgrx } from '@state-adapt/ngrx';
@@ -24,7 +24,7 @@ const initialState: TodoState = {
 @Component({
     selector: 'todo-lists-todo-state-adapt',
     standalone: true,
-    imports: [RxLet, NgIf, LoadingComponent, TodoListComponent],
+    imports: [RxLet, LoadingComponent, TodoListComponent],
     templateUrl: './todo-state-adapt.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

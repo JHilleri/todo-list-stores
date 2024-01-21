@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { TodoCardComponent } from '../todo-card/todo-card.component';
 import { TodoItem } from '@todo-lists/todo/util';
 
@@ -8,7 +8,7 @@ import { TodoItem } from '@todo-lists/todo/util';
     standalone: true,
     templateUrl: './todo-card-grid.component.html',
     styleUrls: ['./todo-card-grid.component.scss'],
-    imports: [CommonModule, TodoCardComponent],
+    imports: [TodoCardComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoCardGridComponent {
@@ -20,8 +20,6 @@ export class TodoCardGridComponent {
         id: TodoItem['id'];
         value: Partial<TodoItem>;
     }>();
-
-    protected trackBy: TrackByFunction<TodoItem> = (_, item) => item.id;
 
     protected updateCompletedItem(item: TodoItem, completed: boolean) {
         this.updateCompleted.emit({ id: item.id, value: { completed } });

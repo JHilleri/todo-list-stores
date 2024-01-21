@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { LetDirective } from '@ngrx/component';
 import { Store } from '@ngrx/store';
@@ -13,7 +13,7 @@ import { selectViewModel } from './state/todo.selectors';
     templateUrl: './todo-ngrx.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgIf, LetDirective, LoadingComponent, TodoListComponent],
+    imports: [LetDirective, LoadingComponent, TodoListComponent],
 })
 export class TodoNgrxComponent implements OnInit {
     private store = inject(Store);

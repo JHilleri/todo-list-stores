@@ -1,24 +1,18 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    Output,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, input } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'tdl-filters',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './filters.component.html',
     styleUrls: ['./filters.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FiltersComponent {
-    @Input() public showCompleted = false;
-    @Input() public filter = '';
+    public showCompleted = input(false);
+    public filter = input('');
 
     @Output() public updateShowCompleted = new EventEmitter<boolean>();
     @Output() public updateFilter = new EventEmitter<string>();

@@ -3,7 +3,7 @@
     <input
         id="filter"
         type="text"
-        [ngModel]="filter"
+        [ngModel]="filter()"
         (ngModelChange)="updateFilter.emit($event)"
     />
 </div>
@@ -13,7 +13,7 @@
         id="show-completed"
         class="switch"
         type="checkbox"
-        [ngModel]="showCompleted"
+        [ngModel]="showCompleted()"
         (ngModelChange)="updateShowCompleted.emit($event)"
     />
     <label for="show-completed">Show completed</label>

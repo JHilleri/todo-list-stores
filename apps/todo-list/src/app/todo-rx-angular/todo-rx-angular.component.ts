@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { insert } from '@rx-angular/cdk/transformations';
 import { RxState } from '@rx-angular/state';
@@ -36,7 +36,7 @@ interface TodoEvents {
 @Component({
     selector: 'todo-lists-todo-rx-angular',
     standalone: true,
-    imports: [RxLet, NgIf, LoadingComponent, TodoListComponent],
+    imports: [RxLet, LoadingComponent, TodoListComponent],
     templateUrl: './todo-rx-angular.component.html',
     styleUrls: ['../todo.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
